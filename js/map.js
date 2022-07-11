@@ -18,9 +18,31 @@ let selectedLayer = 0;
 
 window.addEventListener('load', async function(event) {
     const radios = document.querySelectorAll('input[name="layer"]')
-    radios.forEach((radio)=> {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const layer = urlParams.get('layer');
+    if(layer == 'faction'){
+        selectedLayer = 0;
+    } else if(layer == 'guarded'){
+        selectedLayer = 1;
+    } else if(layer == 'yield'){
+        selectedLayer = 2;
+    }
+    radios.forEach((radio, index)=> {
+        if(index == selectedLayer){
+            radio.checked = true;
+        } else {
+            radio.checked = false;
+        }
         radio.addEventListener('change', function() {
-            layerUpdate();
+            selectedLayer = parseInt(this.value);
+            if(selectedLayer == 0){
+                window.location.href = window.location.href.split('?')[0] + '?layer=faction';
+            } else if(selectedLayer == 1){
+                window.location.href = window.location.href.split('?')[0] + '?layer=guarded';
+            } else if(selectedLayer == 2){
+                window.location.href = window.location.href.split('?')[0] + '?layer=yield';
+            }
         });
     });
 
@@ -187,6 +209,9 @@ function getSortedKeys(obj) {
 }
 
 function getTileStates(tiles){
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const layer = urlParams.get('layer');
     let tilesLookup = {};
     // [0] = tile_id
     // [1] = map_id
@@ -201,41 +226,45 @@ function getTileStates(tiles){
                 guarded: tile[3],
                 game_bricks_per_day: tile[4]
             };
-            let color = null;
-            if(!factionLookup[tile_id]){
-                color = getUniqueColor(tile_id);
-                // factionLookup[tile_id] = 
-                factionLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, '', '');
+
+            if(layer == 'faction'){
+                let color = null;
+                if(!factionLookup[tile_id]){
+                    color = getUniqueColor(tile_id);
+                    // factionLookup[tile_id] = 
+                    factionLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, '', '');
+                    // , (canvas)=>{
+                    //     factionLookup[tile_id] = canvas;
+                    // });
+                    factionCounts[tile_id] = 1;
+                } else {
+                    factionCounts[tile_id]++;
+                }
+            } else if(layer == 'guarded'){
+                let guardedSince = new Date(tile[3]);
+                let now = new Date();
+                let HOUR = 1000*60*60;
+                let hours = HOUR*120;
+                let duration = now.getTime() - guardedSince.getTime();
+                let val = duration/hours;
+                color = heatMapColorforValue(Math.min(val, 1));
+                // guardedLookup[tile[0]] = 
+                tile_id = tile[0];
+                guardedLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (duration/HOUR).toFixed(0),'h');
                 // , (canvas)=>{
-                //     factionLookup[tile_id] = canvas;
+                //     guardedLookup[tile_id] = canvas;
                 // });
-                factionCounts[tile_id] = 1;
-            } else {
-                factionCounts[tile_id]++;
+            } else if(layer == 'yield'){
+                tile_id = tile[0]
+                let bricks = tile[4];
+                let value = (Math.log(bricks) + 2)/2;
+                color = heatMapColorforValue(value);
+                // yieldLookup[tile[0]] = 
+                yieldLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (tile[4]).toFixed(2),'');
+                // , (canvas)=>{
+                //     yieldLookup[tile_id] = canvas;
+                // });
             }
-
-            let guardedSince = new Date(tile[3]);
-            let now = new Date();
-            let HOUR = 1000*60*60;
-            let hours = HOUR*120;
-            let duration = now.getTime() - guardedSince.getTime();
-            let val = duration/hours;
-            color = heatMapColorforValue(Math.min(val, 1));
-            // guardedLookup[tile[0]] = 
-            tile_id = tile[0];
-            guardedLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (duration/HOUR).toFixed(0),'h');
-            // , (canvas)=>{
-            //     guardedLookup[tile_id] = canvas;
-            // });
-
-            let bricks = tile[4];
-            let value = (Math.log(bricks) + 2)/2;
-            color = heatMapColorforValue(value);
-            // yieldLookup[tile[0]] = 
-            yieldLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (tile[4]).toFixed(2),'');
-            // , (canvas)=>{
-            //     yieldLookup[tile_id] = canvas;
-            // });
         }
     })
     return tilesLookup;
@@ -257,13 +286,13 @@ function snapshot() {
                         shape = factionLookup[key];
                     } else if(selectedLayer == 1){
                         let key = hexagon.tile_id;
-                        shape = yieldLookup[key];
+                        shape = guardedLookup[key];
                     } else if(selectedLayer == 2){
                         let key = hexagon.tile_id;
-                        shape = guardedLookup[key];
+                        shape = yieldLookup[key];
                     }
                 } else {
-                    // console.log('Missing tile_id:', hexagon.tile_id);
+                    console.log('Missing tile_id:', hexagon.tile_id);
                 }
             }
             if(shape){
