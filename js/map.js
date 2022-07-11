@@ -21,7 +21,7 @@ window.addEventListener('load', async function(event) {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const layer = urlParams.get('layer');
-    if(layer == 'faction'){
+    if(!layer || layer == 'faction'){
         selectedLayer = 0;
     } else if(layer == 'guarded'){
         selectedLayer = 1;
@@ -227,7 +227,7 @@ function getTileStates(tiles){
                 game_bricks_per_day: tile[4]
             };
 
-            if(layer == 'faction'){
+            if(!layer || layer == 'faction'){
                 let color = null;
                 if(!factionLookup[tile_id]){
                     color = getUniqueColor(tile_id);
