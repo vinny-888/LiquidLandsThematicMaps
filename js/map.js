@@ -271,7 +271,18 @@ function snapshot() {
                 let offsetY = 0;
                 let left = (hexagon.x-1) * col_size*3,
                     top = (hexagon.y-1) * row_size;
-                ctx.drawImage(shape, left+1+offsetX, top-1+offsetY); 
+                
+
+                var imageObj = new Image();
+                imageObj.width = shape.width;
+                imageObj.height = shape.height;
+                
+                imageObj.onload = function() {
+                    ctx.drawImage(shape, left+1+offsetX, top-1+offsetY); 
+                };
+
+                imageObj.src = shape.toDataURL();
+
             }
         }                              
     }
