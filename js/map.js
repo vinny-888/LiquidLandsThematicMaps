@@ -1,6 +1,7 @@
 let zoom = 1;
 let tileStates = null;
 let factionLookup = {};
+let factionCounts = {};
 let yieldLookup = {};
 let guardedLookup = {};
 let width = 0;
@@ -60,15 +61,12 @@ document.addEventListener('DOMContentLoaded', async function(event) {
     canvas.style.width = css_width + "px";
     canvas.style.height = css_height + "px";
 
-   
-
-    let mapId = 0;
     fetch("https://liquidlands.io/raw/land")
     .then((res)=>{
         return res.json();
     }).then((res)=>{
         tileStates = getTileStates(res);
-        snapshot();
+        layerUpdate();
     });
 });
 
@@ -163,9 +161,31 @@ function layerUpdate(){
     radios.forEach((radio, index)=> {
         if (radio.checked) {
             selectedLayer = index;
+            let factionDiv = document.getElementById('factionsDiv');
+            if(selectedLayer == 0){
+                factionDiv.style.display = 'block';
+            } else {
+                factionDiv.style.display = 'none';
+            }
         }
     });
+
+    let table = document.getElementById('factionRows');
+    getSortedKeys(factionCounts).forEach((faction, index)=>{
+        let count = factionCounts[faction];
+        table.innerHTML += `<tr>
+        <td>${index+1}</td>
+        <td><div class="colorSquare" style="background-color: ${getUniqueColor(faction)}"></div></td>
+        <td>${count}</td>
+    </tr>`;
+    })
+
     snapshot();
+}
+
+function getSortedKeys(obj) {
+    var keys = Object.keys(obj);
+    return keys.sort(function(a,b){return obj[b]-obj[a]});
 }
 
 function getTileStates(tiles){
@@ -186,7 +206,11 @@ function getTileStates(tiles){
             if(!factionLookup[tile[2]]){
                 color = getUniqueColor(tile[2]);
                 factionLookup[tile[2]] = get_tile_canvas(color, tile_width - 3, tile_height-3, '', '');
+                factionCounts[tile[2]] = 1;
+            } else {
+                factionCounts[tile[2]]++;
             }
+
             let guardedSince = new Date(tile[3]);
             let now = new Date();
             let HOUR = 1000*60*60;
