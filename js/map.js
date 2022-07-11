@@ -53,6 +53,9 @@ window.addEventListener('load', async function(event) {
     }
 
     poly1 = get_tile_canvas('#2a3339', tile_width - 3, tile_height-3, '', '');
+    //, (canvas)=>{
+    //     poly1 = canvas;
+    // });
 
     let canvas = document.getElementById('mapCanvas');  
     // draw the snapshot
@@ -99,50 +102,44 @@ function zoomOut(){
     // snapshot();
 }
 
-function get_tile_canvas(color, width, height, value, suffix) {
+function get_tile_canvas(color, width, height, value, suffix, callback) {
     var poly = [23, 4, 25.5, 1.25, 29, 0, 71, 0, 74.5, 1.25, 77, 4, 98, 46, 98.75, 50, 98, 54, 77, 96, 74.5, 98.75, 71, 100, 29, 100, 25.5, 98.75, 23, 96, 2, 54, 1.25, 50, 2, 46];
 
     let canvas = document.createElement('canvas');
-    canvas.width = 100;
-    canvas.height = 100;
+    let widthRatio = width/100;
+    let heightRatio = height/100;
+    canvas.width = width;
+    canvas.height = height;
 
     let ctx1 = canvas.getContext('2d');
     ctx1.fillStyle = color;
     ctx1.beginPath();
-    ctx1.moveTo(poly[0], poly[1]);
+    ctx1.moveTo(poly[0]*widthRatio, poly[1]*heightRatio);
     for (let i = 2; i < poly.length - 1; i += 2) { 
-        ctx1.lineTo(poly[i], poly[i + 1]) 
+        ctx1.lineTo(poly[i]*widthRatio, poly[i + 1]*heightRatio) 
     }
     ctx1.closePath();
     ctx1.fill();
 
-    let final = document.createElement('canvas');
-    final.width = width;
-    final.height = height;
+    ctx1.font="12px verdana";
+    ctx1.shadowColor="black";
+    ctx1.shadowBlur=1;
+    ctx1.lineWidth=2;
 
-    let ctx = final.getContext('2d');
-    //canvas.onload = ()=>{
-        ctx.drawImage(canvas, 0, 0, width, height);   
-        ctx.font="12px verdana";
-        ctx.shadowColor="black";
-        ctx.shadowBlur=1;
-        ctx.lineWidth=2;
-
-        let offsetY = 5;
-        let offsetX = 0;
-        if(value.length < 2){
-            offsetX = 8;
-        } else if(value.length < 3){
-            offsetX = 12;
-        } else if(value.length < 5){
-            offsetX = 16;
-        }
-        ctx.strokeText(value+suffix,width/2-offsetX,height/2+offsetY);
-        ctx.shadowBlur=0;
-        ctx.fillStyle="white";
-        ctx.fillText(value+suffix,width/2-offsetX,height/2+offsetY);
-    //}
-    return final;
+    let offsetY = 5;
+    let offsetX = 0;
+    if(value.length < 2){
+        offsetX = 8;
+    } else if(value.length < 3){
+        offsetX = 12;
+    } else if(value.length < 5){
+        offsetX = 16;
+    }
+    ctx1.strokeText(value+suffix,width/2-offsetX,height/2+offsetY);
+    ctx1.shadowBlur=0;
+    ctx1.fillStyle="white";
+    ctx1.fillText(value+suffix,width/2-offsetX,height/2+offsetY);
+    return canvas;
 }
 
 function getUniqueColor(n) {
@@ -198,18 +195,23 @@ function getTileStates(tiles){
     // [4] = game_bricks_per_day
     tiles.forEach((tile)=>{
         if(tile){
+            let tile_id = tile[2]
             tilesLookup[tile[0]] = {
-                faction_id: tile[2],
+                faction_id: tile_id,
                 guarded: tile[3],
                 game_bricks_per_day: tile[4]
             };
             let color = null;
-            if(!factionLookup[tile[2]]){
-                color = getUniqueColor(tile[2]);
-                factionLookup[tile[2]] = get_tile_canvas(color, tile_width - 3, tile_height-3, '', '');
-                factionCounts[tile[2]] = 1;
+            if(!factionLookup[tile_id]){
+                color = getUniqueColor(tile_id);
+                // factionLookup[tile_id] = 
+                factionLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, '', '');
+                // , (canvas)=>{
+                //     factionLookup[tile_id] = canvas;
+                // });
+                factionCounts[tile_id] = 1;
             } else {
-                factionCounts[tile[2]]++;
+                factionCounts[tile_id]++;
             }
 
             let guardedSince = new Date(tile[3]);
@@ -219,12 +221,21 @@ function getTileStates(tiles){
             let duration = now.getTime() - guardedSince.getTime();
             let val = duration/hours;
             color = heatMapColorforValue(Math.min(val, 1));
-            guardedLookup[tile[0]] = get_tile_canvas(color, tile_width - 3, tile_height-3, (duration/HOUR).toFixed(0),'h');
+            // guardedLookup[tile[0]] = 
+            tile_id = tile[0];
+            guardedLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (duration/HOUR).toFixed(0),'h');
+            // , (canvas)=>{
+            //     guardedLookup[tile_id] = canvas;
+            // });
 
             let bricks = tile[4];
             let value = (Math.log(bricks) + 2)/2;
             color = heatMapColorforValue(value);
-            yieldLookup[tile[0]] = get_tile_canvas(color, tile_width - 3, tile_height-3, (tile[4]).toFixed(2),'');
+            // yieldLookup[tile[0]] = 
+            yieldLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (tile[4]).toFixed(2),'');
+            // , (canvas)=>{
+            //     yieldLookup[tile_id] = canvas;
+            // });
         }
     })
     return tilesLookup;
