@@ -16,7 +16,7 @@ let poly1 = null;
 let ele = null;
 let selectedLayer = 0;
 
-document.addEventListener('DOMContentLoaded', async function(event) {
+window.addEventListener('load', async function(event) {
     const radios = document.querySelectorAll('input[name="layer"]')
     radios.forEach((radio)=> {
         radio.addEventListener('change', function() {
