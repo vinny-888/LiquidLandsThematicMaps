@@ -25,8 +25,8 @@ window.addEventListener('load', async function(event) {
     });
 
     ele = document.getElementById('MapOuter');
-    new inrt.scroller({elementId: "MapOuter", defaultDrag: 0.94, maxScrollSpeed: 50});
-    ele.addEventListener('mousedown', mouseDownHandler);
+    // new inrt.scroller({elementId: "MapOuter", defaultDrag: 0.94, maxScrollSpeed: 50});
+    // ele.addEventListener('mousedown', mouseDownHandler);
     let map = document.getElementById('Map');
     width = map.clientWidth;
     height = map.clientHeight;
