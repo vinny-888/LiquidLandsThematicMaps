@@ -121,7 +121,7 @@ function get_tile_canvas(color, width, height, value, suffix) {
     final.height = height;
 
     let ctx = final.getContext('2d');
-    canvas.onload = ()=>{
+    //canvas.onload = ()=>{
         ctx.drawImage(canvas, 0, 0, width, height);   
         ctx.font="12px verdana";
         ctx.shadowColor="black";
@@ -141,7 +141,7 @@ function get_tile_canvas(color, width, height, value, suffix) {
         ctx.shadowBlur=0;
         ctx.fillStyle="white";
         ctx.fillText(value+suffix,width/2-offsetX,height/2+offsetY);
-    }
+    //}
     return final;
 }
 
