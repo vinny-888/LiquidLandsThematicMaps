@@ -25,8 +25,8 @@ window.addEventListener('load', async function(event) {
     });
 
     ele = document.getElementById('MapOuter');
-    // new inrt.scroller({elementId: "MapOuter", defaultDrag: 0.94, maxScrollSpeed: 50});
-    // ele.addEventListener('mousedown', mouseDownHandler);
+    new inrt.scroller({elementId: "MapOuter", defaultDrag: 0.94, maxScrollSpeed: 50});
+    ele.addEventListener('mousedown', mouseDownHandler);
     let map = document.getElementById('Map');
     width = map.clientWidth;
     height = map.clientHeight;
@@ -121,26 +121,27 @@ function get_tile_canvas(color, width, height, value, suffix) {
     final.height = height;
 
     let ctx = final.getContext('2d');
-    ctx.drawImage(canvas, 0, 0, width, height);   
-    ctx.font="12px verdana";
-    ctx.shadowColor="black";
-    ctx.shadowBlur=1;
-    ctx.lineWidth=2;
+    canvas.onload = ()=>{
+        ctx.drawImage(canvas, 0, 0, width, height);   
+        ctx.font="12px verdana";
+        ctx.shadowColor="black";
+        ctx.shadowBlur=1;
+        ctx.lineWidth=2;
 
-    let offsetY = 5;
-    let offsetX = 0;
-    if(value.length < 2){
-        offsetX = 8;
-    } else if(value.length < 3){
-        offsetX = 12;
-    } else if(value.length < 5){
-        offsetX = 16;
+        let offsetY = 5;
+        let offsetX = 0;
+        if(value.length < 2){
+            offsetX = 8;
+        } else if(value.length < 3){
+            offsetX = 12;
+        } else if(value.length < 5){
+            offsetX = 16;
+        }
+        ctx.strokeText(value+suffix,width/2-offsetX,height/2+offsetY);
+        ctx.shadowBlur=0;
+        ctx.fillStyle="white";
+        ctx.fillText(value+suffix,width/2-offsetX,height/2+offsetY);
     }
-    ctx.strokeText(value+suffix,width/2-offsetX,height/2+offsetY);
-    ctx.shadowBlur=0;
-    ctx.fillStyle="white";
-    ctx.fillText(value+suffix,width/2-offsetX,height/2+offsetY);
-
     return final;
 }
 
@@ -251,7 +252,7 @@ function snapshot() {
                         shape = guardedLookup[key];
                     }
                 } else {
-                    console.log('Missing tile_id:', hexagon.tile_id);
+                    // console.log('Missing tile_id:', hexagon.tile_id);
                 }
             }
             if(shape){
