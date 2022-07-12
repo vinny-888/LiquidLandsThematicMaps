@@ -212,6 +212,7 @@ function layerUpdate(){
         let count = factionCounts[faction];
         table.innerHTML += `<tr>
         <td>${index+1}</td>
+        <td style="max-width: 140px;">${factionNames[faction]}</td>
         <td><div class="colorSquare" style="background-color: ${getUniqueColor(faction)}"></div></td>
         <td>${count}</td>
     </tr>`;
