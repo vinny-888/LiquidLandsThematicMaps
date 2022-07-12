@@ -143,12 +143,12 @@ function get_tile_canvas(color, width, height, value, suffix, callback) {
     ctx1.closePath();
     ctx1.fill();
 
-    ctx1.font="12px verdana";
+    ctx1.font="14px verdana";
     ctx1.shadowColor="black";
     ctx1.shadowBlur=1;
     ctx1.lineWidth=2;
 
-    let offsetY = 5;
+    let offsetY = 4;
     let offsetX = 0;
     if(value.length < 2){
         offsetX = 8;
