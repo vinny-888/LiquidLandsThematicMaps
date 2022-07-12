@@ -47,6 +47,17 @@ window.addEventListener('load', async function(event) {
     });
 
     ele = document.getElementById('MapOuter');
+
+    // Handle double click and zoom better
+    ele.addEventListener("dblclick", (evt)=>{
+        console.log('evt: ', evt);
+        let zoomer = document.getElementById('MapZoomer');
+        let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
+        let ratio = 1/scale;
+        zoomer.style.transform = 'scale('+1.0+')';
+        ele.scrollLeft = ((ele.scrollLeft+evt.clientX)*ratio)-(ele.clientWidth/2);
+        ele.scrollTop = ((ele.scrollTop+evt.clientY)*ratio)-(ele.clientHeight/2);
+    });
     new inrt.scroller({elementId: "MapOuter", defaultDrag: 0.94, maxScrollSpeed: 50});
     ele.addEventListener('mousedown', mouseDownHandler);
     let map = document.getElementById('Map');
@@ -110,18 +121,24 @@ async function getMapHistory(){
 function zoomIn(){
     let zoomer = document.getElementById('MapZoomer');
     let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
-    scale*=1.1;
+    let ratio = 1.2;
+    scale*=ratio;
     zoom = scale;
     zoomer.style.transform = 'scale('+scale+')';
-    // snapshot();
+
+    ele.scrollLeft = ((ele.scrollLeft+ele.clientWidth/2)*ratio)-(ele.clientWidth/2);
+    ele.scrollTop = ((ele.scrollTop+ele.clientHeight/2)*ratio)-(ele.clientHeight/2);
 }
 function zoomOut(){
     let zoomer = document.getElementById('MapZoomer');
     let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
-    scale*=0.9;
+    let ratio = 0.8;
+    scale*=ratio;
     zoom = scale;
     zoomer.style.transform = 'scale('+scale+')';
-    // snapshot();
+
+    ele.scrollLeft = ((ele.scrollLeft+ele.clientWidth/2)*ratio)-(ele.clientWidth/2);
+    ele.scrollTop = ((ele.scrollTop+ele.clientHeight/2)*ratio)-(ele.clientHeight/2);
 }
 
 function get_tile_canvas(color, width, height, value, suffix, callback) {
