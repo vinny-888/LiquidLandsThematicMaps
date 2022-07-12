@@ -143,19 +143,19 @@ function get_tile_canvas(color, width, height, value, suffix, callback) {
     ctx1.closePath();
     ctx1.fill();
 
-    ctx1.font="14px verdana";
+    ctx1.font="18px Helvetica";
     ctx1.shadowColor="black";
-    ctx1.shadowBlur=1;
+    ctx1.shadowBlur=2;
     ctx1.lineWidth=2;
 
-    let offsetY = 4;
+    let offsetY = 5;
     let offsetX = 0;
     if(value.length < 2){
-        offsetX = 8;
+        offsetX = 10;
     } else if(value.length < 3){
-        offsetX = 12;
+        offsetX = 15;
     } else if(value.length < 5){
-        offsetX = 16;
+        offsetX = 20;
     }
     ctx1.strokeText(value+suffix,width/2-offsetX,height/2+offsetY);
     ctx1.shadowBlur=0;
@@ -219,51 +219,47 @@ function getTileStates(tiles){
     // [3] = guarded
     // [4] = game_bricks_per_day
     tiles.forEach((tile)=>{
+        let faction_id = tile[2];
+        if(!layer || layer == 'faction'){
+            if(!factionCounts[faction_id]){
+                factionCounts[faction_id] = 1;
+            } else {
+                factionCounts[faction_id]++;
+            }
+        }
+    });
+    tiles.forEach((tile)=>{
         if(tile){
-            let tile_id = tile[2]
-            tilesLookup[tile[0]] = {
-                faction_id: tile_id,
-                guarded: tile[3],
-                game_bricks_per_day: tile[4]
+            let tile_id = tile[0];
+            let faction_id = tile[2];
+            let guarded = tile[3];
+            let game_bricks_per_day = tile[4];
+            tilesLookup[tile_id] = {
+                faction_id: faction_id,
+                guarded: guarded,
+                game_bricks_per_day: game_bricks_per_day
             };
 
             if(!layer || layer == 'faction'){
                 let color = null;
-                if(!factionLookup[tile_id]){
-                    color = getUniqueColor(tile_id);
-                    // factionLookup[tile_id] = 
-                    factionLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, '', '');
-                    // , (canvas)=>{
-                    //     factionLookup[tile_id] = canvas;
-                    // });
-                    factionCounts[tile_id] = 1;
-                } else {
-                    factionCounts[tile_id]++;
+                if(!factionLookup[faction_id]){
+                    color = getUniqueColor(faction_id);
+                    let rank = getSortedKeys(factionCounts).indexOf(''+faction_id)+1;
+                    factionLookup[faction_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, '#'+rank, '');
                 }
             } else if(layer == 'guarded'){
-                let guardedSince = new Date(tile[3]);
+                let guardedSince = new Date(guarded);
                 let now = new Date();
                 let HOUR = 1000*60*60;
                 let hours = HOUR*120;
                 let duration = now.getTime() - guardedSince.getTime();
                 let val = duration/hours;
                 color = heatMapColorforValue(Math.min(val, 1));
-                // guardedLookup[tile[0]] = 
-                tile_id = tile[0];
                 guardedLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (duration/HOUR).toFixed(0),'h');
-                // , (canvas)=>{
-                //     guardedLookup[tile_id] = canvas;
-                // });
             } else if(layer == 'yield'){
-                tile_id = tile[0]
-                let bricks = tile[4];
-                let value = (Math.log(bricks) + 2)/2;
+                let value = (Math.log(game_bricks_per_day) + 2)/2;
                 color = heatMapColorforValue(value);
-                // yieldLookup[tile[0]] = 
                 yieldLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (tile[4]).toFixed(2),'');
-                // , (canvas)=>{
-                //     yieldLookup[tile_id] = canvas;
-                // });
             }
         }
     })
