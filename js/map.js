@@ -336,7 +336,9 @@ function getTileStates(tiles){
                     let rank = getSortedKeys(factionCounts).indexOf(''+faction_id)+1;
                     
                     factionLookup[faction_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, '#'+rank, '', isRealm);
-                } else {
+                } 
+                
+                if(isRealm && !factionLookup[faction_id+'_realm']){
                     color = getUniqueColor(faction_id);
                     let rank = getSortedKeys(factionCounts).indexOf(''+faction_id)+1;
                     
