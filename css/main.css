@@ -76,7 +76,7 @@ body {
 #factionsDiv {
     z-index: 1;
     position: absolute;
-    top: 100px;
+    top: 115px;
     left: 20px;
     background-color: #1f2a32;
     color: #FFF;
@@ -108,4 +108,12 @@ body {
 .colorSquare{
     width: 41px;
     height: 14px;
+}
+
+#realm{
+    font-size: 20px;
+}
+#realmName{
+    color: red;
+    font-weight: bold;
 }
