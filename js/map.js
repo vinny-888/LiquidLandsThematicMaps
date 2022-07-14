@@ -115,8 +115,8 @@ window.addEventListener('load', async function(event) {
                 zoomReset.scrollTop = ele.scrollTop;
 
                 let zoomer = document.getElementById('MapZoomer');
-                zoomer.style.transform = 'scale('+1.5+')';
-                zoom = 1.5;
+                zoomer.style.transform = 'scale('+0.75+')';
+                zoom = 0.75;
                 ele.scrollLeft = 0;
                 ele.scrollTop = 0;
                 document.getElementById('realm').style.display = 'block';
@@ -371,10 +371,14 @@ function snapshot() {
 
         let tiles = mapTiles;
         if(activeRealm){
-            tiles = realms.find((realm)=>realm.tile_id == activeRealm).map;
+            tiles = [];
+            realms.forEach((realm)=>{
+                tiles = tiles.concat(realm.map);
+            })
+            // tiles = realms.find((realm)=>realm.tile_id == activeRealm).map;
         }
 
-        for (let hexagon of tiles) {
+        for (let [index, hexagon] of tiles.entries()) {
             let shape = poly1;
             let isRealm = false;
             if (hexagon.enabled || activeRealm) {
@@ -403,10 +407,34 @@ function snapshot() {
                 let offsetY = 0;
                 let left = (hexagon.x-1) * col_size*3,
                     top = (hexagon.y-1) * row_size;
+                
 
                 if(activeRealm) {
-                    left = (hexagon.tile.x+15) * col_size*2;
-                    top = (hexagon.tile.y+7) * row_size*1.5;
+                    let realmIndex = Math.floor(index/37);
+                    let realm = realms[realmIndex];
+                    top = (hexagon.tile.y+7) * row_size*1.5 + (Math.floor(index/(37*3)) * 11*row_size*1.5);
+                    if(index < (37*3)){
+                        left = ((hexagon.tile.x+20) * col_size*2) + (Math.floor(index/37)*15*col_size*2);
+                    } else {
+                        left = ((hexagon.tile.x+20) * col_size*2) + (Math.floor((index-(37*3))/37)*15*col_size*2)
+                    }
+                    if(index % 37 == 0){
+                        ctx.font="24px Helvetica";
+                        ctx.shadowColor="black";
+                        ctx.shadowBlur=2;
+                        ctx.lineWidth=2;
+                        // col 15.96
+                        // row 25
+
+                        ctx.strokeText(realm.country.name,left, top-20);
+                        ctx.shadowBlur=0;
+                        ctx.fillStyle="white";
+                        if(realm.tile_id == activeRealm){
+                            ctx.fillStyle="red";
+                        } 
+                        ctx.fillText(  realm.country.name,left, top - 20);
+                    }
+                    
                 }
                 if(isRealm){
                     realmShapes[hexagon.tile_id] = {
