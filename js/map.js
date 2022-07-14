@@ -17,16 +17,33 @@ let tile_height = 0;
 let offsetX = 0;
 let offsetY = 0;
 let poly1 = null;
-let ele = null;
+let mapOuter = null;
 let selectedLayer = 0;
 let activeRealm = null;
-let zoomReset = {};
+let zoomReset = {
+    zoom: 0.2,
+    scrollLeft: 0,
+    scrollTop: 0
+};
 
 window.addEventListener('load', async function(event) {
-    const radios = document.querySelectorAll('input[name="layer"]')
+    mapOuter = document.getElementById('MapOuter');
+    const radios = document.querySelectorAll('input[name="layer"]');
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const layer = urlParams.get('layer');
+    const realmIso = urlParams.get('realm');
+    if(realmIso){
+        let realm = realms.find((realm)=>realmIso == realm.country.iso);
+        activeRealm = realm.tile_id;
+        let zoomer = document.getElementById('MapZoomer');
+        zoomer.style.transform = 'scale('+0.75+')';
+        zoom = 0.75;
+        mapOuter.scrollLeft = 0;
+        mapOuter.scrollTop = 0;
+        document.getElementById('realm').style.display = 'block';
+        document.getElementById('realmName').innerHTML = realm.country.name; 
+    }
     canvas = document.getElementById('mapCanvas');  
     if(!layer || layer == 'faction'){
         selectedLayer = 0;
@@ -53,21 +70,20 @@ window.addEventListener('load', async function(event) {
         });
     });
 
-    ele = document.getElementById('MapOuter');
-
     // Handle double click and zoom better
-    ele.addEventListener("dblclick", (evt)=>{
+    mapOuter.addEventListener("dblclick", (evt)=>{
         console.log('evt: ', evt);
         let zoomer = document.getElementById('MapZoomer');
         let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
         let ratio = 1/scale;
+        zoom = 1;
         zoomer.style.transform = 'scale('+1.0+')';
-        ele.scrollLeft = ((ele.scrollLeft+evt.clientX)*ratio)-(ele.clientWidth/2);
-        ele.scrollTop = ((ele.scrollTop+evt.clientY)*ratio)-(ele.clientHeight/2);
+        mapOuter.scrollLeft = ((mapOuter.scrollLeft+evt.clientX)*ratio)-(mapOuter.clientWidth/2);
+        mapOuter.scrollTop = ((mapOuter.scrollTop+evt.clientY)*ratio)-(mapOuter.clientHeight/2);
     });
 
     new inrt.scroller({elementId: "MapOuter", defaultDrag: 0.94, maxScrollSpeed: 50});
-    ele.addEventListener('mousedown', mouseDownHandler);
+    mapOuter.addEventListener('mousedown', mouseDownHandler);
     let map = document.getElementById('Map');
     width = map.clientWidth;
     height = map.clientHeight;
@@ -100,27 +116,39 @@ window.addEventListener('load', async function(event) {
         let hit = false;
         realms.forEach((realm)=>{
             let shape = realmShapes[realm.tile_id];
-            let x1 = shape.left;
-            let y1 = shape.top;
-            let x2 = x1+tile_width;
-            let y2 = y1+tile_height;
-            if(mx >= x1 && mx <= x2 && my >= y1 && my <= y2){
-                console.log("Clicked Realm: ", realm.country.name, realm);
-                hit = true;
-                activeRealm = realm.tile_id;
-                snapshot();
+            if(shape){
+                let x1 = shape.left;
+                let y1 = shape.top;
+                let x2 = x1+tile_width;
+                let y2 = y1+tile_height;
+                if(mx >= x1 && mx <= x2 && my >= y1 && my <= y2){
+                    console.log("Clicked Realm: ", realm.country.name, realm);
+                    hit = true;
+                    activeRealm = realm.tile_id;
+                    snapshot();
 
-                zoomReset.zoom = zoom;
-                zoomReset.scrollLeft = ele.scrollLeft;
-                zoomReset.scrollTop = ele.scrollTop;
+                    zoomReset.zoom = zoom;
+                    zoomReset.scrollLeft = mapOuter.scrollLeft;
+                    zoomReset.scrollTop = mapOuter.scrollTop;
 
-                let zoomer = document.getElementById('MapZoomer');
-                zoomer.style.transform = 'scale('+0.75+')';
-                zoom = 0.75;
-                ele.scrollLeft = 0;
-                ele.scrollTop = 0;
-                document.getElementById('realm').style.display = 'block';
-                document.getElementById('realmName').innerHTML = realm.country.name;
+                    let zoomer = document.getElementById('MapZoomer');
+                    zoomer.style.transform = 'scale('+0.75+')';
+                    zoom = 0.75;
+                    mapOuter.scrollLeft = 0;
+                    mapOuter.scrollTop = 0;
+                    document.getElementById('realm').style.display = 'block';
+                    document.getElementById('realmName').innerHTML = realm.country.name;
+
+                    let thisPage = new URL(window.location.href);
+                    var realmParam = thisPage.searchParams.get('realm');
+                    if(!realmParam){
+                        thisPage.searchParams.append('realm', realm.country.iso);
+                    } else {
+                        thisPage.searchParams.set('realm', realm.country.iso);
+                    }
+                    // window.location.href = thisPage;
+                    history.pushState({}, null, thisPage);
+                }
             }
         });
         if(!hit && activeRealm){
@@ -130,9 +158,17 @@ window.addEventListener('load', async function(event) {
             let zoomer = document.getElementById('MapZoomer');
             zoomer.style.transform = 'scale('+zoomReset.zoom+')';
             zoom = zoomReset.zoom;
-            ele.scrollLeft = zoomReset.scrollLeft;
-            ele.scrollTop = zoomReset.scrollTop;
+            mapOuter.scrollLeft = zoomReset.scrollLeft;
+            mapOuter.scrollTop = zoomReset.scrollTop;
             document.getElementById('realm').style.display = 'none';
+
+            let thisPage = new URL(window.location.href);
+            var realmParam = thisPage.searchParams.get('realm');
+            if(realmParam){
+                thisPage.searchParams.delete('realm');
+            }
+            // window.location.href = thisPage;
+            history.pushState({}, null, thisPage);
         }
     });
 
@@ -173,8 +209,8 @@ function zoomIn(){
     zoom = scale;
     zoomer.style.transform = 'scale('+scale+')';
 
-    ele.scrollLeft = ((ele.scrollLeft+ele.clientWidth/2)*ratio)-(ele.clientWidth/2);
-    ele.scrollTop = ((ele.scrollTop+ele.clientHeight/2)*ratio)-(ele.clientHeight/2);
+    mapOuter.scrollLeft = ((mapOuter.scrollLeft+mapOuter.clientWidth/2)*ratio)-(mapOuter.clientWidth/2);
+    mapOuter.scrollTop = ((mapOuter.scrollTop+mapOuter.clientHeight/2)*ratio)-(mapOuter.clientHeight/2);
 }
 function zoomOut(){
     let zoomer = document.getElementById('MapZoomer');
@@ -184,8 +220,8 @@ function zoomOut(){
     zoom = scale;
     zoomer.style.transform = 'scale('+scale+')';
 
-    ele.scrollLeft = ((ele.scrollLeft+ele.clientWidth/2)*ratio)-(ele.clientWidth/2);
-    ele.scrollTop = ((ele.scrollTop+ele.clientHeight/2)*ratio)-(ele.clientHeight/2);
+    mapOuter.scrollLeft = ((mapOuter.scrollLeft+mapOuter.clientWidth/2)*ratio)-(mapOuter.clientWidth/2);
+    mapOuter.scrollTop = ((mapOuter.scrollTop+mapOuter.clientHeight/2)*ratio)-(mapOuter.clientHeight/2);
 }
 
 function get_tile_canvas(color, width, height, value, suffix, isRealm) {
@@ -460,15 +496,15 @@ let pos = { top: 0, left: 0, x: 0, y: 0 };
 const mouseDownHandler = function (e) {
     pos = {
         // The current scroll
-        left: ele.scrollLeft,
-        top: ele.scrollTop,
+        left: mapOuter.scrollLeft,
+        top: mapOuter.scrollTop,
         // Get the current mouse position
         x: e.clientX,
         y: e.clientY,
     };
 
-    ele.style.cursor = 'grabbing';
-    ele.style.userSelect = 'none';
+    mapOuter.style.cursor = 'grabbing';
+    mapOuter.style.userSelect = 'none';
 
     document.addEventListener('mousemove', mouseMoveHandler);
     document.addEventListener('mouseup', mouseUpHandler);
@@ -480,21 +516,21 @@ const mouseMoveHandler = function (e) {
     const dy = e.clientY - pos.y;
 
     // Scroll the element
-    ele.scrollTop = pos.top - dy;
-    ele.scrollLeft = pos.left - dx;
+    mapOuter.scrollTop = pos.top - dy;
+    mapOuter.scrollLeft = pos.left - dx;
 };
 
 const mouseUpHandler = function () {
     document.removeEventListener('mousemove', mouseMoveHandler);
     document.removeEventListener('mouseup', mouseUpHandler);
 
-    ele.style.cursor = 'grab';
-    ele.style.removeProperty('user-select');
+    mapOuter.style.cursor = 'grab';
+    mapOuter.style.removeProperty('user-select');
 };
 
 const getMouse = function(e) {
     var mx, my;
-    mx = (e.pageX + ele.scrollLeft)/zoom;
-    my = (e.pageY + ele.scrollTop)/zoom;
+    mx = (e.pageX + mapOuter.scrollLeft)/zoom;
+    my = (e.pageY + mapOuter.scrollTop)/zoom;
     return {x: mx, y: my};
 }
