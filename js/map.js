@@ -119,6 +119,8 @@ window.addEventListener('load', async function(event) {
                 zoom = 1.5;
                 ele.scrollLeft = 0;
                 ele.scrollTop = 0;
+                document.getElementById('realm').style.display = 'block';
+                document.getElementById('realmName').innerHTML = realm.country.name;
             }
         });
         if(!hit && activeRealm){
@@ -130,6 +132,7 @@ window.addEventListener('load', async function(event) {
             zoom = zoomReset.zoom;
             ele.scrollLeft = zoomReset.scrollLeft;
             ele.scrollTop = zoomReset.scrollTop;
+            document.getElementById('realm').style.display = 'none';
         }
     });
 
