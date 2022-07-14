@@ -1,9 +1,13 @@
 let zoom = 1;
+let canvas = null;
 let tileStates = null;
 let factionLookup = {};
 let factionCounts = {};
 let yieldLookup = {};
 let guardedLookup = {};
+let realmShapes = {};
+let realmTileLookup = {};
+let realmTilesLookup = {};
 let width = 0;
 let height = 0;
 let css_width = 0;
@@ -15,12 +19,15 @@ let offsetY = 0;
 let poly1 = null;
 let ele = null;
 let selectedLayer = 0;
+let activeRealm = null;
+let zoomReset = {};
 
 window.addEventListener('load', async function(event) {
     const radios = document.querySelectorAll('input[name="layer"]')
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const layer = urlParams.get('layer');
+    canvas = document.getElementById('mapCanvas');  
     if(!layer || layer == 'faction'){
         selectedLayer = 0;
     } else if(layer == 'guarded'){
@@ -58,6 +65,7 @@ window.addEventListener('load', async function(event) {
         ele.scrollLeft = ((ele.scrollLeft+evt.clientX)*ratio)-(ele.clientWidth/2);
         ele.scrollTop = ((ele.scrollTop+evt.clientY)*ratio)-(ele.clientHeight/2);
     });
+
     new inrt.scroller({elementId: "MapOuter", defaultDrag: 0.94, maxScrollSpeed: 50});
     ele.addEventListener('mousedown', mouseDownHandler);
     let map = document.getElementById('Map');
@@ -85,12 +93,48 @@ window.addEventListener('load', async function(event) {
         tile_height = Math.floor(tile_height * ratio);
     }
 
-    poly1 = get_tile_canvas('#2a3339', tile_width - 3, tile_height-3, '', '');
-    //, (canvas)=>{
-    //     poly1 = canvas;
-    // });
+    canvas.addEventListener("click", (e) => {
+        var mouse = getMouse(e);
+        var mx = mouse.x;
+        var my = mouse.y;
+        let hit = false;
+        realms.forEach((realm)=>{
+            let shape = realmShapes[realm.tile_id];
+            let x1 = shape.left;
+            let y1 = shape.top;
+            let x2 = x1+tile_width;
+            let y2 = y1+tile_height;
+            if(mx >= x1 && mx <= x2 && my >= y1 && my <= y2){
+                console.log("Clicked Realm: ", realm.country.name, realm);
+                hit = true;
+                activeRealm = realm.tile_id;
+                snapshot();
 
-    let canvas = document.getElementById('mapCanvas');  
+                zoomReset.zoom = zoom;
+                zoomReset.scrollLeft = ele.scrollLeft;
+                zoomReset.scrollTop = ele.scrollTop;
+
+                let zoomer = document.getElementById('MapZoomer');
+                zoomer.style.transform = 'scale('+1.5+')';
+                zoom = 1.5;
+                ele.scrollLeft = 0;
+                ele.scrollTop = 0;
+            }
+        });
+        if(!hit && activeRealm){
+            console.log("Exit Realm: ");
+            activeRealm = null;
+            snapshot();
+            let zoomer = document.getElementById('MapZoomer');
+            zoomer.style.transform = 'scale('+zoomReset.zoom+')';
+            zoom = zoomReset.zoom;
+            ele.scrollLeft = zoomReset.scrollLeft;
+            ele.scrollTop = zoomReset.scrollTop;
+        }
+    });
+
+    poly1 = get_tile_canvas('#2a3339', tile_width - 3, tile_height-3, '', '');
+    
     // draw the snapshot
     canvas.width = width;
     canvas.height = height;
@@ -141,29 +185,32 @@ function zoomOut(){
     ele.scrollTop = ((ele.scrollTop+ele.clientHeight/2)*ratio)-(ele.clientHeight/2);
 }
 
-function get_tile_canvas(color, width, height, value, suffix, callback) {
+function get_tile_canvas(color, width, height, value, suffix, isRealm) {
     var poly = [23, 4, 25.5, 1.25, 29, 0, 71, 0, 74.5, 1.25, 77, 4, 98, 46, 98.75, 50, 98, 54, 77, 96, 74.5, 98.75, 71, 100, 29, 100, 25.5, 98.75, 23, 96, 2, 54, 1.25, 50, 2, 46];
-
+    let realm_poly = rotatePoly(poly);
     let canvas = document.createElement('canvas');
     let widthRatio = width/100;
     let heightRatio = height/100;
     canvas.width = width;
     canvas.height = height;
 
-    let ctx1 = canvas.getContext('2d');
-    ctx1.fillStyle = color;
-    ctx1.beginPath();
-    ctx1.moveTo(poly[0]*widthRatio, poly[1]*heightRatio);
-    for (let i = 2; i < poly.length - 1; i += 2) { 
-        ctx1.lineTo(poly[i]*widthRatio, poly[i + 1]*heightRatio) 
+    let ctx = canvas.getContext('2d');
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    if(isRealm){
+        poly = realm_poly;
     }
-    ctx1.closePath();
-    ctx1.fill();
+    ctx.moveTo(poly[0]*widthRatio, poly[1]*heightRatio);
+    for (let i = 2; i < poly.length - 1; i += 2) { 
+        ctx.lineTo(poly[i]*widthRatio, poly[i + 1]*heightRatio) 
+    }
+    ctx.closePath();
+    ctx.fill();
 
-    ctx1.font="18px Helvetica";
-    ctx1.shadowColor="black";
-    ctx1.shadowBlur=2;
-    ctx1.lineWidth=2;
+    ctx.font="18px Helvetica";
+    ctx.shadowColor="black";
+    ctx.shadowBlur=2;
+    ctx.lineWidth=2;
 
     let offsetY = 5;
     let offsetX = 0;
@@ -174,11 +221,20 @@ function get_tile_canvas(color, width, height, value, suffix, callback) {
     } else if(value.length < 5){
         offsetX = 20;
     }
-    ctx1.strokeText(value+suffix,width/2-offsetX,height/2+offsetY);
-    ctx1.shadowBlur=0;
-    ctx1.fillStyle="white";
-    ctx1.fillText(value+suffix,width/2-offsetX,height/2+offsetY);
+    ctx.strokeText(value+suffix,width/2-offsetX,height/2+offsetY);
+    ctx.shadowBlur=0;
+    ctx.fillStyle="white";
+    ctx.fillText(value+suffix,width/2-offsetX,height/2+offsetY);
     return canvas;
+}
+
+function rotatePoly(poly){
+    let newPoly = [];
+    for(let i=0; i<poly.length-1; i+=2){
+        newPoly.push(poly[i+1]);
+        newPoly.push(poly[i]);
+    }
+    return newPoly;
 }
 
 function getUniqueColor(n) {
@@ -236,6 +292,13 @@ function getTileStates(tiles){
     // [2] = faction_id
     // [3] = guarded
     // [4] = game_bricks_per_day
+    realms.forEach((realm)=>{
+        realmTileLookup[realm.tile_id] = get_tile_canvas('#BF40BF', tile_width - 3, tile_height-3, '  '+realm.country.iso, '');
+
+        realm.map.forEach((tile)=>{
+            realmTilesLookup[tile.tile_id] = true;
+        })
+    })
     tiles.forEach((tile)=>{
         let faction_id = tile[2];
         if(!layer || layer == 'faction'){
@@ -258,12 +321,23 @@ function getTileStates(tiles){
                 game_bricks_per_day: game_bricks_per_day
             };
 
+            let isRealm = false;
+            if(realmTilesLookup[tile_id]){
+                isRealm = true;
+            }
+
             if(!layer || layer == 'faction'){
                 let color = null;
                 if(!factionLookup[faction_id]){
                     color = getUniqueColor(faction_id);
                     let rank = getSortedKeys(factionCounts).indexOf(''+faction_id)+1;
-                    factionLookup[faction_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, '#'+rank, '');
+                    
+                    factionLookup[faction_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, '#'+rank, '', isRealm);
+                } else {
+                    color = getUniqueColor(faction_id);
+                    let rank = getSortedKeys(factionCounts).indexOf(''+faction_id)+1;
+                    
+                    factionLookup[faction_id+'_realm'] = get_tile_canvas(color, tile_width - 3, tile_height-3, '#'+rank, '', isRealm);
                 }
             } else if(layer == 'guarded'){
                 let guardedSince = new Date(guarded);
@@ -273,11 +347,11 @@ function getTileStates(tiles){
                 let duration = now.getTime() - guardedSince.getTime();
                 let val = duration/hours;
                 color = heatMapColorforValue(Math.min(val, 1));
-                guardedLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (duration/HOUR).toFixed(0),'h');
+                guardedLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (duration/HOUR).toFixed(0),'h', isRealm);
             } else if(layer == 'yield'){
                 let value = (Math.log(game_bricks_per_day) + 2)/2;
                 color = heatMapColorforValue(value);
-                yieldLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (tile[4]).toFixed(2),'');
+                yieldLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (tile[4]).toFixed(2),'', isRealm);
             }
         }
     })
@@ -285,28 +359,38 @@ function getTileStates(tiles){
 }
 
 function snapshot() {
-    let canvas = document.getElementById('mapCanvas');  
     if (canvas.getContext) {
+
         var ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        for (let hexagon of mapTiles) {
-            let shape = poly1;
+        let tiles = mapTiles;
+        if(activeRealm){
+            tiles = realms.find((realm)=>realm.tile_id == activeRealm).map;
+        }
 
-            if (hexagon.enabled) {
+        for (let hexagon of tiles) {
+            let shape = poly1;
+            let isRealm = false;
+            if (hexagon.enabled || activeRealm) {
                 if(tileStates[hexagon.tile_id]){
                     if(selectedLayer == 0){
                         let key = tileStates[hexagon.tile_id].faction_id;
+                        if(activeRealm){
+                            key = tileStates[hexagon.tile_id].faction_id + '_realm';
+                        }
                         shape = factionLookup[key];
                     } else if(selectedLayer == 1){
-                        let key = hexagon.tile_id;
-                        shape = guardedLookup[key];
+                        shape = guardedLookup[hexagon.tile_id];
                     } else if(selectedLayer == 2){
-                        let key = hexagon.tile_id;
-                        shape = yieldLookup[key];
+                        shape = yieldLookup[hexagon.tile_id];
                     }
-                } else {
-                    console.log('Missing tile_id:', hexagon.tile_id);
+                } 
+                if(!activeRealm && !tileStates[hexagon.tile_id]){
+                    if(realms.find((realm)=>hexagon.tile_id==realm.tile_id)){
+                        isRealm = true;
+                        shape = realmTileLookup[hexagon.tile_id];
+                    }
                 }
             }
             if(shape){
@@ -314,18 +398,25 @@ function snapshot() {
                 let offsetY = 0;
                 let left = (hexagon.x-1) * col_size*3,
                     top = (hexagon.y-1) * row_size;
-                
 
+                if(activeRealm) {
+                    left = (hexagon.tile.x+15) * col_size*2;
+                    top = (hexagon.tile.y+7) * row_size*1.5;
+                }
+                if(isRealm){
+                    realmShapes[hexagon.tile_id] = {
+                        left,
+                        top
+                    };
+
+                }
                 var imageObj = new Image();
                 imageObj.width = shape.width;
                 imageObj.height = shape.height;
-                
                 imageObj.onload = function() {
                     ctx.drawImage(shape, left+1+offsetX, top-1+offsetY); 
                 };
-
                 imageObj.src = shape.toDataURL();
-
             }
         }                              
     }
@@ -367,3 +458,10 @@ const mouseUpHandler = function () {
     ele.style.cursor = 'grab';
     ele.style.removeProperty('user-select');
 };
+
+const getMouse = function(e) {
+    var mx, my;
+    mx = (e.pageX + ele.scrollLeft)/zoom;
+    my = (e.pageY + ele.scrollTop)/zoom;
+    return {x: mx, y: my};
+}
