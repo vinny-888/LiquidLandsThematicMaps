@@ -60,12 +60,13 @@ window.addEventListener('load', async function(event) {
         }
         radio.addEventListener('change', function() {
             selectedLayer = parseInt(this.value);
+            let realm = realms.find((realm)=>realmIso == realm.country.iso);
             if(selectedLayer == 0){
-                window.location.href = window.location.href.split('?')[0] + '?layer=faction';
+                window.location.href = window.location.href.split('?')[0] + '?layer=faction' + (realm.country.iso ? '&realm='+realm.country.iso : '');
             } else if(selectedLayer == 1){
-                window.location.href = window.location.href.split('?')[0] + '?layer=guarded';
+                window.location.href = window.location.href.split('?')[0] + '?layer=guarded' + (realm.country.iso ? '&realm='+realm.country.iso : '');
             } else if(selectedLayer == 2){
-                window.location.href = window.location.href.split('?')[0] + '?layer=yield';
+                window.location.href = window.location.href.split('?')[0] + '?layer=yield' + (realm.country.iso ? '&realm='+realm.country.iso : '');
             }
         });
     });
