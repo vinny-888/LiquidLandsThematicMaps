@@ -20,6 +20,7 @@ let poly1 = null;
 let mapOuter = null;
 let selectedLayer = 0;
 let activeRealm = null;
+let realmIso = null;
 let zoomReset = {
     zoom: 0.2,
     scrollLeft: 0,
@@ -32,7 +33,7 @@ window.addEventListener('load', async function(event) {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const layer = urlParams.get('layer');
-    const realmIso = urlParams.get('realm');
+    realmIso = urlParams.get('realm');
     if(realmIso){
         let realm = realms.find((realm)=>realmIso == realm.country.iso);
         activeRealm = realm.tile_id;
@@ -137,6 +138,7 @@ window.addEventListener('load', async function(event) {
                     zoom = 0.75;
                     mapOuter.scrollLeft = 0;
                     mapOuter.scrollTop = 0;
+                    realmIso = realm.country.iso;
                     document.getElementById('realm').style.display = 'block';
                     document.getElementById('realmName').innerHTML = realm.country.name;
 
