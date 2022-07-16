@@ -44,8 +44,6 @@ window.addEventListener('load', async function(event) {
         zoom = 0.75;
         mapOuter.scrollLeft = 0;
         mapOuter.scrollTop = 0;
-        document.getElementById('realm').style.display = 'block';
-        document.getElementById('realmName').innerHTML = realm.country.name; 
     }
     canvas = document.getElementById('mapCanvas');  
     if(!layer || layer == 'faction'){
@@ -147,8 +145,6 @@ window.addEventListener('load', async function(event) {
                     mapOuter.scrollLeft = 0;
                     mapOuter.scrollTop = 0;
                     realmIso = realm.country.iso;
-                    document.getElementById('realm').style.display = 'block';
-                    document.getElementById('realmName').innerHTML = realm.country.name;
 
                     let thisPage = new URL(window.location.href);
                     var realmParam = thisPage.searchParams.get('realm');
