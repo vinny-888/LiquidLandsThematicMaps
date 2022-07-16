@@ -1,6 +1,7 @@
 let zoom = 1;
 let canvas = null;
 let tileStates = null;
+let allTiles = null;
 let factionLookup = {};
 let factionCounts = {};
 let yieldLookup = {};
@@ -168,7 +169,27 @@ window.addEventListener('load', async function(event) {
                 }
             }
         });
-        if(!hit && activeRealm){
+        
+        let tileHitTest = e.ctrlKey || e.metaKey;
+        if(tileHitTest){
+            for (let tile of allTiles) {
+                let tile_id = tile[0];
+                let shape = tileShapes[tile_id];
+                if(shape && (
+                    (activeRealm && shape.isRealm) || 
+                    (!activeRealm && !shape.isRealm))){
+                    let x1 = shape.left;
+                    let y1 = shape.top;
+                    let x2 = x1+tile_width;
+                    let y2 = y1+tile_height;
+                    if(mx >= x1 && mx <= x2 && my >= y1 && my <= y2){
+                        console.log("Clicked Tile: ", tile_id);
+                        window.open('https://liquidlands.io/land/'+tile_id, '_blank');
+                        // break;
+                    }
+                }
+            };
+        } else if(!hit && activeRealm){
             console.log("Exit Realm: ");
             activeRealm = null;
             snapshot();
@@ -187,24 +208,6 @@ window.addEventListener('load', async function(event) {
             // window.location.href = thisPage;
             history.pushState({}, null, thisPage);
         } 
-        let tileHitTest = e.ctrlKey || e.metaKey;
-        if(tileHitTest){
-            let tiles = mapTiles;
-            for (let [index, hexagon] of tiles.entries()) {
-                let shape = tileShapes[hexagon.tile_id];
-                if(shape){
-                    let x1 = shape.left;
-                    let y1 = shape.top;
-                    let x2 = x1+tile_width;
-                    let y2 = y1+tile_height;
-                    if(mx >= x1 && mx <= x2 && my >= y1 && my <= y2){
-                        console.log("Clicked Tile: ", hexagon.tile_id, hexagon);
-                        window.open('https://liquidlands.io/land/'+hexagon.tile_id, '_blank');
-                        // break;
-                    }
-                }
-            };
-        }
     });
 
     poly1 = get_tile_canvas('#2a3339', tile_width - 3, tile_height-3, '', '');
@@ -219,6 +222,7 @@ window.addEventListener('load', async function(event) {
     .then((res)=>{
         return res.json();
     }).then((res)=>{
+        allTiles = res;
         tileStates = getTileStates(res);
         layerUpdate();
     });
@@ -478,7 +482,6 @@ function snapshot() {
                 let offsetY = 0;
                 let left = (hexagon.x-1) * col_size*3,
                     top = (hexagon.y-1) * row_size;
-                
 
                 if(activeRealm) {
                     let realmIndex = Math.floor(index/37);
@@ -489,6 +492,11 @@ function snapshot() {
                     } else {
                         left = ((hexagon.tile.x+20) * col_size*2) + (Math.floor((index-(37*3))/37)*15*col_size*2)
                     }
+                    tileShapes[hexagon.tile_id] = {
+                        left,
+                        top,
+                        isRealm: true
+                    };
                     if(index % 37 == 0){
                         ctx.font="24px Helvetica";
                         ctx.shadowColor="black";
@@ -512,10 +520,11 @@ function snapshot() {
                         left,
                         top
                     };
-                } else {
+                } else if (!tileShapes[hexagon.tile_id]){
                     tileShapes[hexagon.tile_id] = {
                         left,
-                        top
+                        top,
+                        isRealm: false
                     };
                 }
                 var imageObj = new Image();
