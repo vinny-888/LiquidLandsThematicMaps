@@ -1,3 +1,5 @@
+const width = 7200;
+const height = 4200;
 let zoom = 0.2;
 let canvas = null;
 let tileStates = null;
@@ -10,8 +12,6 @@ let realmShapes = {};
 let tileShapes = {};
 let realmTileLookup = {};
 let realmTilesLookup = {};
-let width = 0;
-let height = 0;
 let css_width = 0;
 let css_height = 0;
 let tile_width = 0;
@@ -28,6 +28,7 @@ let zoomReset = {
     scrollLeft: 0,
     scrollTop: 0
 };
+const realmHeightRatio = 1.142;
 
 window.addEventListener('load', async function(event) {
     mapOuter = document.getElementById('MapOuter');
@@ -110,8 +111,6 @@ window.addEventListener('load', async function(event) {
 
     new inrt.scroller({elementId: "MapOuter", defaultDrag: 0.94, maxScrollSpeed: 50});
     mapOuter.addEventListener('mousedown', mouseDownHandler);
-    width = 7200;
-    height = 4200;
     // get the map and dimensions
     let ratio = 1;
     css_width = width;
@@ -302,12 +301,25 @@ function get_tile_canvas(color, width, height, value, suffix, isRealm) {
     canvas.width = width;
     canvas.height = height;
 
+    let offsetY = 5;
+    let offsetX = 0;
+    if(value.length < 2){
+        offsetX = 10;
+    } else if(value.length < 3){
+        offsetX = 15;
+    } else if(value.length < 5){
+        offsetX = 20;
+    }
+
+    if(isRealm){
+        poly = realm_poly;
+        canvas.height = height*realmHeightRatio;
+        offsetY = 10;
+    }
+
     let ctx = canvas.getContext('2d');
     ctx.fillStyle = color;
     ctx.beginPath();
-    if(isRealm){
-        poly = realm_poly;
-    }
     ctx.moveTo(poly[0]*widthRatio, poly[1]*heightRatio);
     for (let i = 2; i < poly.length - 1; i += 2) { 
         ctx.lineTo(poly[i]*widthRatio, poly[i + 1]*heightRatio) 
@@ -319,16 +331,6 @@ function get_tile_canvas(color, width, height, value, suffix, isRealm) {
     ctx.shadowColor="black";
     ctx.shadowBlur=2;
     ctx.lineWidth=2;
-
-    let offsetY = 5;
-    let offsetX = 0;
-    if(value.length < 2){
-        offsetX = 10;
-    } else if(value.length < 3){
-        offsetX = 15;
-    } else if(value.length < 5){
-        offsetX = 20;
-    }
     ctx.strokeText(value+suffix,width/2-offsetX,height/2+offsetY);
     ctx.shadowBlur=0;
     ctx.fillStyle="white";
@@ -340,7 +342,7 @@ function rotatePoly(poly){
     let newPoly = [];
     for(let i=0; i<poly.length-1; i+=2){
         newPoly.push(poly[i+1]);
-        newPoly.push(poly[i]);
+        newPoly.push(poly[i]*realmHeightRatio);
     }
     return newPoly;
 }
@@ -518,7 +520,7 @@ function snapshot() {
                     if(activeRealm) {
                         let realmIndex = Math.floor(index/37);
                         let realm = realms[realmIndex];
-                        top = (hexagon.tile.y+7) * row_size*1.5 + (Math.floor(index/(37*3)) * 11*row_size*1.5);
+                        top = (hexagon.tile.y+5) * row_size*1.5*realmHeightRatio + (Math.floor(index/(37*3)) * 9*row_size*1.5*realmHeightRatio);
                         if(index < (37*3)){
                             left = ((hexagon.tile.x+20) * col_size*2) + (Math.floor(index/37)*15*col_size*2);
                         } else {
@@ -537,7 +539,7 @@ function snapshot() {
                             // col 15.96
                             // row 25
 
-                            ctx.strokeText(realm.country.name,left, top-20);
+                            ctx.strokeText(realm.country.name,left, top - 20);
                             ctx.shadowBlur=0;
                             ctx.fillStyle="white";
                             if(realm.tile_id == activeRealm){
