@@ -5,18 +5,18 @@
         <script src="js/mapTiles.js"></script>
         <script src="js/factions.js"></script>
         <script src="js/realms.js"></script>
-        <script src="js/map.js?v=1.1"></script>
-        <link rel="stylesheet" href="css/main.css?v=1.0">
+        <script src="js/map.js?v=1.3"></script>
+        <link rel="stylesheet" href="css/main.css?v=1.3">
     </head>
     <body>
         <div id="info">
 Zoom to tile (Double Click)<br>
 Pan map (Scroll or Drag)<br>
 Open tile in game (Cmnd/Ctrl+Click)<br>
-Click Realms to open (<a style="color: #ffa500;" href="https://vinny-888.github.io/LiquidLandsThematicMaps/?layer=yield&realm=mc">View Realms</a>)<br>
+Click Realms to open (<span id="viewRealms" class="link">View Realms</span>)<br>
         </div>
         <div class="controls">
-            <p>Layers:</p>
+            <div class="bold">Layers:</div>
             <input type="radio" id="faction" name="layer" value="0" checked="checked">
             <label for="html">Faction</label><br>
             <input type="radio" id="guarded" name="layer" value="1">
@@ -25,8 +25,8 @@ Click Realms to open (<a style="color: #ffa500;" href="https://vinny-888.github.
             <label for="css">Yield</label>
         </div>
         <div id="factionsDiv" style="display: none;">
-            <div class="title">Factions:</div>
-            <table id="factions">
+            <div class="title"><span class="bold">Factions: </span>(<span style="display: inline;" id="factionToggle" class="link">hide</span>)</div>
+            <table id="factions" style="display: block;">
                 <thead>
                     <tr>
                         <th>Rank</th>
