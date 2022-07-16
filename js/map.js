@@ -1,4 +1,4 @@
-let zoom = 1;
+let zoom = 0.2;
 let canvas = null;
 let tileStates = null;
 let allTiles = null;
@@ -35,17 +35,8 @@ window.addEventListener('load', async function(event) {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const layer = urlParams.get('layer');
-    realmIso = urlParams.get('realm');
-    if(realmIso){
-        let realm = realms.find((realm)=>realmIso == realm.country.iso);
-        activeRealm = realm.tile_id;
-        let zoomer = document.getElementById('MapZoomer');
-        zoomer.style.transform = 'scale('+0.75+')';
-        zoom = 0.75;
-        mapOuter.scrollLeft = 0;
-        mapOuter.scrollTop = 0;
-    }
     canvas = document.getElementById('mapCanvas');  
+    realmIso = urlParams.get('realm');
     if(!layer || layer == 'faction'){
         selectedLayer = 0;
     } else if(layer == 'guarded'){
@@ -71,17 +62,43 @@ window.addEventListener('load', async function(event) {
             }
         });
     });
-
+    let viewRealms = document.getElementById('viewRealms');
+    viewRealms.addEventListener("click", (evt)=>{
+        if(activeRealm){
+            exitRealm();
+        } else {
+            enterRealm({tile_id:8787, country: {iso: 'mc'}});
+        }
+    });
+    
+    let factionToggle = document.getElementById('factionToggle');
+    factionToggle.addEventListener("click", (evt)=>{
+        let factionDiv = document.getElementById('factions');
+        if(factionDiv.style.display == 'block'){
+            factionDiv.style.display = 'none';
+            factionToggle.innerHTML = 'show';
+        } else {
+            factionDiv.style.display = 'block';
+            factionToggle.innerHTML = 'hide';
+        }
+    });
     // Handle double click and zoom better
     mapOuter.addEventListener("dblclick", (evt)=>{
         console.log('evt: ', evt);
         let zoomer = document.getElementById('MapZoomer');
         let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
         let ratio = 1/scale;
-        zoom = 1;
-        zoomer.style.transform = 'scale('+1.0+')';
-        mapOuter.scrollLeft = ((mapOuter.scrollLeft+evt.clientX)*ratio)-(mapOuter.clientWidth/2);
-        mapOuter.scrollTop = ((mapOuter.scrollTop+evt.clientY)*ratio)-(mapOuter.clientHeight/2);
+        if(zoom != 1){
+            zoom = 1;
+            zoomer.style.transform = 'scale('+zoom+')';
+            mapOuter.scrollLeft = ((mapOuter.scrollLeft+evt.clientX)*ratio)-(mapOuter.clientWidth/2);
+            mapOuter.scrollTop = ((mapOuter.scrollTop+evt.clientY)*ratio)-(mapOuter.clientHeight/2);
+        } else {
+            zoom = 0.2;
+            zoomer.style.transform = 'scale('+zoom+')';
+            mapOuter.scrollLeft = 0;
+            mapOuter.scrollTop = 0;
+        }
     });
 
     document.addEventListener('click', function (e) {
@@ -132,29 +149,7 @@ window.addEventListener('load', async function(event) {
                 if(mx >= x1 && mx <= x2 && my >= y1 && my <= y2){
                     console.log("Clicked Realm: ", realm.country.name, realm);
                     hit = true;
-                    activeRealm = realm.tile_id;
-                    snapshot();
-
-                    zoomReset.zoom = zoom;
-                    zoomReset.scrollLeft = mapOuter.scrollLeft;
-                    zoomReset.scrollTop = mapOuter.scrollTop;
-
-                    let zoomer = document.getElementById('MapZoomer');
-                    zoomer.style.transform = 'scale('+0.75+')';
-                    zoom = 0.75;
-                    mapOuter.scrollLeft = 0;
-                    mapOuter.scrollTop = 0;
-                    realmIso = realm.country.iso;
-
-                    let thisPage = new URL(window.location.href);
-                    var realmParam = thisPage.searchParams.get('realm');
-                    if(!realmParam){
-                        thisPage.searchParams.append('realm', realm.country.iso);
-                    } else {
-                        thisPage.searchParams.set('realm', realm.country.iso);
-                    }
-                    // window.location.href = thisPage;
-                    history.pushState({}, null, thisPage);
+                    enterRealm(realm);
                     let tileHitTest = false;
                     if(tileHitTest){
                         let tileId = realm.tile_id;
@@ -186,22 +181,7 @@ window.addEventListener('load', async function(event) {
             };
         } else if(!hit && activeRealm){
             console.log("Exit Realm: ");
-            activeRealm = null;
-            realmIso = null;
-            snapshot();
-            let zoomer = document.getElementById('MapZoomer');
-            zoomer.style.transform = 'scale('+zoomReset.zoom+')';
-            zoom = zoomReset.zoom;
-            mapOuter.scrollLeft = zoomReset.scrollLeft;
-            mapOuter.scrollTop = zoomReset.scrollTop;
-
-            let thisPage = new URL(window.location.href);
-            var realmParam = thisPage.searchParams.get('realm');
-            if(realmParam){
-                thisPage.searchParams.delete('realm');
-            }
-            // window.location.href = thisPage;
-            history.pushState({}, null, thisPage);
+            exitRealm();
         } 
     });
 
@@ -220,9 +200,64 @@ window.addEventListener('load', async function(event) {
         allTiles = res;
         tileStates = getTileStates(res);
         layerUpdate();
+        if(realmIso){
+            let realm = realms.find((realm)=>realmIso == realm.country.iso);
+            enterRealm(realm);
+        }
     });
 });
 
+function enterRealm(realm){
+    activeRealm = realm.tile_id;
+    snapshot();
+
+    zoomReset.zoom = zoom;
+    zoomReset.scrollLeft = mapOuter.scrollLeft;
+    zoomReset.scrollTop = mapOuter.scrollTop;
+
+    let zoomer = document.getElementById('MapZoomer');
+    zoomer.style.transform = 'scale('+0.75+')';
+    zoom = 0.75;
+    mapOuter.scrollLeft = 0;
+    mapOuter.scrollTop = 0;
+    realmIso = realm.country.iso;
+
+    let thisPage = new URL(window.location.href);
+    var realmParam = thisPage.searchParams.get('realm');
+    if(!realmParam){
+        thisPage.searchParams.append('realm', realm.country.iso);
+    } else {
+        thisPage.searchParams.set('realm', realm.country.iso);
+    }
+    // window.location.href = thisPage;
+    history.pushState({}, null, thisPage);
+    let viewRealms = document.getElementById('viewRealms');
+    viewRealms.innerHTML = 'Hide Realms';
+    mapOuter.style.cursor = 'zoom-out';
+}
+
+function exitRealm(){
+    activeRealm = null;
+    realmIso = null;
+    snapshot();
+    let zoomer = document.getElementById('MapZoomer');
+    zoomer.style.transform = 'scale('+zoomReset.zoom+')';
+    zoom = zoomReset.zoom;
+    mapOuter.scrollLeft = zoomReset.scrollLeft;
+    mapOuter.scrollTop = zoomReset.scrollTop;
+
+    let thisPage = new URL(window.location.href);
+    var realmParam = thisPage.searchParams.get('realm');
+    if(realmParam){
+        thisPage.searchParams.delete('realm');
+    }
+    // window.location.href = thisPage;
+    history.pushState({}, null, thisPage);
+
+    let viewRealms = document.getElementById('viewRealms');
+    viewRealms.innerHTML = 'View Realms';
+    mapOuter.style.cursor = 'grab';
+}
 function heatMapColorforValue(value){
     var h = (1.0 - value) * 240
     return "hsl(" + h + ", 100%, 50%)";
@@ -435,102 +470,106 @@ function getTileStates(tiles){
 
 function snapshot() {
     if (canvas.getContext) {
+        canvas.style.display = 'none';
 
-        var ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        setTimeout(()=>{
+            var ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        let tiles = mapTiles;
-        if(activeRealm){
-            tiles = [];
-            realms.forEach((realm)=>{
-                tiles = tiles.concat(realm.map);
-            })
-            // tiles = realms.find((realm)=>realm.tile_id == activeRealm).map;
-        }
+            let tiles = mapTiles;
+            if(activeRealm){
+                tiles = [];
+                realms.forEach((realm)=>{
+                    tiles = tiles.concat(realm.map);
+                })
+                // tiles = realms.find((realm)=>realm.tile_id == activeRealm).map;
+            }
 
-        for (let [index, hexagon] of tiles.entries()) {
-            let shape = poly1;
-            let isRealm = false;
-            if (hexagon.enabled || activeRealm) {
-                if(tileStates[hexagon.tile_id]){
-                    if(selectedLayer == 0){
-                        let key = tileStates[hexagon.tile_id].faction_id;
-                        if(activeRealm){
-                            key = tileStates[hexagon.tile_id].faction_id + '_realm';
+            for (let [index, hexagon] of tiles.entries()) {
+                let shape = poly1;
+                let isRealm = false;
+                if (hexagon.enabled || activeRealm) {
+                    if(tileStates[hexagon.tile_id]){
+                        if(selectedLayer == 0){
+                            let key = tileStates[hexagon.tile_id].faction_id;
+                            if(activeRealm){
+                                key = tileStates[hexagon.tile_id].faction_id + '_realm';
+                            }
+                            shape = factionLookup[key];
+                        } else if(selectedLayer == 1){
+                            shape = guardedLookup[hexagon.tile_id];
+                        } else if(selectedLayer == 2){
+                            shape = yieldLookup[hexagon.tile_id];
                         }
-                        shape = factionLookup[key];
-                    } else if(selectedLayer == 1){
-                        shape = guardedLookup[hexagon.tile_id];
-                    } else if(selectedLayer == 2){
-                        shape = yieldLookup[hexagon.tile_id];
+                    } 
+                    if(!activeRealm && !tileStates[hexagon.tile_id]){
+                        if(realms.find((realm)=>hexagon.tile_id==realm.tile_id)){
+                            isRealm = true;
+                            shape = realmTileLookup[hexagon.tile_id];
+                        }
                     }
-                } 
-                if(!activeRealm && !tileStates[hexagon.tile_id]){
-                    if(realms.find((realm)=>hexagon.tile_id==realm.tile_id)){
-                        isRealm = true;
-                        shape = realmTileLookup[hexagon.tile_id];
+                }
+                if(shape){
+                    let offsetX = 0;
+                    let offsetY = 0;
+                    let left = (hexagon.x-1) * col_size*3,
+                        top = (hexagon.y-1) * row_size;
+
+                    if(activeRealm) {
+                        let realmIndex = Math.floor(index/37);
+                        let realm = realms[realmIndex];
+                        top = (hexagon.tile.y+7) * row_size*1.5 + (Math.floor(index/(37*3)) * 11*row_size*1.5);
+                        if(index < (37*3)){
+                            left = ((hexagon.tile.x+20) * col_size*2) + (Math.floor(index/37)*15*col_size*2);
+                        } else {
+                            left = ((hexagon.tile.x+20) * col_size*2) + (Math.floor((index-(37*3))/37)*15*col_size*2)
+                        }
+                        tileShapes[hexagon.tile_id] = {
+                            left,
+                            top,
+                            isRealm: true
+                        };
+                        if(index % 37 == 0){
+                            ctx.font="24px Helvetica";
+                            ctx.shadowColor="black";
+                            ctx.shadowBlur=2;
+                            ctx.lineWidth=2;
+                            // col 15.96
+                            // row 25
+
+                            ctx.strokeText(realm.country.name,left, top-20);
+                            ctx.shadowBlur=0;
+                            ctx.fillStyle="white";
+                            if(realm.tile_id == activeRealm){
+                                ctx.fillStyle="red";
+                            } 
+                            ctx.fillText(  realm.country.name,left, top - 20);
+                        }
+                        
                     }
+                    if(isRealm){
+                        realmShapes[hexagon.tile_id] = {
+                            left,
+                            top
+                        };
+                    } else if (!tileShapes[hexagon.tile_id]){
+                        tileShapes[hexagon.tile_id] = {
+                            left,
+                            top,
+                            isRealm: false
+                        };
+                    }
+                    var imageObj = new Image();
+                    imageObj.width = shape.width;
+                    imageObj.height = shape.height;
+                    imageObj.onload = function() {
+                        ctx.drawImage(shape, left+1+offsetX, top-1+offsetY); 
+                    };
+                    imageObj.src = shape.toDataURL();
                 }
             }
-            if(shape){
-                let offsetX = 0;
-                let offsetY = 0;
-                let left = (hexagon.x-1) * col_size*3,
-                    top = (hexagon.y-1) * row_size;
-
-                if(activeRealm) {
-                    let realmIndex = Math.floor(index/37);
-                    let realm = realms[realmIndex];
-                    top = (hexagon.tile.y+7) * row_size*1.5 + (Math.floor(index/(37*3)) * 11*row_size*1.5);
-                    if(index < (37*3)){
-                        left = ((hexagon.tile.x+20) * col_size*2) + (Math.floor(index/37)*15*col_size*2);
-                    } else {
-                        left = ((hexagon.tile.x+20) * col_size*2) + (Math.floor((index-(37*3))/37)*15*col_size*2)
-                    }
-                    tileShapes[hexagon.tile_id] = {
-                        left,
-                        top,
-                        isRealm: true
-                    };
-                    if(index % 37 == 0){
-                        ctx.font="24px Helvetica";
-                        ctx.shadowColor="black";
-                        ctx.shadowBlur=2;
-                        ctx.lineWidth=2;
-                        // col 15.96
-                        // row 25
-
-                        ctx.strokeText(realm.country.name,left, top-20);
-                        ctx.shadowBlur=0;
-                        ctx.fillStyle="white";
-                        if(realm.tile_id == activeRealm){
-                            ctx.fillStyle="red";
-                        } 
-                        ctx.fillText(  realm.country.name,left, top - 20);
-                    }
-                    
-                }
-                if(isRealm){
-                    realmShapes[hexagon.tile_id] = {
-                        left,
-                        top
-                    };
-                } else if (!tileShapes[hexagon.tile_id]){
-                    tileShapes[hexagon.tile_id] = {
-                        left,
-                        top,
-                        isRealm: false
-                    };
-                }
-                var imageObj = new Image();
-                imageObj.width = shape.width;
-                imageObj.height = shape.height;
-                imageObj.onload = function() {
-                    ctx.drawImage(shape, left+1+offsetX, top-1+offsetY); 
-                };
-                imageObj.src = shape.toDataURL();
-            }
-        }                              
+            canvas.style.display = 'block';
+        }, 0 );
     }
 }
 
