@@ -94,7 +94,7 @@ window.addEventListener('load', async function(event) {
     new inrt.scroller({elementId: "MapOuter", defaultDrag: 0.94, maxScrollSpeed: 50});
     mapOuter.addEventListener('mousedown', mouseDownHandler);
     width = 7200;
-    height = 3600;
+    height = 4800;
     // get the map and dimensions
     let ratio = 1;
     css_width = width;
