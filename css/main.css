@@ -71,6 +71,7 @@ body {
     left: 10px;
     background-color: #1f2a32;
     color: #FFF;
+    font-size: 14px;
 }
 .controls {
     z-index: 1;
@@ -87,9 +88,17 @@ body {
     left: 10px;
     color: #FFF;
 }
+.link{
+    text-decoration: underline;
+    cursor: pointer;
+    color: #ffa500;
+}
+.bold{
+    font-weight: bold;
+}
 .title{
     background-color: #1f2a32;
-    width: 72px;
+    width: 115px;
 }
 
 #factions {
