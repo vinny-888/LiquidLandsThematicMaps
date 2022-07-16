@@ -345,7 +345,7 @@ function getTileStates(tiles){
                     factionLookup[faction_id+'_realm'] = get_tile_canvas(color, tile_width - 3, tile_height-3, '#'+rank, '', isRealm);
                 }
             } else if(layer == 'guarded'){
-                let dateStr = guarded+'Z';
+                let dateStr = guarded.indexOf('Z') == -1 ? guarded + 'Z' : guarded;
                 let guardedSince = new Date(dateStr);
                 let now = new Date();
                 let duration = now.getTime() - guardedSince.getTime();
@@ -357,7 +357,7 @@ function getTileStates(tiles){
                 color = heatMapColorforValue(value);
                 yieldLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (tile[4]).toFixed(2),'', isRealm);
             } else if(layer == 'guarded_yield'){
-                let dateStr = guarded+'Z';
+                let dateStr = guarded.indexOf('Z') == -1 ? guarded + 'Z' : guarded;
                 let guardedSince = new Date(dateStr);
                 let now = new Date();
                 let duration = now.getTime() - guardedSince.getTime();
