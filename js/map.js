@@ -192,6 +192,7 @@ window.addEventListener('load', async function(event) {
         } else if(!hit && activeRealm){
             console.log("Exit Realm: ");
             activeRealm = null;
+            realmIso = null;
             snapshot();
             let zoomer = document.getElementById('MapZoomer');
             zoomer.style.transform = 'scale('+zoomReset.zoom+')';
