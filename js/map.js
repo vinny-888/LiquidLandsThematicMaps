@@ -194,7 +194,6 @@ window.addEventListener('load', async function(event) {
             zoom = zoomReset.zoom;
             mapOuter.scrollLeft = zoomReset.scrollLeft;
             mapOuter.scrollTop = zoomReset.scrollTop;
-            document.getElementById('realm').style.display = 'none';
 
             let thisPage = new URL(window.location.href);
             var realmParam = thisPage.searchParams.get('realm');
