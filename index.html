@@ -5,8 +5,8 @@
         <script src="js/mapTiles.js"></script>
         <script src="js/factions.js"></script>
         <script src="js/realms.js"></script>
-        <script src="js/map.js?v=1.3"></script>
-        <link rel="stylesheet" href="css/main.css?v=1.3">
+        <script src="js/map.js?v=1.4"></script>
+        <link rel="stylesheet" href="css/main.css?v=1.4">
     </head>
     <body>
         <div id="info">
@@ -22,7 +22,9 @@ Click Realms to open (<span id="viewRealms" class="link">View Realms</span>)<br>
             <input type="radio" id="guarded" name="layer" value="1">
             <label for="javascript">Guarded</label><br>
             <input type="radio" id="yield" name="layer" value="2">
-            <label for="css">Yield</label>
+            <label for="css">Yield</label><br>
+            <input type="radio" id="guarded_yield" name="layer" value="3">
+            <label for="css" class="hovertext" data-hover="(Guarded Hours / 12) * Yield = Score">Score</label>
         </div>
         <div id="factionsDiv" style="display: none;">
             <div class="title"><span class="bold">Factions: </span>(<span style="display: inline;" id="factionToggle" class="link">hide</span>)</div>
