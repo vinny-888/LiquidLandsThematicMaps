@@ -8,6 +8,7 @@ let factionLookup = {};
 let factionCounts = {};
 let yieldLookup = {};
 let guardedLookup = {};
+let guardedYieldLookup = {};
 let realmShapes = {};
 let tileShapes = {};
 let realmTileLookup = {};
@@ -28,11 +29,13 @@ let zoomReset = {
     scrollLeft: 0,
     scrollTop: 0
 };
+let HOUR = 1000*60*60;
+let guarded_hours = HOUR*120;
+let guarded_yield_hours = HOUR*24;
 const realmHeightRatio = 1.142;
 
 window.addEventListener('load', async function(event) {
     mapOuter = document.getElementById('MapOuter');
-    const radios = document.querySelectorAll('input[name="layer"]');
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const layer = urlParams.get('layer');
@@ -44,70 +47,9 @@ window.addEventListener('load', async function(event) {
         selectedLayer = 1;
     } else if(layer == 'yield'){
         selectedLayer = 2;
+    } else if(layer == 'guarded_yield'){
+        selectedLayer = 3;
     }
-    radios.forEach((radio, index)=> {
-        if(index == selectedLayer){
-            radio.checked = true;
-        } else {
-            radio.checked = false;
-        }
-        radio.addEventListener('change', function() {
-            selectedLayer = parseInt(this.value);
-            let realm = realms.find((realm)=>realmIso == realm.country.iso);
-            if(selectedLayer == 0){
-                window.location.href = window.location.href.split('?')[0] + '?layer=faction' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
-            } else if(selectedLayer == 1){
-                window.location.href = window.location.href.split('?')[0] + '?layer=guarded' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
-            } else if(selectedLayer == 2){
-                window.location.href = window.location.href.split('?')[0] + '?layer=yield' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
-            }
-        });
-    });
-    let viewRealms = document.getElementById('viewRealms');
-    viewRealms.addEventListener("click", (evt)=>{
-        if(activeRealm){
-            exitRealm();
-        } else {
-            enterRealm({tile_id:8787, country: {iso: 'mc'}});
-        }
-    });
-    
-    let factionToggle = document.getElementById('factionToggle');
-    factionToggle.addEventListener("click", (evt)=>{
-        let factionDiv = document.getElementById('factions');
-        if(factionDiv.style.display == 'block'){
-            factionDiv.style.display = 'none';
-            factionToggle.innerHTML = 'show';
-        } else {
-            factionDiv.style.display = 'block';
-            factionToggle.innerHTML = 'hide';
-        }
-    });
-    // Handle double click and zoom better
-    mapOuter.addEventListener("dblclick", (evt)=>{
-        console.log('evt: ', evt);
-        let zoomer = document.getElementById('MapZoomer');
-        let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
-        let ratio = 1/scale;
-        if(zoom != 1){
-            zoom = 1;
-            zoomer.style.transform = 'scale('+zoom+')';
-            mapOuter.scrollLeft = ((mapOuter.scrollLeft+evt.clientX)*ratio)-(mapOuter.clientWidth/2);
-            mapOuter.scrollTop = ((mapOuter.scrollTop+evt.clientY)*ratio)-(mapOuter.clientHeight/2);
-        } else {
-            zoom = 0.2;
-            zoomer.style.transform = 'scale('+zoom+')';
-            mapOuter.scrollLeft = 0;
-            mapOuter.scrollTop = 0;
-        }
-    });
-
-    document.addEventListener('click', function (e) {
-        if (e.ctrlKey || e.metaKey) {
-          console.log('Ctrl | Cmnd clicked');
-          return;
-        }
-    });
 
     new inrt.scroller({elementId: "MapOuter", defaultDrag: 0.94, maxScrollSpeed: 50});
     mapOuter.addEventListener('mousedown', mouseDownHandler);
@@ -133,57 +75,6 @@ window.addEventListener('load', async function(event) {
         tile_height = Math.floor(tile_height * ratio);
     }
 
-    canvas.addEventListener("click", (e) => {
-        var mouse = getMouse(e);
-        var mx = mouse.x;
-        var my = mouse.y;
-        let hit = false;
-        realms.forEach((realm)=>{
-            let shape = realmShapes[realm.tile_id];
-            if(shape){
-                let x1 = shape.left;
-                let y1 = shape.top;
-                let x2 = x1+tile_width;
-                let y2 = y1+tile_height;
-                if(mx >= x1 && mx <= x2 && my >= y1 && my <= y2){
-                    console.log("Clicked Realm: ", realm.country.name, realm);
-                    hit = true;
-                    enterRealm(realm);
-                    let tileHitTest = false;
-                    if(tileHitTest){
-                        let tileId = realm.tile_id;
-                        window.open('https://liquidlands.io/land/'+tileId, '_blank');
-                    }
-                    // break;
-                }
-            }
-        });
-        
-        let tileHitTest = e.ctrlKey || e.metaKey;
-        if(tileHitTest){
-            for (let tile of allTiles) {
-                let tile_id = tile[0];
-                let shape = tileShapes[tile_id];
-                if(shape && (
-                    (activeRealm && shape.isRealm) || 
-                    (!activeRealm && !shape.isRealm))){
-                    let x1 = shape.left;
-                    let y1 = shape.top;
-                    let x2 = x1+tile_width;
-                    let y2 = y1+tile_height;
-                    if(mx >= x1 && mx <= x2 && my >= y1 && my <= y2){
-                        console.log("Clicked Tile: ", tile_id);
-                        window.open('https://liquidlands.io/land/'+tile_id, '_blank');
-                        // break;
-                    }
-                }
-            };
-        } else if(!hit && activeRealm){
-            console.log("Exit Realm: ");
-            exitRealm();
-        } 
-    });
-
     poly1 = get_tile_canvas('#2a3339', tile_width - 3, tile_height-3, '', '');
     
     // draw the snapshot
@@ -191,6 +82,8 @@ window.addEventListener('load', async function(event) {
     canvas.height = height;
     canvas.style.width = css_width + "px";
     canvas.style.height = css_height + "px";
+
+    addEventListeners();
 
     fetch("https://liquidlands.io/raw/land")
     .then((res)=>{
@@ -452,18 +345,26 @@ function getTileStates(tiles){
                     factionLookup[faction_id+'_realm'] = get_tile_canvas(color, tile_width - 3, tile_height-3, '#'+rank, '', isRealm);
                 }
             } else if(layer == 'guarded'){
-                let guardedSince = new Date(guarded);
+                let dateStr = guarded+'Z';
+                let guardedSince = new Date(dateStr);
                 let now = new Date();
-                let HOUR = 1000*60*60;
-                let hours = HOUR*120;
                 let duration = now.getTime() - guardedSince.getTime();
-                let val = duration/hours;
+                let val = duration/guarded_hours;
                 color = heatMapColorforValue(Math.min(val, 1));
                 guardedLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (duration/HOUR).toFixed(0),'h', isRealm);
             } else if(layer == 'yield'){
                 let value = (Math.log(game_bricks_per_day) + 2)/2;
                 color = heatMapColorforValue(value);
                 yieldLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, (tile[4]).toFixed(2),'', isRealm);
+            } else if(layer == 'guarded_yield'){
+                let dateStr = guarded+'Z';
+                let guardedSince = new Date(dateStr);
+                let now = new Date();
+                let duration = now.getTime() - guardedSince.getTime();
+                let guardedHours = Math.max(duration/guarded_yield_hours, 0);
+                let guardedYield = (game_bricks_per_day*guardedHours);
+                color = heatMapColorforValue(Math.min(guardedYield, 1));
+                guardedYieldLookup[tile_id] = get_tile_canvas(color, tile_width - 3, tile_height-3, guardedYield.toFixed(2),'', isRealm);
             }
         }
     })
@@ -502,6 +403,8 @@ function snapshot() {
                             shape = guardedLookup[hexagon.tile_id];
                         } else if(selectedLayer == 2){
                             shape = yieldLookup[hexagon.tile_id];
+                        } else if(selectedLayer == 3){
+                            shape = guardedYieldLookup[hexagon.tile_id];
                         }
                     } 
                     if(!activeRealm && !tileStates[hexagon.tile_id]){
@@ -617,4 +520,129 @@ const getMouse = function(e) {
     mx = (e.pageX + mapOuter.scrollLeft)/zoom;
     my = (e.pageY + mapOuter.scrollTop)/zoom;
     return {x: mx, y: my};
+}
+
+function addEventListeners(){
+
+    const radios = document.querySelectorAll('input[name="layer"]');
+    radios.forEach((radio, index)=> {
+        if(index == selectedLayer){
+            radio.checked = true;
+        } else {
+            radio.checked = false;
+        }
+        radio.addEventListener('change', function() {
+            selectedLayer = parseInt(this.value);
+            let realm = realms.find((realm)=>realmIso == realm.country.iso);
+            if(selectedLayer == 0){
+                window.location.href = window.location.href.split('?')[0] + '?layer=faction' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
+            } else if(selectedLayer == 1){
+                window.location.href = window.location.href.split('?')[0] + '?layer=guarded' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
+            } else if(selectedLayer == 2){
+                window.location.href = window.location.href.split('?')[0] + '?layer=yield' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
+            } else if(selectedLayer == 3){
+                window.location.href = window.location.href.split('?')[0] + '?layer=guarded_yield' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
+            }
+        });
+    });
+
+
+    let viewRealms = document.getElementById('viewRealms');
+    viewRealms.addEventListener("click", (evt)=>{
+        if(activeRealm){
+            exitRealm();
+        } else {
+            enterRealm({tile_id:8787, country: {iso: 'mc'}});
+        }
+    });
+
+
+    
+    let factionToggle = document.getElementById('factionToggle');
+    factionToggle.addEventListener("click", (evt)=>{
+        let factionDiv = document.getElementById('factions');
+        if(factionDiv.style.display == 'block'){
+            factionDiv.style.display = 'none';
+            factionToggle.innerHTML = 'show';
+        } else {
+            factionDiv.style.display = 'block';
+            factionToggle.innerHTML = 'hide';
+        }
+    });
+    // Handle double click and zoom better
+    mapOuter.addEventListener("dblclick", (evt)=>{
+        console.log('evt: ', evt);
+        let zoomer = document.getElementById('MapZoomer');
+        let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
+        let ratio = 1/scale;
+        if(zoom != 1){
+            zoom = 1;
+            zoomer.style.transform = 'scale('+zoom+')';
+            mapOuter.scrollLeft = ((mapOuter.scrollLeft+evt.clientX)*ratio)-(mapOuter.clientWidth/2);
+            mapOuter.scrollTop = ((mapOuter.scrollTop+evt.clientY)*ratio)-(mapOuter.clientHeight/2);
+        } else {
+            zoom = 0.2;
+            zoomer.style.transform = 'scale('+zoom+')';
+            mapOuter.scrollLeft = 0;
+            mapOuter.scrollTop = 0;
+        }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (e.ctrlKey || e.metaKey) {
+          console.log('Ctrl | Cmnd clicked');
+          return;
+        }
+    });
+
+    canvas.addEventListener("click", (e) => {
+        var mouse = getMouse(e);
+        var mx = mouse.x;
+        var my = mouse.y;
+        let hit = false;
+        realms.forEach((realm)=>{
+            let shape = realmShapes[realm.tile_id];
+            if(shape){
+                let x1 = shape.left;
+                let y1 = shape.top;
+                let x2 = x1+tile_width;
+                let y2 = y1+tile_height;
+                if(mx >= x1 && mx <= x2 && my >= y1 && my <= y2){
+                    console.log("Clicked Realm: ", realm.country.name, realm);
+                    hit = true;
+                    enterRealm(realm);
+                    let tileHitTest = false;
+                    if(tileHitTest){
+                        let tileId = realm.tile_id;
+                        window.open('https://liquidlands.io/land/'+tileId, '_blank');
+                    }
+                    // break;
+                }
+            }
+        });
+        
+        let tileHitTest = e.ctrlKey || e.metaKey;
+        if(tileHitTest){
+            for (let tile of allTiles) {
+                let tile_id = tile[0];
+                let shape = tileShapes[tile_id];
+                if(shape && (
+                    (activeRealm && shape.isRealm) || 
+                    (!activeRealm && !shape.isRealm))){
+                    let x1 = shape.left;
+                    let y1 = shape.top;
+                    let x2 = x1+tile_width;
+                    let y2 = y1+tile_height;
+                    if(mx >= x1 && mx <= x2 && my >= y1 && my <= y2){
+                        console.log("Clicked Tile: ", tile_id);
+                        window.open('https://liquidlands.io/land/'+tile_id, '_blank');
+                        // break;
+                    }
+                }
+            };
+        } else if(!hit && activeRealm){
+            console.log("Exit Realm: ");
+            exitRealm();
+        } 
+    });
 }
