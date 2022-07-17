@@ -1,4 +1,3 @@
-
 function snapshot() {
     let canvas = document.getElementById('mapCanvas');  
     if (canvas.getContext) {
@@ -69,9 +68,6 @@ function snapshot() {
                             ctx.shadowColor="black";
                             ctx.shadowBlur=2;
                             ctx.lineWidth=2;
-                            // col 15.96
-                            // row 25
-
                             ctx.strokeText(realm.country.name,left, top - 20);
                             ctx.shadowBlur=0;
                             ctx.fillStyle="white";
@@ -80,7 +76,6 @@ function snapshot() {
                             } 
                             ctx.fillText(  realm.country.name,left, top - 20);
                         }
-                        
                     }
                     if(isRealm){
                         state.realmShapes[hexagon.tile_id] = {
