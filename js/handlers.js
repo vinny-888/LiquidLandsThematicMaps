@@ -1,0 +1,172 @@
+const mouseDownHandler = function (e) {
+    let mapOuter = document.getElementById('MapOuter');
+    state.pos = {
+        // The current scroll
+        left: mapOuter.scrollLeft,
+        top: mapOuter.scrollTop,
+        // Get the current mouse position
+        x: e.clientX,
+        y: e.clientY,
+    };
+
+    mapOuter.style.cursor = 'grabbing';
+    mapOuter.style.userSelect = 'none';
+
+    document.addEventListener('mousemove', mouseMoveHandler);
+    document.addEventListener('mouseup', mouseUpHandler);
+};
+
+const dblClickHandler = function (evt){
+    console.log('evt: ', evt);
+    let zoomer = document.getElementById('MapZoomer');
+    let mapOuter = document.getElementById('MapOuter');
+    let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
+    let ratio = 1/scale;
+    if(state.zoom != 1){
+        state.zoom = 1;
+        zoomer.style.transform = 'scale('+state.zoom+')';
+        mapOuter.scrollLeft = ((mapOuter.scrollLeft+evt.clientX)*ratio)-(mapOuter.clientWidth/2);
+        mapOuter.scrollTop = ((mapOuter.scrollTop+evt.clientY)*ratio)-(mapOuter.clientHeight/2);
+    } else {
+        state.zoom = 0.2;
+        zoomer.style.transform = 'scale('+state.zoom+')';
+        mapOuter.scrollLeft = 0;
+        mapOuter.scrollTop = 0;
+    }
+}
+
+const mouseMoveHandler = function (e) {
+    // How far the mouse has been moved
+    const dx = e.clientX - state.pos.x;
+    const dy = e.clientY - state.pos.y;
+
+    // Scroll the element
+    let mapOuter = document.getElementById('MapOuter');
+    mapOuter.scrollTop = state.pos.top - dy;
+    mapOuter.scrollLeft = state.pos.left - dx;
+};
+
+const mouseUpHandler = function () {
+    document.removeEventListener('mousemove', mouseMoveHandler);
+    document.removeEventListener('mouseup', mouseUpHandler);
+
+    let mapOuter = document.getElementById('MapOuter');
+    mapOuter.style.cursor = 'grab';
+    mapOuter.style.removeProperty('user-select');
+};
+
+const getMouse = function(e) {
+    let mapOuter = document.getElementById('MapOuter');
+    var mx, my;
+    mx = (e.pageX + mapOuter.scrollLeft)/state.zoom;
+    my = (e.pageY + mapOuter.scrollTop)/state.zoom;
+    return {x: mx, y: my};
+}
+
+function addEventListeners(){
+    let mapOuter = document.getElementById('MapOuter');
+    mapOuter.addEventListener('mousedown', mouseDownHandler);
+    mapOuter.addEventListener("dblclick", dblClickHandler);
+
+    const radios = document.querySelectorAll('input[name="layer"]');
+    radios.forEach((radio, index)=> {
+        if(index == state.selectedLayer){
+            radio.checked = true;
+        } else {
+            radio.checked = false;
+        }
+        radio.addEventListener('change', function() {
+            state.selectedLayer = parseInt(this.value);
+            let realm = state.realms.find((realm)=> state.realmIso == realm.country.iso);
+            if(state.selectedLayer == 0){
+                window.location.href = window.location.href.split('?')[0] + '?layer=faction' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
+            } else if(state.selectedLayer == 1){
+                window.location.href = window.location.href.split('?')[0] + '?layer=guarded' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
+            } else if(state.selectedLayer == 2){
+                window.location.href = window.location.href.split('?')[0] + '?layer=yield' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
+            } else if(state.selectedLayer == 3){
+                window.location.href = window.location.href.split('?')[0] + '?layer=guarded_yield' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
+            }
+        });
+    });
+
+    let viewRealms = document.getElementById('viewRealms');
+    viewRealms.addEventListener("click", (evt)=>{
+        if(state.activeRealm){
+            exitRealm();
+        } else {
+            enterRealm({tile_id:8787, country: {iso: 'mc'}});
+        }
+    });
+    
+    let factionToggle = document.getElementById('factionToggle');
+    factionToggle.addEventListener("click", (evt)=>{
+        let factionDiv = document.getElementById('factions');
+        if(factionDiv.style.display == 'block'){
+            factionDiv.style.display = 'none';
+            factionToggle.innerHTML = 'show';
+        } else {
+            factionDiv.style.display = 'block';
+            factionToggle.innerHTML = 'hide';
+        }
+    });
+
+    document.addEventListener('click', function (e) {
+        if (e.ctrlKey || e.metaKey) {
+          console.log('Ctrl | Cmnd clicked');
+          return;
+        }
+    });
+
+    let canvas = document.getElementById('mapCanvas');  
+    canvas.addEventListener("click", (e) => {
+        var mouse = getMouse(e);
+        var mx = mouse.x;
+        var my = mouse.y;
+        let hit = false;
+        state.realms.forEach((realm)=>{
+            let shape = state.realmShapes[realm.tile_id];
+            if(shape){
+                let x1 = shape.left;
+                let y1 = shape.top;
+                let x2 = x1 + state.tile_width;
+                let y2 = y1 + state.tile_height;
+                if(mx >= x1 && mx <= x2 && my >= y1 && my <= y2){
+                    console.log("Clicked Realm: ", realm.country.name, realm);
+                    hit = true;
+                    enterRealm(realm);
+                    let tileHitTest = false;
+                    if(tileHitTest){
+                        let tileId = realm.tile_id;
+                        window.open('https://liquidlands.io/land/'+tileId, '_blank');
+                    }
+                    // break;
+                }
+            }
+        });
+        
+        let tileHitTest = e.ctrlKey || e.metaKey;
+        if(tileHitTest){
+            for (let tile of state.allTiles) {
+                let tile_id = tile[0];
+                let shape = state.tileShapes[tile_id];
+                if(shape && (
+                    (state.activeRealm && shape.isRealm) || 
+                    (!state.activeRealm && !shape.isRealm))){
+                    let x1 = shape.left;
+                    let y1 = shape.top;
+                    let x2 = x1 + state.tile_width;
+                    let y2 = y1 + state.tile_height;
+                    if(mx >= x1 && mx <= x2 && my >= y1 && my <= y2){
+                        console.log("Clicked Tile: ", tile_id);
+                        window.open('https://liquidlands.io/land/'+tile_id, '_blank');
+                        // break;
+                    }
+                }
+            };
+        } else if(!hit && state.activeRealm){
+            console.log("Exit Realm: ");
+            exitRealm();
+        } 
+    });
+}
