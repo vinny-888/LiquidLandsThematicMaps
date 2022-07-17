@@ -88,6 +88,7 @@ function addEventListeners(){
                 state.layer = 'guarded_yield';
             }
             state.tileStates = getTileStates(state.allTiles);
+            layerUpdate();
             snapshot();
             updateUrlState();
         });
