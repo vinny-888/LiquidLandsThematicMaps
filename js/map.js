@@ -1,12 +1,16 @@
 window.addEventListener('load', async function(event) {
     state.realmIso = urlParams.get('realm');
-    if(!layer || layer == 'faction'){
+    state.layer = urlParams.get('layer');
+    state.zoom = urlParams.get('z');
+    state.pos.left = urlParams.get('l');
+    state.pos.top = urlParams.get('t');
+    if(!state.layer || state.layer == 'faction'){
         state.selectedLayer = 0;
-    } else if(layer == 'guarded'){
+    } else if(state.layer == 'guarded'){
         state.selectedLayer = 1;
-    } else if(layer == 'yield'){
+    } else if(state.layer == 'yield'){
         state.selectedLayer = 2;
-    } else if(layer == 'guarded_yield'){
+    } else if(state.layer == 'guarded_yield'){
         state.selectedLayer = 3;
     }
 
@@ -55,6 +59,9 @@ window.addEventListener('load', async function(event) {
         } else {
             snapshot();
         }
+        // setTimeout(()=>{
+        //     loadZoom();
+        // }, 1000);
     });
 });
 
@@ -65,16 +72,8 @@ function enterRealm(realm){
     zoomToRealm();
 
     state.realmIso = realm.country.iso;
-
-    let thisPage = new URL(window.location.href);
-    var realmParam = thisPage.searchParams.get('realm');
-    if(!realmParam){
-        thisPage.searchParams.append('realm', realm.country.iso);
-    } else {
-        thisPage.searchParams.set('realm', realm.country.iso);
-    }
-    // window.location.href = thisPage;
-    history.pushState({}, null, thisPage);
+    updateUrlState();
+    
     let viewRealms = document.getElementById('viewRealms');
     viewRealms.innerHTML = 'Hide Realms';
 
@@ -94,7 +93,6 @@ function exitRealm(){
     if(realmParam){
         thisPage.searchParams.delete('realm');
     }
-    // window.location.href = thisPage;
     history.pushState({}, null, thisPage);
 
     let viewRealms = document.getElementById('viewRealms');
@@ -127,7 +125,7 @@ function getTileStates(tiles){
         })
     })
     // Calculate the counts for factions
-    if(!layer || layer == 'faction'){
+    if(!state.layer || state.layer == 'faction'){
         tiles.forEach((tile)=>{
             let faction_id = tile[2];
             if(!state.factionCounts[faction_id]){
@@ -150,18 +148,18 @@ function getTileStates(tiles){
                 game_bricks_per_day: game_bricks_per_day
             };
 
-            if(!layer || layer == 'faction'){
+            if(!state.layer || state.layer == 'faction'){
                 if(!state.factionLookup[faction_id]){
                     state.factionLookup[faction_id] = createFaction(tile_id, faction_id);
                 } 
                 if(state.realmTilesLookup[tile_id] && !state.factionLookup[faction_id+'_realm']){
                     state.factionLookup[faction_id+'_realm'] = createFaction(tile_id, faction_id);
                 }
-            } else if(layer == 'guarded'){
+            } else if(state.layer == 'guarded'){
                 state.guardedLookup[tile_id] = createGuardedTile(tile_id, guarded);
-            } else if(layer == 'yield'){
+            } else if(state.layer == 'yield'){
                 state.yieldLookup[tile_id] = createYieldTile(tile_id, game_bricks_per_day)
-            } else if(layer == 'guarded_yield'){
+            } else if(state.layer == 'guarded_yield'){
                 state.guardedYieldLookup[tile_id] = createProtected(tile_id, guarded, game_bricks_per_day);
             }
         }

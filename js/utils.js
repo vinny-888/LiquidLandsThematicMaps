@@ -54,3 +54,48 @@ function layerUpdate(){
     </tr>`;
     })
 }
+
+function updateUrlState(){
+    let mapOuter = document.getElementById('MapOuter');
+    let thisPage = new URL(window.location.href);
+    /*
+    var zoomParam = thisPage.searchParams.get('z');
+    if(!zoomParam){
+        thisPage.searchParams.append('z', state.zoom);
+    } else {
+        thisPage.searchParams.set('z', state.zoom);
+    }
+
+    var leftParam = thisPage.searchParams.get('l');
+    if(!leftParam){
+        thisPage.searchParams.append('l', mapOuter.scrollLeft);
+    } else {
+        thisPage.searchParams.set('l', mapOuter.scrollLeft);
+    }
+
+    var topParam = thisPage.searchParams.get('t');
+    if(!topParam){
+        thisPage.searchParams.append('t', mapOuter.scrollTop);
+    } else {
+        thisPage.searchParams.set('t', mapOuter.scrollTop);
+    }
+    */
+
+    var realmParam = thisPage.searchParams.get('realm');
+    if(state.realmIso){
+        if(!realmParam){
+            thisPage.searchParams.append('realm', state.realmIso);
+        } else {
+            thisPage.searchParams.set('realm', state.realmIso);
+        }
+    }
+
+    var layerParam = thisPage.searchParams.get('layer');
+    if(!layerParam){
+        thisPage.searchParams.append('layer', state.layer);
+    } else {
+        thisPage.searchParams.set('layer', state.layer);
+    }
+
+    history.pushState({}, null, thisPage);
+}

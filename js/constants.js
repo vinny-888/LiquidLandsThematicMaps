@@ -4,4 +4,3 @@ const guarded_yield_hours = HOUR*24;
 const realmHeightRatio = 1.142;
 const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
-const layer = urlParams.get('layer');

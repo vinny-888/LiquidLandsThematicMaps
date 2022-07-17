@@ -17,7 +17,6 @@ const mouseDownHandler = function (e) {
 };
 
 const dblClickHandler = function (evt){
-    console.log('evt: ', evt);
     let zoomer = document.getElementById('MapZoomer');
     let mapOuter = document.getElementById('MapOuter');
     let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
@@ -33,6 +32,7 @@ const dblClickHandler = function (evt){
         mapOuter.scrollLeft = 0;
         mapOuter.scrollTop = 0;
     }
+    updateUrlState();
 }
 
 const mouseMoveHandler = function (e) {
@@ -53,6 +53,7 @@ const mouseUpHandler = function () {
     let mapOuter = document.getElementById('MapOuter');
     mapOuter.style.cursor = 'grab';
     mapOuter.style.removeProperty('user-select');
+    updateUrlState();
 };
 
 const getMouse = function(e) {
@@ -77,16 +78,18 @@ function addEventListeners(){
         }
         radio.addEventListener('change', function() {
             state.selectedLayer = parseInt(this.value);
-            let realm = state.realms.find((realm)=> state.realmIso == realm.country.iso);
             if(state.selectedLayer == 0){
-                window.location.href = window.location.href.split('?')[0] + '?layer=faction' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
+                state.layer = 'faction';
             } else if(state.selectedLayer == 1){
-                window.location.href = window.location.href.split('?')[0] + '?layer=guarded' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
+                state.layer = 'guarded';
             } else if(state.selectedLayer == 2){
-                window.location.href = window.location.href.split('?')[0] + '?layer=yield' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
+                state.layer = 'yield';
             } else if(state.selectedLayer == 3){
-                window.location.href = window.location.href.split('?')[0] + '?layer=guarded_yield' + (realm && realm.country.iso ? '&realm='+realm.country.iso : '');
+                state.layer = 'guarded_yield';
             }
+            state.tileStates = getTileStates(state.allTiles);
+            snapshot();
+            updateUrlState();
         });
     });
 

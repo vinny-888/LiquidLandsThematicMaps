@@ -40,9 +40,7 @@ let state = {
     // Canvas Tile Lookups
     factionLookup: {},
     factionCounts: {},
-
     yieldLookup: {},
-
     guardedLookup: {},
     guardedYieldLookup: {},
 
@@ -56,6 +54,4 @@ let state = {
     realms: realms,
     mapTiles: mapTiles,
     factionNames: factionNames,
-
-
 };

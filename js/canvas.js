@@ -2,8 +2,9 @@
 function snapshot() {
     let canvas = document.getElementById('mapCanvas');  
     if (canvas.getContext) {
-        canvas.style.display = 'none';
+        canvas.style.opacity = 0.5;
 
+        // Hack to clear the canvas while redrawing so it feels more responsive
         setTimeout(()=>{
             var ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -102,7 +103,8 @@ function snapshot() {
                     imageObj.src = shape.toDataURL();
                 }
             }
-            canvas.style.display = 'block';
+            
+            canvas.style.opacity = 1;
         }, 0 );
     }
 }
