@@ -1,12 +1,19 @@
+let offscreenCanvas = null;
 function snapshot() {
-    let canvas = document.getElementById('mapCanvas');  
-    if (canvas.getContext) {
-        canvas.style.opacity = 0.5;
+    const canvasEl = document.getElementById('mapCanvas');
+    if(!offscreenCanvas){
+        offscreenCanvas =
+        'OffscreenCanvas' in window
+            ? canvasEl.transferControlToOffscreen()
+            : canvasEl;
+    }
+    if (offscreenCanvas.getContext) {
+        canvasEl.style.opacity = 0.5;
 
         // Hack to clear the canvas while redrawing so it feels more responsive
         setTimeout(()=>{
-            var ctx = canvas.getContext('2d');
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            var ctx = offscreenCanvas.getContext('2d');
+            ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
 
             let tiles = [];
             if(state.activeRealm){
@@ -92,14 +99,11 @@ function snapshot() {
                     var imageObj = new Image();
                     imageObj.width = shape.width;
                     imageObj.height = shape.height;
-                    imageObj.onload = function() {
-                        ctx.drawImage(shape, left+1+offsetX, top-1+offsetY); 
-                    };
-                    imageObj.src = shape.toDataURL();
+                    ctx.drawImage(shape, left+1+offsetX, top-1+offsetY); 
                 }
             }
             
-            canvas.style.opacity = 1;
+            canvasEl.style.opacity = 1;
         }, 0 );
     }
 }
@@ -107,11 +111,10 @@ function snapshot() {
 function get_tile_canvas(color, width, height, value, suffix, isRealm) {
     var poly = [23, 4, 25.5, 1.25, 29, 0, 71, 0, 74.5, 1.25, 77, 4, 98, 46, 98.75, 50, 98, 54, 77, 96, 74.5, 98.75, 71, 100, 29, 100, 25.5, 98.75, 23, 96, 2, 54, 1.25, 50, 2, 46];
     let realm_poly = rotatePoly(poly);
-    let tileCanvas = document.createElement('canvas');
+    // Use an offscreen canvas to speed everything up
+    let tileCanvas = new OffscreenCanvas(width, height);
     let widthRatio = width/100;
     let heightRatio = height/100;
-    tileCanvas.width = width;
-    tileCanvas.height = height;
 
     let offsetY = 5;
     let offsetX = 0;
