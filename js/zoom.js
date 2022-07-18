@@ -71,7 +71,7 @@ function zoomToTile(evt){
         zoomer.style.transform = 'scale('+state.zoom+')';
         let x = evt.clientX;
         let y = evt.clientY;
-        if(isSafariMobile()){
+        if(isSafariMobile() || isMobile()){
             x = evt.pageX;
             y = evt.pageY;
         }

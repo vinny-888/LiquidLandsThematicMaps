@@ -1,5 +1,5 @@
 window.addEventListener('load', async function(event) {
-    if(isSafariMobile()){
+    if(isSafariMobile() || isMobile()){
         state.width = 4096;
         state.height = 2389;
         state.fontSize = 12;

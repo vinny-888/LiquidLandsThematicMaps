@@ -12,7 +12,7 @@ const mouseDownHandler = function (e) {
     mapOuter.style.cursor = 'grabbing';
     mapOuter.style.userSelect = 'none';
 
-    if(isSafariMobile()){
+    if(isSafariMobile() || isMobile()){
         document.addEventListener('ondrag', mouseMoveHandler);
         document.addEventListener('ondragend', mouseUpHandler);
     } else {
@@ -66,7 +66,7 @@ const getMouse = function(e) {
 
 function addEventListeners(){
     let mapOuter = document.getElementById('MapOuter');
-    if(isSafariMobile()){
+    if(isSafariMobile() || isMobile()){
         mapOuter.addEventListener('ondragstart', mouseDownHandler);
     } else {
         mapOuter.addEventListener('mousedown', mouseDownHandler);
