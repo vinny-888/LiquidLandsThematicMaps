@@ -129,7 +129,6 @@ async function playMapHistory(){
         layerUpdate();
         console.log('mapHistory:', state.mapHistory.length);
         snapshot();
-        getFactionHistoryCounts();
         state.mapHistoryInterval = setInterval(()=>{
             state.mapHistoryIndex++;
             if(state.mapHistoryIndex >= state.mapHistory.length){
@@ -169,6 +168,7 @@ function getMapHistoryTileStates(){
     if(Object.keys(state.factionCounts).length == 0){
         getFactionCounts();
     }
+    getFactionHistoryCounts();
     let tilesLookup = [];
     // mapHistory[0]
     // [0] = tile
@@ -183,7 +183,7 @@ function getMapHistoryTileStates(){
                 let faction_id = tile[2];
                 tilesLookup[index][tile_id] = faction_id;
                 if(!state.factionHistoryLookup[index][faction_id]){
-                    state.factionHistoryLookup[index][faction_id] = createFaction(faction_id, false);
+                    state.factionHistoryLookup[index][faction_id] = createHistoryFaction(faction_id, false, index);
                 }
             });
         }
@@ -271,6 +271,12 @@ function getTileStates(tiles){
 function createFaction(faction_id, isRealm){
     let color = getUniqueColor(faction_id);
     let rank = getSortedKeys(state.factionCounts).indexOf(''+faction_id)+1;
+    return get_tile_canvas(color, state.tile_width - 3, state.tile_height-3, '#'+rank, '', isRealm);
+}
+
+function createHistoryFaction(faction_id, isRealm, index){
+    let color = getUniqueColor(faction_id);
+    let rank = getSortedKeys(state.factionHistoryCounts[index]).indexOf(''+faction_id)+1;
     return get_tile_canvas(color, state.tile_width - 3, state.tile_height-3, '#'+rank, '', isRealm);
 }
 
