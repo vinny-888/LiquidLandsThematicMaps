@@ -12,8 +12,14 @@ const mouseDownHandler = function (e) {
     mapOuter.style.cursor = 'grabbing';
     mapOuter.style.userSelect = 'none';
 
-    document.addEventListener('mousemove', mouseMoveHandler);
-    document.addEventListener('mouseup', mouseUpHandler);
+    if(isSafariMobile()){
+        document.addEventListener('ondrag', mouseMoveHandler);
+        document.addEventListener('ondragend', mouseUpHandler);
+    } else {
+        document.addEventListener('mousemove', mouseMoveHandler);
+        document.addEventListener('mouseup', mouseUpHandler);
+    }
+
 };
 
 var mylatesttap;
@@ -60,8 +66,13 @@ const getMouse = function(e) {
 
 function addEventListeners(){
     let mapOuter = document.getElementById('MapOuter');
-    mapOuter.addEventListener('mousedown', mouseDownHandler);
-    mapOuter.addEventListener("dblclick", dblClickHandler);
+    if(isSafariMobile()){
+        mapOuter.addEventListener('ondragstart', mouseDownHandler);
+    } else {
+        mapOuter.addEventListener('mousedown', mouseDownHandler);
+        mapOuter.addEventListener("dblclick", dblClickHandler);
+    }
+   
     // mapOuter.addEventListener("click", doubleTapHandler);
 
     const radios = document.querySelectorAll('input[name="layer"]');
