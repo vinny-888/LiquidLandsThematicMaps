@@ -77,6 +77,7 @@ function addEventListeners(){
             radio.checked = false;
         }
         radio.addEventListener('change', function() {
+            stopMapHistory();
             state.selectedLayer = parseInt(this.value);
             if(state.selectedLayer == 0){
                 state.layer = 'faction';
@@ -93,13 +94,23 @@ function addEventListeners(){
             updateUrlState();
         });
     });
-
+    
     let viewRealms = document.getElementById('viewRealms');
     viewRealms.addEventListener("click", (evt)=>{
         if(state.activeRealm){
             exitRealm();
         } else {
             enterRealm({tile_id:8787, country: {iso: 'mc'}});
+        }
+    });
+
+    let viewMapHistory = document.getElementById('viewMapHistory');
+    viewMapHistory.addEventListener("click", (evt)=>{
+        let play = document.getElementById('viewMapHistory').innerHTML == 'Play History' ? true : false;
+        if(play){
+            playMapHistory();
+        } else {
+            stopMapHistory();
         }
     });
     

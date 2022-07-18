@@ -8,10 +8,10 @@ function snapshot() {
             : canvasEl;
     }
     if (offscreenCanvas.getContext) {
-        canvasEl.style.opacity = 0.5;
+        // canvasEl.style.opacity = 0.5;
 
         // Hack to clear the canvas while redrawing so it feels more responsive
-        setTimeout(()=>{
+        // setTimeout(()=>{
             var ctx = offscreenCanvas.getContext('2d');
             ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
 
@@ -27,7 +27,12 @@ function snapshot() {
             for (let [index, hexagon] of tiles.entries()) {
                 let shape = state.blankTilePoly;
                 let isRealm = false;
-                if (hexagon.enabled || state.activeRealm) {
+                if(state.historyPlaying){
+                    if(hexagon.enabled && state.tileHistoryStates[state.mapHistoryIndex]){
+                        let faction = state.tileHistoryStates[state.mapHistoryIndex][hexagon.tile_id];
+                        shape = state.factionHistoryLookup[state.mapHistoryIndex][faction];
+                    }
+                } else if (hexagon.enabled || state.activeRealm) {
                     if(state.tileStates[hexagon.tile_id]){
                         if(state.selectedLayer == 0){
                             let key = state.tileStates[hexagon.tile_id].faction_id;
@@ -103,8 +108,8 @@ function snapshot() {
                 }
             }
             
-            canvasEl.style.opacity = 1;
-        }, 0 );
+            // canvasEl.style.opacity = 1;
+        // }, 0 );
     }
 }
 

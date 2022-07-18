@@ -90,12 +90,22 @@ function updateUrlState(){
         }
     }
 
-    var layerParam = thisPage.searchParams.get('layer');
-    if(!layerParam){
-        thisPage.searchParams.append('layer', state.layer);
-    } else {
-        thisPage.searchParams.set('layer', state.layer);
+    if(state.layer){
+        var layerParam = thisPage.searchParams.get('layer');
+        if(!layerParam){
+            thisPage.searchParams.append('layer', state.layer);
+        } else {
+            thisPage.searchParams.set('layer', state.layer);
+        }
     }
 
     history.pushState({}, null, thisPage);
+}
+
+function setSelectedLayer(layer){
+    const radios = document.querySelectorAll('input[name="layer"]');
+    radios.forEach((radio)=> {
+        radio.checked = false;
+    });
+    document.getElementById(layer).checked = true;
 }

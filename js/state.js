@@ -54,4 +54,12 @@ let state = {
     realms: realms,
     mapTiles: mapTiles,
     factionNames: factionNames,
+
+    // Map History
+    mapHistory: null,
+    mapHistoryIndex: 0,
+    factionHistoryLookup: {},
+    tileHistoryStates: {},
+    historyPlaying: false,
+    mapHistoryInterval: null,
 };

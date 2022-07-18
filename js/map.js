@@ -88,6 +88,9 @@ function exitRealm(){
     
     zoomFromRealm();
 
+    // TODO test this
+    //updateUrlState();
+
     let thisPage = new URL(window.location.href);
     var realmParam = thisPage.searchParams.get('realm');
     if(realmParam){
@@ -102,11 +105,88 @@ function exitRealm(){
     mapOuter.style.cursor = 'grab';
 }
 
+async function stopMapHistory(){
+    let viewMapHistory = document.getElementById('viewMapHistory');
+    viewMapHistory.innerHTML = 'Play History';
+    state.historyPlaying = false;
+    let mapTimestamp = document.getElementById('mapTimestamp');
+    mapTimestamp.style.display = 'none';
+    clearInterval(state.mapHistoryInterval);
+    state.selectedLayer = 0;
+    state.layer = 'faction';
+    state.tileStates = getTileStates(state.allTiles);
+    layerUpdate();
+    snapshot();
+    updateUrlState();
+}
+async function playMapHistory(){
+    setSelectedLayer('faction');
+    let viewMapHistory = document.getElementById('viewMapHistory');
+    viewMapHistory.innerHTML = 'Stop History';
+    getMapHistory().then((data)=>{
+        state.mapHistory = data;
+        state.tileHistoryStates = getMapHistoryTileStates();
+        layerUpdate();
+        console.log('mapHistory:', state.mapHistory.length);
+        snapshot();
+        state.mapHistoryInterval = setInterval(()=>{
+            state.mapHistoryIndex++;
+            if(state.mapHistoryIndex >= state.mapHistory.length){
+                state.mapHistoryIndex = 0;
+            }
+            let mapTimestamp = document.getElementById('mapTimestamp');
+            mapTimestamp.style.display = 'block';
+            let date = new Date(state.mapHistory[state.mapHistoryIndex].timestamp);
+            mapTimestamp.innerHTML = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+            snapshot();
+        }, 1000/2);
+        state.historyPlaying = true;
+    });
+}
+
 async function getMapHistory(){
-    let url = 'https://LiquidLandsHistory.damo1884.repl.co/history';
+    let url = 'https://liquidlands-history.glitch.me/history';
     let response = await fetch(url);
     let json = await response.json();
     return json;
+}
+
+function getMapHistoryTileStates(){
+    if(Object.keys(state.factionCounts).length == 0){
+        getFactionCounts();
+    }
+    let tilesLookup = [];
+    // mapHistory[0]
+    // [0] = tile
+    // [1] = map
+    // [2] = faction   
+    state.mapHistory.forEach((map, index)=>{
+        if(map){
+            tilesLookup[index] = {};
+            state.factionHistoryLookup[index] = {};
+            let mapState = map.mapState;
+            mapState.forEach((tile)=>{
+                let tile_id = tile[0];
+                let faction_id = tile[2];
+                tilesLookup[index][tile_id] = faction_id;
+                if(!state.factionHistoryLookup[index][faction_id]){
+                    state.factionHistoryLookup[index][faction_id] = createFaction(faction_id, false);
+                }
+            });
+        }
+    })
+    return tilesLookup;
+}
+
+function getFactionCounts(){
+    state.allTiles.forEach((tile)=>{
+        let faction_id = tile[2];
+        if(!state.factionCounts[faction_id]){
+            state.factionCounts[faction_id] = 1;
+        } else {
+            state.factionCounts[faction_id]++;
+        }
+    });
 }
 
 function getTileStates(tiles){
@@ -125,16 +205,8 @@ function getTileStates(tiles){
         })
     })
     // Calculate the counts for factions
-    if(!state.layer || state.layer == 'faction'){
-        tiles.forEach((tile)=>{
-            let faction_id = tile[2];
-            if(!state.factionCounts[faction_id]){
-                state.factionCounts[faction_id] = 1;
-            } else {
-                state.factionCounts[faction_id]++;
-            }
-        });
-    }
+    getFactionCounts();
+
     tiles.forEach((tile)=>{
         if(tile){
             let tile_id = tile[0];
@@ -150,10 +222,10 @@ function getTileStates(tiles){
 
             if(!state.layer || state.layer == 'faction'){
                 if(!state.factionLookup[faction_id]){
-                    state.factionLookup[faction_id] = createFaction(tile_id, faction_id);
+                    state.factionLookup[faction_id] = createFaction(faction_id, state.realmTilesLookup[tile_id] ? true : false);
                 } 
                 if(state.realmTilesLookup[tile_id] && !state.factionLookup[faction_id+'_realm']){
-                    state.factionLookup[faction_id+'_realm'] = createFaction(tile_id, faction_id);
+                    state.factionLookup[faction_id+'_realm'] = createFaction(tile_id, faction_id, state.realmTilesLookup[tile_id] ? true : false);
                 }
             } else if(state.layer == 'guarded'){
                 state.guardedLookup[tile_id] = createGuardedTile(tile_id, guarded);
@@ -167,10 +239,10 @@ function getTileStates(tiles){
     return tempTiles;
 }
 
-function createFaction(tile_id, faction_id){
+function createFaction(faction_id, isRealm){
     let color = getUniqueColor(faction_id);
     let rank = getSortedKeys(state.factionCounts).indexOf(''+faction_id)+1;
-    return get_tile_canvas(color, state.tile_width - 3, state.tile_height-3, '#'+rank, '', state.realmTilesLookup[tile_id] ? true : false);
+    return get_tile_canvas(color, state.tile_width - 3, state.tile_height-3, '#'+rank, '', isRealm);
 }
 
 function createProtected(tile_id, guarded, game_bricks_per_day){
@@ -191,11 +263,16 @@ function createYieldTile(tile_id, game_bricks_per_day){
 }
 
 function createGuardedTile(tile_id, guarded){
-    let dateStr = guarded.indexOf('Z') == -1 ? guarded + 'Z' : guarded;
-    let guardedSince = new Date(dateStr);
-    let now = new Date();
-    let duration = now.getTime() - guardedSince.getTime();
-    let val = duration/guarded_hours;
-    color = heatMapColorforValue(Math.min(val, 1));
+    let duration = 0;
+    if(guarded){
+        let dateStr = guarded.indexOf('Z') == -1 ? guarded + 'Z' : guarded;
+        let guardedSince = new Date(dateStr);
+        let now = new Date();
+        duration = now.getTime() - guardedSince.getTime();
+        let val = duration/guarded_hours;
+        color = heatMapColorforValue(Math.min(val, 1));
+    } else {
+        color = '#666';
+    }
     return get_tile_canvas(color, state.tile_width - 3, state.tile_height-3, (duration/HOUR).toFixed(0),'h', state.realmTilesLookup[tile_id] ? true : false);       
 }
