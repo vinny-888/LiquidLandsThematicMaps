@@ -17,7 +17,7 @@ function getUniqueColor(n) {
 
 function heatMapColorforValue(value){
     var h = (1.0 - value) * 240
-    return "hsl(" + h + ", 100%, 50%)";
+    return "hsl(" + parseInt(h) + ", 100%, 50%)";
 }
 
 function rotatePoly(poly){
@@ -108,4 +108,11 @@ function setSelectedLayer(layer){
         radio.checked = false;
     });
     document.getElementById(layer).checked = true;
+}
+
+function isSafariMobile(){
+    var ua = window.navigator.userAgent;
+    var iOS = !!ua.match(/iPad/i) || !!ua.match(/iPhone/i);
+    var webkit = !!ua.match(/WebKit/i);
+    return iOS && webkit && !ua.match(/CriOS/i);
 }

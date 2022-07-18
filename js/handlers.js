@@ -16,23 +16,17 @@ const mouseDownHandler = function (e) {
     document.addEventListener('mouseup', mouseUpHandler);
 };
 
+var mylatesttap;
+function doubleTapHandler(evt) {
+   var now = new Date().getTime();
+   var timesince = now - mylatesttap;
+   if((timesince < 600) && (timesince > 0)){
+    zoomToTile(evt);
+   }
+   mylatesttap = new Date().getTime();
+}
 const dblClickHandler = function (evt){
-    let zoomer = document.getElementById('MapZoomer');
-    let mapOuter = document.getElementById('MapOuter');
-    let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
-    let ratio = 1/scale;
-    if(state.zoom != 1){
-        state.zoom = 1;
-        zoomer.style.transform = 'scale('+state.zoom+')';
-        mapOuter.scrollLeft = ((mapOuter.scrollLeft+evt.clientX)*ratio)-(mapOuter.clientWidth/2);
-        mapOuter.scrollTop = ((mapOuter.scrollTop+evt.clientY)*ratio)-(mapOuter.clientHeight/2);
-    } else {
-        state.zoom = 0.2;
-        zoomer.style.transform = 'scale('+state.zoom+')';
-        mapOuter.scrollLeft = 0;
-        mapOuter.scrollTop = 0;
-    }
-    updateUrlState();
+    zoomToTile(evt);
 }
 
 const mouseMoveHandler = function (e) {
@@ -68,6 +62,7 @@ function addEventListeners(){
     let mapOuter = document.getElementById('MapOuter');
     mapOuter.addEventListener('mousedown', mouseDownHandler);
     mapOuter.addEventListener("dblclick", dblClickHandler);
+    // mapOuter.addEventListener("click", doubleTapHandler);
 
     const radios = document.querySelectorAll('input[name="layer"]');
     radios.forEach((radio, index)=> {
@@ -77,7 +72,7 @@ function addEventListeners(){
             radio.checked = false;
         }
         radio.addEventListener('change', function() {
-            stopMapHistory();
+            // stopMapHistory();
             state.selectedLayer = parseInt(this.value);
             if(state.selectedLayer == 0){
                 state.layer = 'faction';

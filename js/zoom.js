@@ -60,3 +60,28 @@ function loadZoom(){
     let zoomer = document.getElementById('MapZoomer');
     zoomer.style.transform = 'scale('+state.zoom+')';
 }
+
+function zoomToTile(evt){
+    let zoomer = document.getElementById('MapZoomer');
+    let mapOuter = document.getElementById('MapOuter');
+    let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
+    let ratio = 1/scale;
+    if(state.zoom != 1){
+        state.zoom = 1;
+        zoomer.style.transform = 'scale('+state.zoom+')';
+        let x = evt.clientX;
+        let y = evt.clientY;
+        if(isSafariMobile()){
+            x = evt.pageX;
+            y = evt.pageY;
+        }
+        mapOuter.scrollLeft = ((mapOuter.scrollLeft+x)*ratio)-(mapOuter.clientWidth/2);
+        mapOuter.scrollTop = ((mapOuter.scrollTop+y)*ratio)-(mapOuter.clientHeight/2);
+    } else {
+        state.zoom = 0.2;
+        zoomer.style.transform = 'scale('+state.zoom+')';
+        mapOuter.scrollLeft = 0;
+        mapOuter.scrollTop = 0;
+    }
+    updateUrlState();
+}

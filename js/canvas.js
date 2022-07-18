@@ -13,6 +13,10 @@ function snapshot() {
         // Hack to clear the canvas while redrawing so it feels more responsive
         // setTimeout(()=>{
             var ctx = offscreenCanvas.getContext('2d');
+            if(!ctx){
+                alert('out of memory');
+                // window.location.reload();
+            }
             ctx.clearRect(0, 0, canvasEl.width, canvasEl.height);
 
             let tiles = [];
@@ -41,11 +45,14 @@ function snapshot() {
                             }
                             shape = state.factionLookup[key];
                         } else if(state.selectedLayer == 1){
-                            shape = state.guardedLookup[hexagon.tile_id];
+                            let durationHours = state.guardedColorLookup[hexagon.tile_id];
+                            shape = state.guardedLookup[durationHours];
                         } else if(state.selectedLayer == 2){
-                            shape = state.yieldLookup[hexagon.tile_id];
+                            let game_bricks_per_day = state.yieldBricksLookup[hexagon.tile_id];
+                            shape = state.yieldLookup[game_bricks_per_day];
                         } else if(state.selectedLayer == 3){
-                            shape = state.guardedYieldLookup[hexagon.tile_id];
+                            let guardedYield = state.guardedYieldValLookup[hexagon.tile_id];
+                            shape = state.guardedYieldLookup[guardedYield];
                         }
                     } 
                     if(!state.activeRealm && !state.tileStates[hexagon.tile_id]){
@@ -105,6 +112,8 @@ function snapshot() {
                     imageObj.width = shape.width;
                     imageObj.height = shape.height;
                     ctx.drawImage(shape, left+1+offsetX, top-1+offsetY); 
+                } else {
+                    console.log('shape null', state.guardedColorLookup[hexagon.tile_id]);
                 }
             }
             
@@ -117,18 +126,23 @@ function get_tile_canvas(color, width, height, value, suffix, isRealm) {
     var poly = [23, 4, 25.5, 1.25, 29, 0, 71, 0, 74.5, 1.25, 77, 4, 98, 46, 98.75, 50, 98, 54, 77, 96, 74.5, 98.75, 71, 100, 29, 100, 25.5, 98.75, 23, 96, 2, 54, 1.25, 50, 2, 46];
     let realm_poly = rotatePoly(poly);
     // Use an offscreen canvas to speed everything up
-    let tileCanvas = new OffscreenCanvas(width, height);
+    let tileCanvas = null;
+    if(typeof OffscreenCanvas !== "undefined"){
+        tileCanvas = new OffscreenCanvas(width, height);
+    } else {
+        tileCanvas = document.createElement('canvas');
+    }
     let widthRatio = width/100;
     let heightRatio = height/100;
 
-    let offsetY = 5;
+    let offsetY = state.offsetY;
     let offsetX = 0;
     if(value.length < 2){
-        offsetX = 10;
+        offsetX = state.offsetX*2;
     } else if(value.length < 3){
-        offsetX = 15;
+        offsetX = state.offsetX*3;
     } else if(value.length < 5){
-        offsetX = 20;
+        offsetX = state.offsetX*5;
     }
 
     if(isRealm){
@@ -138,6 +152,10 @@ function get_tile_canvas(color, width, height, value, suffix, isRealm) {
     }
 
     let ctx = tileCanvas.getContext('2d');
+    if(!ctx){
+        alert('out of memory');
+        // window.location.reload();
+    }
     ctx.fillStyle = color;
     ctx.beginPath();
     ctx.moveTo(poly[0]*widthRatio, poly[1]*heightRatio);
@@ -147,7 +165,7 @@ function get_tile_canvas(color, width, height, value, suffix, isRealm) {
     ctx.closePath();
     ctx.fill();
 
-    ctx.font="18px Helvetica";
+    ctx.font=state.fontSize+"px Helvetica";
     ctx.shadowColor="black";
     ctx.shadowBlur=2;
     ctx.lineWidth=2;
@@ -156,4 +174,35 @@ function get_tile_canvas(color, width, height, value, suffix, isRealm) {
     ctx.fillStyle="white";
     ctx.fillText(value+suffix,width/2-offsetX,height/2+offsetY);
     return tileCanvas;
+}
+
+function freeMemory(layer){
+    if(layer != 'faction'){
+        Object.keys(state.factionLookup).forEach((key)=>{
+            state.factionLookup[key].width = 0;
+            state.factionLookup[key].height = 0;
+            delete state.factionLookup[key];
+        });
+    }
+    if(layer != 'guarded'){
+        Object.keys(state.guardedLookup).forEach((key)=>{
+            state.guardedLookup[key].width = 0;
+            state.guardedLookup[key].height = 0;
+            delete state.guardedLookup[key];
+        });
+    }
+    if(layer != 'yield'){
+        Object.keys(state.yieldLookup).forEach((key)=>{
+            state.yieldLookup[key].width = 0;
+            state.yieldLookup[key].height = 0;
+            delete state.yieldLookup[key];
+        });
+    }
+    if(layer != 'guarded_yield'){
+        Object.keys(state.guardedYieldLookup).forEach((key)=>{
+            state.guardedYieldLookup[key].width = 0;
+            state.guardedYieldLookup[key].height = 0;
+            delete state.guardedYieldLookup[key];
+        });
+    }
 }

@@ -2,6 +2,9 @@ let state = {
     // Map Dimensions
     width: 7200,
     height: 4200,
+    fontSize: 18,
+    offsetX: 5,
+    offsetY: 5,
 
     // URL Params
     realmIso: null,
@@ -41,8 +44,11 @@ let state = {
     factionLookup: {},
     factionCounts: {},
     yieldLookup: {},
+    yieldBricksLookup: {},
     guardedLookup: {},
+    guardedColorLookup: {},
     guardedYieldLookup: {},
+    guardedYieldValLookup: {},
 
     realmShapes: {},
     tileShapes: {},
