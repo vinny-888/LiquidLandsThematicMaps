@@ -152,7 +152,7 @@ async function playMapHistory(){
             let date = new Date(state.mapHistory[state.mapHistoryIndex].timestamp);
             mapTimestamp.innerHTML = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
             snapshot();
-        }, 1000/2);
+        }, 500);
         state.historyPlaying = true;
     });
 }
@@ -254,7 +254,7 @@ function getTileStates(tiles){
                     state.factionLookup[faction_id] = createFaction(faction_id, state.realmTilesLookup[tile_id] ? true : false);
                 } 
                 if(state.realmTilesLookup[tile_id] && !state.factionLookup[faction_id+'_realm']){
-                    state.factionLookup[faction_id+'_realm'] = createFaction(tile_id, faction_id, state.realmTilesLookup[tile_id] ? true : false);
+                    state.factionLookup[faction_id+'_realm'] = createFaction(faction_id, state.realmTilesLookup[tile_id] ? true : false);
                 }
             } else if(state.layer == 'guarded'){
                 state.guardedLookup[tile_id] = createGuardedTile(tile_id, guarded);
