@@ -62,4 +62,5 @@ let state = {
     tileHistoryStates: {},
     historyPlaying: false,
     mapHistoryInterval: null,
+    factionHistoryCounts: [],
 };

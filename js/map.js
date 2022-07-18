@@ -129,11 +129,25 @@ async function playMapHistory(){
         layerUpdate();
         console.log('mapHistory:', state.mapHistory.length);
         snapshot();
+        getFactionHistoryCounts();
         state.mapHistoryInterval = setInterval(()=>{
             state.mapHistoryIndex++;
             if(state.mapHistoryIndex >= state.mapHistory.length){
                 state.mapHistoryIndex = 0;
             }
+
+            let table = document.getElementById('factionRows');
+            table.innerHTML = '';
+            getSortedKeys(state.factionHistoryCounts[state.mapHistoryIndex]).forEach((faction, index)=>{
+                let count = state.factionHistoryCounts[state.mapHistoryIndex][faction];
+                table.innerHTML += `<tr>
+                    <td>${index+1}</td>
+                    <td style="max-width: 140px;">${state.factionNames[faction]}</td>
+                    <td><div class="colorSquare" style="background-color: ${getUniqueColor(faction)}"></div></td>
+                    <td>${count}</td>
+                </tr>`;
+            })
+
             let mapTimestamp = document.getElementById('mapTimestamp');
             mapTimestamp.style.display = 'block';
             let date = new Date(state.mapHistory[state.mapHistoryIndex].timestamp);
@@ -164,8 +178,7 @@ function getMapHistoryTileStates(){
         if(map){
             tilesLookup[index] = {};
             state.factionHistoryLookup[index] = {};
-            let mapState = map.mapState;
-            mapState.forEach((tile)=>{
+            map.mapState.forEach((tile)=>{
                 let tile_id = tile[0];
                 let faction_id = tile[2];
                 tilesLookup[index][tile_id] = faction_id;
@@ -176,6 +189,22 @@ function getMapHistoryTileStates(){
         }
     })
     return tilesLookup;
+}
+
+function getFactionHistoryCounts(){
+    state.mapHistory.forEach((map, index)=>{
+        if(map){
+            state.factionHistoryCounts[index] = {};
+            map.mapState.forEach((tile)=>{
+                let faction_id = tile[2];
+                if(!state.factionHistoryCounts[index][faction_id]){
+                    state.factionHistoryCounts[index][faction_id] = 1;
+                } else {
+                    state.factionHistoryCounts[index][faction_id]++;
+                }
+            });
+        }
+    });
 }
 
 function getFactionCounts(){
