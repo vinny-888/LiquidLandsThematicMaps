@@ -113,7 +113,7 @@ function snapshot() {
                     imageObj.height = shape.height;
                     ctx.drawImage(shape, left+1+offsetX, top-1+offsetY); 
                 } else {
-                    console.log('shape null', state.guardedColorLookup[hexagon.tile_id]);
+                    //console.log('shape null', state.guardedColorLookup[hexagon.tile_id]);
                 }
             }
             
