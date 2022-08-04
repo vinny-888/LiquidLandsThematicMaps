@@ -168,7 +168,7 @@ async function playMapHistory(){
 }
 
 async function getMapHistory(){
-    let url = 'https://liquidlands-history2.glitch.me/history';
+    let url = 'https://liquidlands-history.glitch.me/history';
     let response = await fetch(url);
     let json = await response.json();
     return json;
