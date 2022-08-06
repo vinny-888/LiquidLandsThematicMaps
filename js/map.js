@@ -287,6 +287,9 @@ function getTileStates(tiles){
             } else if(state.layer == 'yield'){
                 let value = ((Math.log(game_bricks_per_day) + 2)/2).toFixed(2);
                 color = heatMapColorforValue(value);
+                if(game_bricks_per_day > 3){
+                    color = '#888888';
+                }
                 state.yieldBricksLookup[tile_id] = value;
                 if(!state.yieldLookup[value]){
                     state.yieldLookup[value] = createYieldTile(tile_id, game_bricks_per_day.toFixed(2), color);
