@@ -45,7 +45,7 @@ window.addEventListener('load', async function(event) {
         state.tile_height = Math.floor(state.tile_height * ratio);
     }
 
-    state.blankTilePoly = get_tile_canvas('#2a3339', state.tile_width - 3, state.tile_height-3, '', '');
+    state.blankTilePoly = get_tile_canvas('#2a3339', state.tile_width - 3, state.tile_height-3, '', '', false);
     
     // draw the snapshot
     let canvas = document.getElementById('mapCanvas');  
@@ -238,7 +238,7 @@ function getTileStates(tiles){
 
     // Cache the Realm Tiles
     state.realms.forEach((realm)=>{
-        state.realmTileLookup[realm.tile_id] = get_tile_canvas('#BF40BF', state.tile_width - 3, state.tile_height-3, '  '+realm.country.iso, '');
+        state.realmTileLookup[realm.tile_id] = get_tile_canvas('#BF40BF', state.tile_width - 3, state.tile_height-3, '  '+realm.country.iso, '', true);
         realm.map.forEach((tile)=>{
             state.realmTilesLookup[tile.tile_id] = true;
         })
@@ -272,7 +272,7 @@ function getTileStates(tiles){
                 let durationHours = 0;
                 let color = '#666';
                 if(guarded){
-                    let dateStr = guarded.indexOf('Z') == -1 ? guarded + 'Z' : guarded;
+                    let dateStr = guarded && guarded.indexOf('Z') == -1 ? guarded + 'Z' : guarded;
                     let guardedSince = new Date(dateStr);
                     let now = new Date();
                     let duration = now.getTime() - guardedSince.getTime();
@@ -284,27 +284,40 @@ function getTileStates(tiles){
                 if(!state.guardedLookup[durationHours]){
                     state.guardedLookup[durationHours] = createGuardedTile(tile_id, durationHours, color);
                 }
+                if(state.realmTilesLookup[tile_id] && !state.guardedLookup[durationHours+'_realm']){
+                    state.guardedLookup[durationHours+'_realm'] = createGuardedTile(tile_id, durationHours, color);
+                }
             } else if(state.layer == 'yield'){
-                let value = ((Math.log(game_bricks_per_day) + 2)/2).toFixed(2);
+                let value = ((Math.log(game_bricks_per_day)+2)/2).toFixed(2);
                 color = heatMapColorforValue(value);
                 if(game_bricks_per_day > 3){
                     color = '#888888';
+                    console.log(tile_id, game_bricks_per_day);
                 }
                 state.yieldBricksLookup[tile_id] = value;
                 if(!state.yieldLookup[value]){
                     state.yieldLookup[value] = createYieldTile(tile_id, game_bricks_per_day.toFixed(2), color);
                 }
+                if(state.realmTilesLookup[tile_id] && !state.yieldLookup[value+'_realm']){
+                    state.yieldLookup[value+'_realm'] = createYieldTile(tile_id, game_bricks_per_day.toFixed(2), color);
+                }
             } else if(state.layer == 'guarded_yield'){
-                let dateStr = guarded.indexOf('Z') == -1 ? guarded + 'Z' : guarded;
+                let dateStr = guarded && guarded.indexOf('Z') == -1 ? guarded + 'Z' : guarded;
                 let guardedSince = new Date(dateStr);
                 let now = new Date();
                 let duration = now.getTime() - guardedSince.getTime();
                 let guardedHours = Math.max(duration/guarded_yield_hours, 0);
-                let guardedYield = (game_bricks_per_day*guardedHours).toFixed(2);
+                let guardedYield = (game_bricks_per_day*Math.min(guardedHours, 2)).toFixed(2);
                 color = heatMapColorforValue(Math.min(guardedYield, 1));
+                if(guardedHours > 2){
+                    color = '#ff00f0';
+                }
                 state.guardedYieldValLookup[tile_id] = guardedYield;
                 if(!state.guardedYieldLookup[guardedYield]){
                     state.guardedYieldLookup[guardedYield] = createProtected(tile_id, guardedYield, color);
+                }
+                if(state.realmTilesLookup[tile_id] && !state.guardedYieldLookup[guardedYield+'_realm']){
+                    state.guardedYieldLookup[guardedYield+'_realm'] = createProtected(tile_id, guardedYield, color);
                 }
             }
         }
