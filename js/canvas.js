@@ -47,12 +47,21 @@ function snapshot() {
                         } else if(state.selectedLayer == 1){
                             let durationHours = state.guardedColorLookup[hexagon.tile_id];
                             shape = state.guardedLookup[durationHours];
+                            if(state.activeRealm){
+                                shape = state.guardedLookup[durationHours+'_realm'];
+                            }
                         } else if(state.selectedLayer == 2){
                             let game_bricks_per_day = state.yieldBricksLookup[hexagon.tile_id];
                             shape = state.yieldLookup[game_bricks_per_day];
+                            if(state.activeRealm){
+                                shape = state.yieldLookup[game_bricks_per_day+'_realm'];
+                            }
                         } else if(state.selectedLayer == 3){
                             let guardedYield = state.guardedYieldValLookup[hexagon.tile_id];
                             shape = state.guardedYieldLookup[guardedYield];
+                            if(state.activeRealm){
+                                shape = state.guardedYieldLookup[guardedYield+'_realm'];
+                            }
                         }
                     } 
                     if(!state.activeRealm && !state.tileStates[hexagon.tile_id]){
@@ -113,7 +122,7 @@ function snapshot() {
                     imageObj.height = shape.height;
                     ctx.drawImage(shape, left+1+offsetX, top-1+offsetY); 
                 } else {
-                    //console.log('shape null', state.guardedColorLookup[hexagon.tile_id]);
+                    // console.log('shape null', state.guardedColorLookup[hexagon.tile_id]);
                 }
             }
             
