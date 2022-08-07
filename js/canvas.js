@@ -29,7 +29,7 @@ function snapshot() {
             }
 
             for (let [index, hexagon] of tiles.entries()) {
-                let shape = state.blankTilePoly;
+                let shape = null;
                 let isRealm = false;
                 if(state.historyPlaying){
                     if(hexagon.enabled && state.tileHistoryStates[state.mapHistoryIndex]){
@@ -41,26 +41,30 @@ function snapshot() {
                         if(state.selectedLayer == 0){
                             let key = state.tileStates[hexagon.tile_id].faction_id;
                             if(state.activeRealm){
-                                key = state.tileStates[hexagon.tile_id].faction_id + '_realm';
+                                isRealm = true;
+                                key = 'faction_'+state.tileStates[hexagon.tile_id].faction_id + '_realm';
                             }
                             shape = state.factionLookup[key];
                         } else if(state.selectedLayer == 1){
                             let durationHours = state.guardedColorLookup[hexagon.tile_id];
                             shape = state.guardedLookup[durationHours];
                             if(state.activeRealm){
-                                shape = state.guardedLookup[durationHours+'_realm'];
+                                isRealm = true;
+                                shape = state.guardedLookup['duration_'+durationHours+'_realm'];
                             }
                         } else if(state.selectedLayer == 2){
                             let game_bricks_per_day = state.yieldBricksLookup[hexagon.tile_id];
                             shape = state.yieldLookup[game_bricks_per_day];
                             if(state.activeRealm){
-                                shape = state.yieldLookup[game_bricks_per_day+'_realm'];
+                                isRealm = true;
+                                shape = state.yieldLookup['yield_'+game_bricks_per_day+'_realm'];
                             }
                         } else if(state.selectedLayer == 3){
                             let guardedYield = state.guardedYieldValLookup[hexagon.tile_id];
                             shape = state.guardedYieldLookup[guardedYield];
                             if(state.activeRealm){
-                                shape = state.guardedYieldLookup[guardedYield+'_realm'];
+                                isRealm = true;
+                                shape = state.guardedYieldLookup['guardedYield_'+guardedYield+'_realm'];
                             }
                         }
                     } 
@@ -71,59 +75,58 @@ function snapshot() {
                         }
                     }
                 }
-                if(shape){
-                    let offsetX = 0;
-                    let offsetY = 0;
-                    let left = (hexagon.x-1) * col_size*3,
-                        top = (hexagon.y-1) * row_size;
-
-                    if(state.activeRealm) {
-                        let realmIndex = Math.floor(index/37);
-                        let realm = state.realms[realmIndex];
-                        top = (hexagon.tile.y+5) * row_size*1.5*realmHeightRatio + (Math.floor(index/(37*3)) * 9*row_size*1.5*realmHeightRatio);
-                        if(index < (37*3)){
-                            left = ((hexagon.tile.x+20) * col_size*2) + (Math.floor(index/37)*15*col_size*2);
-                        } else {
-                            left = ((hexagon.tile.x+20) * col_size*2) + (Math.floor((index-(37*3))/37)*15*col_size*2)
-                        }
-                        state.tileShapes[hexagon.tile_id] = {
-                            left,
-                            top,
-                            isRealm: true
-                        };
-                        if(index % 37 == 0){
-                            ctx.font="24px Helvetica";
-                            ctx.shadowColor="black";
-                            ctx.shadowBlur=2;
-                            ctx.lineWidth=2;
-                            ctx.strokeText(realm.country.name,left, top - 20);
-                            ctx.shadowBlur=0;
-                            ctx.fillStyle="white";
-                            if(realm.tile_id == state.activeRealm){
-                                ctx.fillStyle="red";
-                            } 
-                            ctx.fillText(  realm.country.name,left, top - 20);
-                        }
-                    }
-                    if(isRealm){
-                        state.realmShapes[hexagon.tile_id] = {
-                            left,
-                            top
-                        };
-                    } else if (!state.tileShapes[hexagon.tile_id]){
-                        state.tileShapes[hexagon.tile_id] = {
-                            left,
-                            top,
-                            isRealm: false
-                        };
-                    }
-                    var imageObj = new Image();
-                    imageObj.width = shape.width;
-                    imageObj.height = shape.height;
-                    ctx.drawImage(shape, left+1+offsetX, top-1+offsetY); 
-                } else {
-                    // console.log('shape null', state.guardedColorLookup[hexagon.tile_id]);
+                if(!shape){
+                    shape = hexagon.tile ? state.blankTileRealmPoly : state.blankTilePoly;
                 }
+                let offsetX = 0;
+                let offsetY = 0;
+                let left = (hexagon.x-1) * col_size*3,
+                    top = (hexagon.y-1) * row_size;
+
+                if(state.activeRealm) {
+                    let realmIndex = Math.floor(index/37);
+                    let realm = state.realms[realmIndex];
+                    top = (hexagon.tile.y+5) * row_size*1.5*realmHeightRatio + (Math.floor(index/(37*3)) * 9*row_size*1.5*realmHeightRatio);
+                    if(index < (37*3)){
+                        left = ((hexagon.tile.x+20) * col_size*2) + (Math.floor(index/37)*15*col_size*2);
+                    } else {
+                        left = ((hexagon.tile.x+20) * col_size*2) + (Math.floor((index-(37*3))/37)*15*col_size*2)
+                    }
+                    state.tileShapes[hexagon.tile_id] = {
+                        left,
+                        top,
+                        isRealm: true
+                    };
+                    if(index % 37 == 0){
+                        ctx.font="24px Helvetica";
+                        ctx.shadowColor="black";
+                        ctx.shadowBlur=2;
+                        ctx.lineWidth=2;
+                        ctx.strokeText(realm.country.name,left, top - 20);
+                        ctx.shadowBlur=0;
+                        ctx.fillStyle="white";
+                        if(realm.tile_id == state.activeRealm){
+                            ctx.fillStyle="red";
+                        } 
+                        ctx.fillText(  realm.country.name,left, top - 20);
+                    }
+                }
+                if(isRealm){
+                    state.realmShapes[hexagon.tile_id] = {
+                        left,
+                        top
+                    };
+                } else if (!state.tileShapes[hexagon.tile_id]){
+                    state.tileShapes[hexagon.tile_id] = {
+                        left,
+                        top,
+                        isRealm: false
+                    };
+                }
+                var imageObj = new Image();
+                imageObj.width = shape.width;
+                imageObj.height = shape.height;
+                ctx.drawImage(shape, left+1+offsetX, top-1+offsetY); 
             }
             
             // canvasEl.style.opacity = 1;
