@@ -162,7 +162,7 @@ async function playMapHistory(){
             let date = new Date(state.mapHistory[state.mapHistoryIndex].timestamp);
             mapTimestamp.innerHTML = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
             snapshot();
-        }, 300);
+        }, 1000);
         state.historyPlaying = true;
     });
 }
