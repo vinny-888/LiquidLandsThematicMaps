@@ -46,7 +46,7 @@ window.addEventListener('load', async function(event) {
     }
 
     state.blankTilePoly = get_tile_canvas('#2a3339', state.tile_width - 3, state.tile_height-3, '', '', false);
-    
+    state.blankTileRealmPoly = get_tile_canvas('#2a3339', state.tile_width - 3, state.tile_height-3, '', '', true);
     // draw the snapshot
     let canvas = document.getElementById('mapCanvas');  
     canvas.width = state.width;
@@ -238,7 +238,7 @@ function getTileStates(tiles){
 
     // Cache the Realm Tiles
     state.realms.forEach((realm)=>{
-        state.realmTileLookup[realm.tile_id] = get_tile_canvas('#BF40BF', state.tile_width - 3, state.tile_height-3, '  '+realm.country.iso, '', true);
+        state.realmTileLookup[realm.tile_id] = get_tile_canvas('#BF40BF', state.tile_width - 3, state.tile_height-3, '  '+realm.country.iso, '', false);
         realm.map.forEach((tile)=>{
             state.realmTilesLookup[tile.tile_id] = true;
         })
@@ -266,7 +266,7 @@ function getTileStates(tiles){
                     state.factionLookup[faction_id] = createFaction(faction_id, state.realmTilesLookup[tile_id] ? true : false);
                 } 
                 if(state.realmTilesLookup[tile_id] && !state.factionLookup[faction_id+'_realm']){
-                    state.factionLookup[faction_id+'_realm'] = createFaction(faction_id, state.realmTilesLookup[tile_id] ? true : false);
+                    state.factionLookup['faction_'+faction_id+'_realm'] = createFaction(faction_id, state.realmTilesLookup[tile_id] ? true : false);
                 }
             } else if(state.layer == 'guarded'){
                 let durationHours = 0;
@@ -285,7 +285,7 @@ function getTileStates(tiles){
                     state.guardedLookup[durationHours] = createGuardedTile(tile_id, durationHours, color);
                 }
                 if(state.realmTilesLookup[tile_id] && !state.guardedLookup[durationHours+'_realm']){
-                    state.guardedLookup[durationHours+'_realm'] = createGuardedTile(tile_id, durationHours, color);
+                    state.guardedLookup['duration_'+durationHours+'_realm'] = createGuardedTile(tile_id, durationHours, color);
                 }
             } else if(state.layer == 'yield'){
                 let value = ((Math.log(game_bricks_per_day)+2)/2).toFixed(2);
@@ -299,7 +299,7 @@ function getTileStates(tiles){
                     state.yieldLookup[value] = createYieldTile(tile_id, game_bricks_per_day.toFixed(2), color);
                 }
                 if(state.realmTilesLookup[tile_id] && !state.yieldLookup[value+'_realm']){
-                    state.yieldLookup[value+'_realm'] = createYieldTile(tile_id, game_bricks_per_day.toFixed(2), color);
+                    state.yieldLookup['yield_'+value+'_realm'] = createYieldTile(tile_id, game_bricks_per_day.toFixed(2), color);
                 }
             } else if(state.layer == 'guarded_yield'){
                 let dateStr = guarded && guarded.indexOf('Z') == -1 ? guarded + 'Z' : guarded;
@@ -317,7 +317,7 @@ function getTileStates(tiles){
                     state.guardedYieldLookup[guardedYield] = createProtected(tile_id, guardedYield, color);
                 }
                 if(state.realmTilesLookup[tile_id] && !state.guardedYieldLookup[guardedYield+'_realm']){
-                    state.guardedYieldLookup[guardedYield+'_realm'] = createProtected(tile_id, guardedYield, color);
+                    state.guardedYieldLookup['guardedYield_'+guardedYield+'_realm'] = createProtected(tile_id, guardedYield, color);
                 }
             }
         }
