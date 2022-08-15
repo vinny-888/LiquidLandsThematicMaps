@@ -3,10 +3,11 @@
     <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script type="text/javascript" src="js/libs/inrt.js"></script>
+        <script src="js/libs/slider/slider.js"></script>
 
-        <script type="text/javascript" src="js/data/mapTiles.js"></script>
-        <script type="text/javascript" src="js/data/factions.js"></script>
-        <script type="text/javascript" src="js/data/realms.js"></script>
+        <script type="text/javascript" src="js/data/mapTiles.js?v=3.3"></script>
+        <script type="text/javascript" src="js/data/factions.js?v=3.3"></script>
+        <script type="text/javascript" src="js/data/realms.jsv=3.2"></script>
 
         <script type="text/javascript" src="js/constants.js?v=3.3"></script>
         <script type="text/javascript" src="js/state.js?v=3.3"></script>
@@ -17,7 +18,8 @@
         <script type="text/javascript" src="js/zoom.js?v=3.3"></script>
         <script type="text/javascript" src="js/map.js?v=3.3"></script>
 
-        <link rel="stylesheet" href="css/main.css?v=3.2">
+        <link rel="stylesheet" href="css/main.css?v=3.3">
+        <link rel="stylesheet" href="js/libs/slider/slider.css" />
     </head>
     <body>
         <div id="mapTimestamp" style="display: none;">xxx</div>
@@ -36,8 +38,13 @@ Faction Map History (<span id="viewMapHistory" class="link">Play History</span>)
             <label for="javascript">Guarded</label><br>
             <input type="radio" id="yield" name="layer" value="2">
             <label for="css">Yield</label><br>
-            <!--<input type="radio" id="guarded_yield" name="layer" value="3">
-            <label for="css" class="hovertext" data-hover="Guarded Days * Yield = Produced">Produced</label>-->
+            <input type="radio" id="guarded_yield" name="layer" value="3">
+            <label for="css" class="hovertext" data-hover="Guarded Days * Yield = Produced">Produced</label>
+            <br><br>
+            <div class="slidecontainer">
+                <input type="range" name="pieces" id="inputPieces" multiple value="6,12" min="0" max="46"/>
+                <label for="css" style="font-size: 12px;">Guarded Hours</label>
+            </div>
         </div>
         <div id="factionsDiv" style="display: none;">
             <div class="title"><span class="bold">Factions: </span>(<span style="display: inline;" id="factionToggle" class="link">hide</span>)</div>
