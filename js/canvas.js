@@ -148,14 +148,7 @@ function get_tile_canvas(color, width, height, value, suffix, isRealm) {
     let heightRatio = height/100;
 
     let offsetY = state.offsetY;
-    let offsetX = 0;
-    if(value.length < 2){
-        offsetX = state.offsetX*2;
-    } else if(value.length < 3){
-        offsetX = state.offsetX*3;
-    } else if(value.length < 5){
-        offsetX = state.offsetX*5;
-    }
+    let offsetX = state.offsetX*value.length;
 
     if(isRealm){
         poly = realm_poly;
