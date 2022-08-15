@@ -6,6 +6,9 @@ let state = {
     offsetX: 5,
     offsetY: 5,
 
+    minHours: 6,
+    maxHours: 12,
+
     // URL Params
     realmIso: null,
     selectedLayer: null,
@@ -33,8 +36,9 @@ let state = {
     tile_width: 0,
     tile_height: 0,
 
-    // Blank Tile
+    // Blank Tiles
     blankTilePoly: null,
+    blankTileRealmPoly: null,
 
     // States
     tileStates: null,
