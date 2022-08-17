@@ -35,6 +35,23 @@ const dblClickHandler = function (evt){
     zoomToTile(evt);
 }
 
+function wheelHandler(evt) {
+    evt.preventDefault();
+    if (!offscreenCanvas)
+        return;
+    var ctx = offscreenCanvas.getContext('2d');
+    if(!ctx){
+        alert('out of memory');
+    }
+    
+    if (evt.deltaY < 0) {
+        zoomIn(evt.pageX, evt.pageY);
+    }
+    else if (evt.deltaY > 0) {  // don't scroll for fancy mouse wheels which can scroll left/right etc.
+        zoomOut(evt.pageX, evt.pageY);
+    }
+}
+
 const mouseMoveHandler = function (e) {
     // How far the mouse has been moved
     const dx = e.clientX - state.pos.x;
@@ -71,6 +88,7 @@ function addEventListeners(){
     } else {
         mapOuter.addEventListener('mousedown', mouseDownHandler);
         mapOuter.addEventListener("dblclick", dblClickHandler);
+        mapOuter.addEventListener("wheel", wheelHandler);
     }
    
     // mapOuter.addEventListener("click", doubleTapHandler);
@@ -139,7 +157,7 @@ function addEventListeners(){
         }
     });
 
-    let canvas = document.getElementById('mapCanvas');  
+    let canvas = document.getElementById('mapCanvas');
     canvas.addEventListener("click", (e) => {
         var mouse = getMouse(e);
         var mx = mouse.x;

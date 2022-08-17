@@ -1,4 +1,5 @@
-function zoomIn(){
+// zoom in at position x,y. If omitted, zoom in at the center.
+function zoomIn(x=0, y=0) {
     let zoomer = document.getElementById('MapZoomer');
     let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
     let ratio = 1.2;
@@ -7,12 +8,17 @@ function zoomIn(){
     zoomer.style.transform = 'scale('+scale+')';
 
     let mapOuter = document.getElementById('MapOuter');
-    mapOuter.scrollLeft = ((mapOuter.scrollLeft+mapOuter.clientWidth/2)*ratio)-(mapOuter.clientWidth/2);
-    mapOuter.scrollTop = ((mapOuter.scrollTop+mapOuter.clientHeight/2)*ratio)-(mapOuter.clientHeight/2);
+    if (x==0)
+        x = mapOuter.clientWidth/2
+    if (y==0)
+        y = mapOuter.clientHeight/2
+    mapOuter.scrollLeft = ((mapOuter.scrollLeft + x) * ratio) - x;
+    mapOuter.scrollTop = ((mapOuter.scrollTop + y) * ratio) - y;
     updateUrlState();
 }
 
-function zoomOut(){
+// zoom out at position x,y. If omitted, zoom out from the center.
+function zoomOut(x=0, y=0){
     let zoomer = document.getElementById('MapZoomer');
     let scale = parseFloat(zoomer.style.transform.replace('scale(', '').replace(')', ''));
     let ratio = 0.8;
@@ -21,8 +27,12 @@ function zoomOut(){
     zoomer.style.transform = 'scale('+scale+')';
 
     let mapOuter = document.getElementById('MapOuter');
-    mapOuter.scrollLeft = ((mapOuter.scrollLeft+mapOuter.clientWidth/2)*ratio)-(mapOuter.clientWidth/2);
-    mapOuter.scrollTop = ((mapOuter.scrollTop+mapOuter.clientHeight/2)*ratio)-(mapOuter.clientHeight/2);
+    if (x==0)
+        x = mapOuter.clientWidth/2
+    if (y==0)
+        y = mapOuter.clientHeight/2
+    mapOuter.scrollLeft = ((mapOuter.scrollLeft + x) * ratio) - x;
+    mapOuter.scrollTop = ((mapOuter.scrollTop + y) * ratio) - y;
     updateUrlState();
 }
 
