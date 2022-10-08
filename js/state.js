@@ -6,8 +6,8 @@ let state = {
     offsetX: 5,
     offsetY: 5,
 
-    minHours: 6,
-    maxHours: 12,
+    minHours: 0,
+    maxHours: 48,
 
     // URL Params
     realmIso: null,
