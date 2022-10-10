@@ -47,8 +47,8 @@ const touchMoveHandler = function(e) {
 }
 
 const touchEndHandler = function(e) {
-  document.removeEventListener('mousemove', mouseMoveHandler);
-  document.removeEventListener('mouseup', mouseUpHandler);
+  document.removeEventListener('mousemove', touchMoveHandler);
+  document.removeEventListener('mouseup', touchEndHandler);
 
   let mapOuter = document.getElementById('MapOuter');
   mapOuter.style.cursor = 'grab';
@@ -88,7 +88,7 @@ const getMouse = function(e) {
 function addEventListeners(){
     let mapOuter = document.getElementById('MapOuter');
     if(isSafariMobile() || isMobile()){
-        mapOuter.addEventListener('ondragstart', mouseDownHandler);
+        mapOuter.addEventListener('touchstart', mouseDownHandler);
     } else {
         mapOuter.addEventListener('mousedown', mouseDownHandler);
         mapOuter.addEventListener("dblclick", dblClickHandler);
