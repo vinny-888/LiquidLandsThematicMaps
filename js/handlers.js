@@ -35,7 +35,7 @@ const dblClickHandler = function (evt){
     zoomToTile(evt);
 }
 
-const touchMoveHandler = function(e) => {    
+const touchMoveHandler = function(e) {    
   // How far the mouse has been moved
   const dx = e.touches[0].clientX - state.pos.x;
   const dy = e.touches[0].clientY - state.pos.y;
@@ -46,7 +46,7 @@ const touchMoveHandler = function(e) => {
   mapOuter.scrollLeft = state.pos.left - dx;
 }
 
-const touchEndHandler = function(e) => {
+const touchEndHandler = function(e) {
   document.removeEventListener('mousemove', mouseMoveHandler);
   document.removeEventListener('mouseup', mouseUpHandler);
 
