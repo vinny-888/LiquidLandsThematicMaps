@@ -1,21 +1,29 @@
 const mouseDownHandler = function (e) {
     let mapOuter = document.getElementById('MapOuter');
-    state.pos = {
-        // The current scroll
-        left: mapOuter.scrollLeft,
-        top: mapOuter.scrollTop,
-        // Get the current mouse position
-        x: e.clientX,
-        y: e.clientY,
-    };
 
     mapOuter.style.cursor = 'grabbing';
     mapOuter.style.userSelect = 'none';
 
     if(isSafariMobile() || isMobile()){
+        state.pos = {
+            // The current scroll
+            left: mapOuter.scrollLeft,
+            top: mapOuter.scrollTop,
+            // Get the current mouse position
+            x: e.touches[0].clientX,
+            y: e.touches[0].clientY,
+        };
         document.addEventListener('touchmove', touchMoveHandler);
         document.addEventListener('touchend', touchEndHandler);
     } else {
+        state.pos = {
+            // The current scroll
+            left: mapOuter.scrollLeft,
+            top: mapOuter.scrollTop,
+            // Get the current mouse position
+            x: e.clientX,
+            y: e.clientY,
+        };
         document.addEventListener('mousemove', mouseMoveHandler);
         document.addEventListener('mouseup', mouseUpHandler);
     }
