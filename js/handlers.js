@@ -13,8 +13,8 @@ const mouseDownHandler = function (e) {
     mapOuter.style.userSelect = 'none';
 
     if(isSafariMobile() || isMobile()){
-        document.addEventListener('ondrag', mouseMoveHandler);
-        document.addEventListener('ondragend', mouseUpHandler);
+        document.addEventListener('touchmove', touchMoveHandler);
+        document.addEventListener('touchend', touchEndHandler);
     } else {
         document.addEventListener('mousemove', mouseMoveHandler);
         document.addEventListener('mouseup', mouseUpHandler);
@@ -33,6 +33,27 @@ function doubleTapHandler(evt) {
 }
 const dblClickHandler = function (evt){
     zoomToTile(evt);
+}
+
+const touchMoveHandler = function(e) => {    
+  // How far the mouse has been moved
+  const dx = e.touches[0].clientX - state.pos.x;
+  const dy = e.touches[0].clientY - state.pos.y;
+
+    // Scroll the element
+  let mapOuter = document.getElementById('MapOuter');
+  mapOuter.scrollTop = state.pos.top - dy;
+  mapOuter.scrollLeft = state.pos.left - dx;
+}
+
+const touchEndHandler = function(e) => {
+  document.removeEventListener('mousemove', mouseMoveHandler);
+  document.removeEventListener('mouseup', mouseUpHandler);
+
+  let mapOuter = document.getElementById('MapOuter');
+  mapOuter.style.cursor = 'grab';
+  mapOuter.style.removeProperty('user-select');
+  updateUrlState();
 }
 
 const mouseMoveHandler = function (e) {
