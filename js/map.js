@@ -27,7 +27,7 @@ window.addEventListener('load', async function(event) {
         state.offsetY = 4;
 
         let mapOuter = document.getElementById('MapOuter');
-        mapOuter.addEventListener("touchstart", doubleTapHandler);
+        //mapOuter.addEventListener("touchstart", doubleTapHandler);
     }
     state.realmIso = urlParams.get('realm');
     state.layer = urlParams.get('layer');
