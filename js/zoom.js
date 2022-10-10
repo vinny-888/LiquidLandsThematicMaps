@@ -7,8 +7,15 @@ function zoomIn(){
     zoomer.style.transform = 'scale('+scale+')';
 
     let mapOuter = document.getElementById('MapOuter');
-    mapOuter.scrollLeft = ((mapOuter.scrollLeft+mapOuter.clientWidth/2)*ratio)-(mapOuter.clientWidth/2);
-    mapOuter.scrollTop = ((mapOuter.scrollTop+mapOuter.clientHeight/2)*ratio)-(mapOuter.clientHeight/2);
+    
+    let width = evt.clientWidth;
+    let height = evt.clientHeight;
+    if(isSafariMobile() || isMobile()){
+        width = evt.pageWidth;
+        height = evt.pageHeight;
+    }
+    mapOuter.scrollLeft = ((mapOuter.scrollLeft + width/2)*ratio)-(width/2);
+    mapOuter.scrollTop = ((mapOuter.scrollTop + height/2)*ratio)-(height/2);
     updateUrlState();
 }
 
@@ -21,8 +28,14 @@ function zoomOut(){
     zoomer.style.transform = 'scale('+scale+')';
 
     let mapOuter = document.getElementById('MapOuter');
-    mapOuter.scrollLeft = ((mapOuter.scrollLeft+mapOuter.clientWidth/2)*ratio)-(mapOuter.clientWidth/2);
-    mapOuter.scrollTop = ((mapOuter.scrollTop+mapOuter.clientHeight/2)*ratio)-(mapOuter.clientHeight/2);
+    let width = evt.clientWidth;
+    let height = evt.clientHeight;
+    if(isSafariMobile() || isMobile()){
+        width = evt.pageWidth;
+        height = evt.pageHeight;
+    }
+    mapOuter.scrollLeft = ((mapOuter.scrollLeft + width/2)*ratio)-(width/2);
+    mapOuter.scrollTop = ((mapOuter.scrollTop + height/2)*ratio)-(height/2);
     updateUrlState();
 }
 
