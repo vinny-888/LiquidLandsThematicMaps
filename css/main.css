@@ -8,6 +8,7 @@ body {
 }
 #MapOuter {
     cursor: grab;
+    touch-action: auto;
     overflow: auto;
     position: fixed;
     left: 0;
