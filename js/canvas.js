@@ -26,6 +26,7 @@ function snapshot() {
                 });
             } else {
                 tiles = state.mapTiles;
+                console.log('mapTiles:', tiles.length);
             }
 
             for (let [index, hexagon] of tiles.entries()) {
