@@ -12,8 +12,8 @@ let state = {
     minDefense: 0,
     maxDefense: 50,
 
-    minYield: 0,
-    maxYield: 3,
+    minYield: 0.0,
+    maxYield: 3.0,
 
     // URL Params
     realmIso: null,

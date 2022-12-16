@@ -6,8 +6,9 @@ const OmRangeSliderInputValueStyles = {
     ASP_ARRAY: 2
 }
 
-function OmRangeSlider(inputElement, inputValueStyle) {
+function OmRangeSlider(settings, inputElement) {
     const that = this;
+    let isFloat = settings.isFloat;
 
     let input = inputElement;
     let inputValueEnd = undefined;
@@ -22,12 +23,7 @@ function OmRangeSlider(inputElement, inputValueStyle) {
 
     let debug = false;
 
-    let settings = {
-        min: 0,
-        max: 47,
-        unit: '',
-        inputValueStyle: inputValueStyle
-    };
+    
 
     this.setRange = function (range) {
         rangeValue = range;
@@ -209,7 +205,7 @@ function OmRangeSlider(inputElement, inputValueStyle) {
         const startPx = parseInt(buttonStart.style.left);
         const endPx = parseInt(buttonEnd.style.left) - buttonEnd.offsetWidth;
 
-        const isFloat = parseFloat(settings.min) % 1 !== 0 || parseFloat(settings.max) % 1 !== 0;
+        // const isFloat = parseFloat(settings.min) % 1 !== 0 || parseFloat(settings.max) % 1 !== 0;
 
         const diffRange = settings.max - settings.min;
         let resultStart = (diffRange / rangePx * startPx) + parseFloat(settings.min);
@@ -218,6 +214,9 @@ function OmRangeSlider(inputElement, inputValueStyle) {
         if (!isFloat) {
             resultStart = +Math.ceil(resultStart);
             resultEnd = +Math.ceil(resultEnd);
+        } else {
+            resultStart = resultStart.toFixed(2);
+            resultEnd = resultEnd.toFixed(2);
         }
 
         refreshRangeIndicator();
@@ -418,9 +417,9 @@ OmRangeSlider.init = function (settings) {
     };
     settings = settings ? Object.assign(defaultSettings, settings) : defaultSettings;
 
-    const rangeSliders = document.querySelectorAll(settings.selector);
-    for (const rangeSlider of rangeSliders) {
-        (new OmRangeSlider(rangeSlider, settings.inputValueStyle))
+    const rangeSliders = document.querySelectorAll('input[type=range][multiple]');
+    for (let i=0; i<rangeSliders.length; i++) {
+        (new OmRangeSlider(settings[i], rangeSliders[i]))
             .setDebug(false)
             .initialize();
     }

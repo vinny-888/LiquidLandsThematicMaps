@@ -1,8 +1,10 @@
 window.addEventListener('load', async function(event) {
-    OmRangeSlider.init({ 
-      unit: ' Hrs',
-    });
     let timeout = null;
+    let settings = {
+        min: 0,
+        max: 47,
+        unit: 'Hrs'
+    };
     document.getElementById('inputPieces').addEventListener('rangechange', function(e) {
         clearTimeout(timeout);
         timeout = setTimeout(()=>{
@@ -19,6 +21,11 @@ window.addEventListener('load', async function(event) {
     }, true);
 
     let timeout2 = null;
+    let settings2 = {
+        min: 0,
+        max: 47,
+        unit: 'Def'
+    };
     document.getElementById('inputPieces2').addEventListener('rangechange', function(e) {
         clearTimeout(timeout2);
         timeout2 = setTimeout(()=>{
@@ -35,6 +42,12 @@ window.addEventListener('load', async function(event) {
     }, true);
 
     let timeout3 = null;
+    let settings3 = {
+        min: 0.0,
+        max: 3.0,
+        unit: 'Yld',
+        isFloat: true
+    };
     document.getElementById('inputPieces3').addEventListener('rangechange', function(e) {
         clearTimeout(timeout3);
         timeout3 = setTimeout(()=>{
@@ -42,13 +55,16 @@ window.addEventListener('load', async function(event) {
             state.factionLookup = {};
             state.yieldLookup = {};
             state.guardedLookup = {};
-            state.minYield = e.detail[0];
-            state.maxYield = e.detail[1];
+            state.minYield = parseFloat(e.detail[0]);
+            state.maxYield = parseFloat(e.detail[1]);
             state.tileStates = getTileStates(state.allTiles);
             layerUpdate();
             snapshot();
         },300)
     }, true);
+
+
+    OmRangeSlider.init([settings, settings2, settings3]);
 
     if(isSafariMobile() || isMobile()){
         state.width = 4096;
