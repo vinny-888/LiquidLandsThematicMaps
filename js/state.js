@@ -9,6 +9,12 @@ let state = {
     minHours: 0,
     maxHours: 48,
 
+    minDefense: 0,
+    maxDefense: 50,
+
+    minYield: 0,
+    maxYield: 3,
+
     // URL Params
     realmIso: null,
     selectedLayer: null,

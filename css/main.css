@@ -86,7 +86,7 @@ body {
 #factionsDiv {
     z-index: 1;
     position: absolute;
-    top: 250px;
+    top: 300px;
     left: 10px;
     color: #FFF;
 }
@@ -180,4 +180,8 @@ body {
     right: 0;
     margin: auto;
     z-index: 1;
+}
+
+.slidecontainer{
+    text-align: center;
 }

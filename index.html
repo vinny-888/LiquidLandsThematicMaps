@@ -5,18 +5,18 @@
         <script type="text/javascript" src="js/libs/inrt.js?v=1.0"></script>
         <script src="js/libs/slider/slider.js"></script>
 
-        <script type="text/javascript" src="js/data/mapTiles.js?v=3.5"></script>
-        <script type="text/javascript" src="js/data/factions.js?v=3.5"></script>
-        <script type="text/javascript" src="js/data/realms.js?v=3.5"></script>
+        <script type="text/javascript" src="js/data/mapTiles.js?v=3.6"></script>
+        <script type="text/javascript" src="js/data/factions.js?v=3.6"></script>
+        <script type="text/javascript" src="js/data/realms.js?v=3.6"></script>
 
-        <script type="text/javascript" src="js/constants.js?v=3.5"></script>
-        <script type="text/javascript" src="js/state.js?v=3.5"></script>
+        <script type="text/javascript" src="js/constants.js?v=3.6"></script>
+        <script type="text/javascript" src="js/state.js?v=3.6"></script>
 
         <script type="text/javascript" src="js/handlers.js?v=3.8"></script>
-        <script type="text/javascript" src="js/utils.js?v=3.5"></script>
-        <script type="text/javascript" src="js/canvas.js?v=3.5"></script>
-        <script type="text/javascript" src="js/zoom.js?v=3.5"></script>
-        <script type="text/javascript" src="js/map.js?v=3.5"></script>
+        <script type="text/javascript" src="js/utils.js?v=3.6"></script>
+        <script type="text/javascript" src="js/canvas.js?v=3.6"></script>
+        <script type="text/javascript" src="js/zoom.js?v=3.6"></script>
+        <script type="text/javascript" src="js/map.js?v=3.6"></script>
 
         <link rel="stylesheet" href="css/main.css?v=3.6">
         <link rel="stylesheet" href="js/libs/slider/slider.css" />
@@ -42,8 +42,24 @@ Faction Map History (<span id="viewMapHistory" class="link">Play History</span>)
             <label for="css" class="hovertext" data-hover="Guarded Days * Yield = Produced">Produced</label>
             <br><br>
             <div class="slidecontainer">
-                <input type="range" name="pieces" id="inputPieces" multiple value="0,48" min="0" max="46"/>
+                <div style="width: 129px;">
+                    <input type="range" name="pieces" id="inputPieces" multiple value="0,48" min="0" max="46"/>
+                </div>
                 <label for="css" style="font-size: 12px;">Guarded Hours</label>
+            </div>
+            <br>
+            <div class="slidecontainer">
+                <div style="width: 129px;">
+                    <input type="range" name="pieces" id="inputPieces2" multiple value="0,48" min="0" max="46"/>
+                </div>
+                    <label for="css" style="font-size: 12px;">Defense</label>
+            </div>
+            <br>
+            <div class="slidecontainer">
+                <div style="width: 129px;">
+                    <input type="range" name="pieces" id="inputPieces3" multiple value="0,2" min="0" max="2"/>
+                </div>
+                    <label for="css" style="font-size: 12px;">Yield</label>
             </div>
         </div>
         <div id="factionsDiv" style="display: none;">
