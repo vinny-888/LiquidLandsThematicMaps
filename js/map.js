@@ -17,7 +17,7 @@ window.addEventListener('load', async function(event) {
             state.tileStates = getTileStates(state.allTiles);
             layerUpdate();
             snapshot();
-        },300)
+        },1000)
     }, true);
 
     let timeout2 = null;
@@ -38,7 +38,7 @@ window.addEventListener('load', async function(event) {
             state.tileStates = getTileStates(state.allTiles);
             layerUpdate();
             snapshot();
-        },300)
+        },1000)
     }, true);
 
     let timeout3 = null;
@@ -60,7 +60,7 @@ window.addEventListener('load', async function(event) {
             state.tileStates = getTileStates(state.allTiles);
             layerUpdate();
             snapshot();
-        },300)
+        },1000)
     }, true);
 
 
