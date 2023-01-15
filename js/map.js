@@ -9,6 +9,7 @@ window.addEventListener('load', async function(event) {
         clearTimeout(timeout);
         timeout = setTimeout(()=>{
             state.guardedYieldLookup = {};
+            state.defenseLookup = {};
             state.factionLookup = {};
             state.yieldLookup = {};
             state.guardedLookup = {};
@@ -30,6 +31,7 @@ window.addEventListener('load', async function(event) {
         clearTimeout(timeout2);
         timeout2 = setTimeout(()=>{
             state.guardedYieldLookup = {};
+            state.defenseLookup = {};
             state.factionLookup = {};
             state.yieldLookup = {};
             state.guardedLookup = {};
@@ -52,6 +54,7 @@ window.addEventListener('load', async function(event) {
         clearTimeout(timeout3);
         timeout3 = setTimeout(()=>{
             state.guardedYieldLookup = {};
+            state.defenseLookup = {};
             state.factionLookup = {};
             state.yieldLookup = {};
             state.guardedLookup = {};
@@ -89,6 +92,8 @@ window.addEventListener('load', async function(event) {
         state.selectedLayer = 2;
     } else if(state.layer == 'guarded_yield'){
         state.selectedLayer = 3;
+    } else if(state.layer == 'defense'){
+        state.selectedLayer = 4;
     }
 
     new inrt.scroller({elementId: "MapOuter", defaultDrag: 0.94, maxScrollSpeed: 50});
@@ -398,6 +403,17 @@ function getTileStates(tiles){
                 if(state.realmTilesLookup[tile_id] && !state.guardedYieldLookup[guardedYield+'_realm']){
                     state.guardedYieldLookup['guardedYield_'+guardedYield+'_realm'] = createProtected(tile_id, guardedYield, color, duration/HOUR, defense, game_bricks_per_day);
                 }
+            } else if(state.layer == 'defense'){
+                color = heatMapColorforValue(Math.min(defense/100, 1));
+
+                let key = defense;
+                state.defenseValLookup[tile_id] = key;
+                if(!state.defenseLookup[key]){
+                    state.defenseLookup[key] = createYieldTile(tile_id, ''+defense, color, duration/HOUR, defense, 1);
+                }
+                // if(state.realmTilesLookup[tile_id] && !state.guardedYieldLookup[guardedYield+'_realm']){
+                //     state.guardedYieldLookup['guardedYield_'+guardedYield+'_realm'] = createYieldTile(tile_id, defense, color, duration/HOUR, defense, 1);
+                // }
             }
         }
     })

@@ -58,7 +58,9 @@ let state = {
     guardedLookup: {},
     guardedColorLookup: {},
     guardedYieldLookup: {},
+    defenseLookup: {},
     guardedYieldValLookup: {},
+    defenseValLookup: {},
 
     realmShapes: {},
     tileShapes: {},

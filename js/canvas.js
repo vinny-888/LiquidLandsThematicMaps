@@ -67,6 +67,13 @@ function snapshot() {
                                 isRealm = true;
                                 shape = state.guardedYieldLookup['guardedYield_'+guardedYield+'_realm'];
                             }
+                        } else if(state.selectedLayer == 4){
+                            let defense = state.defenseValLookup[hexagon.tile_id];
+                            shape = state.defenseLookup[defense];
+                            if(state.activeRealm){
+                                isRealm = true;
+                                shape = state.defenseLookup[defense];
+                            }
                         }
                     } 
                     if(!state.activeRealm && !state.tileStates[hexagon.tile_id]){
@@ -209,6 +216,13 @@ function freeMemory(layer){
             state.guardedYieldLookup[key].width = 0;
             state.guardedYieldLookup[key].height = 0;
             delete state.guardedYieldLookup[key];
+        });
+    }
+    if(layer != 'defense'){
+        Object.keys(state.defenseLookup).forEach((key)=>{
+            state.defenseLookup[key].width = 0;
+            state.defenseLookup[key].height = 0;
+            delete state.defenseLookup[key];
         });
     }
 }

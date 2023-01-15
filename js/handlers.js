@@ -122,6 +122,8 @@ function addEventListeners(){
                 state.layer = 'yield';
             } else if(state.selectedLayer == 3){
                 state.layer = 'guarded_yield';
+            } else if(state.selectedLayer == 4){
+                state.layer = 'defense';
             }
             state.tileStates = getTileStates(state.allTiles);
             layerUpdate();
