@@ -14,7 +14,7 @@ window.addEventListener('load', async function(event) {
             state.yieldLookup = {};
             state.guardedLookup = {};
             state.minHours = e.detail[0];
-            state.maxHours = e.detail[1];
+            state.maxHours = e.detail[1] == 47 ? 9999 : e.detail[1];
             state.tileStates = getTileStates(state.allTiles);
             layerUpdate();
             snapshot();
@@ -36,7 +36,7 @@ window.addEventListener('load', async function(event) {
             state.yieldLookup = {};
             state.guardedLookup = {};
             state.minDefense = e.detail[0];
-            state.maxDefense = e.detail[1];
+            state.maxDefense = e.detail[1] == 47 ? 9999 : e.detail[1];
             state.tileStates = getTileStates(state.allTiles);
             layerUpdate();
             snapshot();
@@ -59,7 +59,7 @@ window.addEventListener('load', async function(event) {
             state.yieldLookup = {};
             state.guardedLookup = {};
             state.minYield = parseFloat(e.detail[0]);
-            state.maxYield = parseFloat(e.detail[1]);
+            state.maxYield = e.detail[1] == 4.04 ? 9999 : parseFloat(e.detail[1]);
             state.tileStates = getTileStates(state.allTiles);
             layerUpdate();
             snapshot();
@@ -360,9 +360,9 @@ function getTileStates(tiles){
                     durationHours = (duration/HOUR).toFixed(0);
                     let val = duration/guarded_hours;
                     color = heatMapColorforValue(Math.min(val, 1));
-                    if(durationHours > 48){
-                        color = '#888888';
-                    }
+                    // if(durationHours > 48){
+                    //     color = '#888888';
+                    // }
                 }
                 let key = durationHours+'_'+defense+'_'+game_bricks_per_day;
                 state.guardedColorLookup[tile_id] = key;
