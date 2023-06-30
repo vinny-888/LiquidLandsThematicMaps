@@ -176,6 +176,6 @@ chart.on('expcollclick', function (sender, collapsing, id, ids) {
 
 chart.on('click', function(sender, args){
     console.log('node clicked:', args.node.id);
-    window.location.href = '/item.html?id='+args.node.id;
+    window.location.href = './item.html?id='+args.node.id;
     return false;
 });
