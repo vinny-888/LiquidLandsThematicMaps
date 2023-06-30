@@ -78,6 +78,34 @@ window.addEventListener("DOMContentLoaded", async (event) => {
     await loadJSONData();
   });
 
+  function getChildren(items, item, parent, children){
+    let newItem = buildItem(item, parent);
+    children.push(newItem);
+    
+    let children1 = children;
+    let children2 = [];
+    let children3 = [];
+    if(item.input1){
+        let child = items.find((elm)=>elm.id == item.input1.id);
+        children1 = getChildren(items, child, newItem.id, children);
+    }
+
+    if(item.input2){
+        let child = items.find((elm)=>elm.id == item.input2.id);
+        children2 = getChildren(items, child, newItem.id, children1);
+    } else {
+        children2 = children1;
+    }
+
+    if(item.input3){
+        let child = items.find((elm)=>elm.id == item.input3.id);
+        children3 = getChildren(items, child, newItem.id, children2);
+    } else {
+        children3 = children2;
+    }
+    
+    return children3;
+}
 
 /* LL Item Sample
     {
@@ -107,10 +135,21 @@ window.addEventListener("DOMContentLoaded", async (event) => {
 
 function convertJSON(json){
     let items = [];
+    let counts = [];
     json.forEach((item)=>{
         let newItem = buildItem(item, null);
         items.push(newItem);
+        let children = getChildren(json, item, null, []);
+        let difficulty = 0;
+        children.forEach((child)=>{
+            difficulty += child.difficulty;
+        })
+        counts.push(difficulty);
     })
+
+    items.sort(function(a, b) {
+        return counts[items.indexOf(b)] - counts[items.indexOf(a)];
+    });
     return items;
 }
 
@@ -127,6 +166,7 @@ function buildItem(item, parent){
         "id":id,
         "title":item.place_name,
         "name":item.title,
+        "difficulty":item.difficulty,
         "img": 'https://liquidlands.io'+item.thumb.replace('/48/', '/350/'),
         "tags":['item']
     }
