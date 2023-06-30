@@ -159,7 +159,7 @@ function buildItem(item, parent){
 
     // Need unique ids for nodes
     while(ids.indexOf(id) != -1){
-        id = id+10000;
+        id = id+100000;
     }
     ids.push(id);
     let elm = {
@@ -212,6 +212,10 @@ chart.on('expcollclick', function (sender, collapsing, id, ids) {
 
 chart.on('click', function(sender, args){
     console.log('node clicked:', args.node.id);
-    window.location.href = './item.html?id='+args.node.id;
+    let id = args.node.id;
+    while(id > 9999){
+        id -= 100000;
+    }
+    window.location.href = './item.html?id='+id;
     return false;
 });
