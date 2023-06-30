@@ -66,10 +66,6 @@ var chart = new OrgChart(document.getElementById("tree"), {
     ]
 });
 
-chart.on('exportstart', function (sender, args) {
-    args.styles = document.getElementById('myStyles').outerHTML;
-});
-
 const url = 'https://liquidlands.io/raw/items';
 async function loadJSONData() {
     const response = await fetch(url);
