@@ -424,3 +424,27 @@ chart.on('click', function(sender, args){
     }
     return false;
 });
+
+chart.on('expcollclick', function (sender, isCollpasing, id, ids) {
+
+    if (!isCollpasing) {
+      var collapseIds = [];
+      var clickedNode = chart.getNode('all');
+
+    for (var i = 0; i < clickedNode.stChildren.length; i++) {
+        let child = clickedNode.stChildren[i];
+        if(clickedNode.stChildrenIds[i] != id){
+            for (var j = 0; j < child.childrenIds.length; j++) {
+                collapseIds.push(child.childrenIds[j])
+            }
+        }
+    }
+
+      chart.collapse(id, collapseIds)
+
+    //   chart.collapse(id, collapseIds, function () {
+    //     chart.expand(id, clickedNode.childrenIds)
+    //   })
+      return false;
+    }
+  });
