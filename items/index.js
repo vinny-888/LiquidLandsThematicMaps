@@ -1,6 +1,4 @@
 let template = 'deborah';
-OrgChart.templates[template].plus = '<circle cx="15" cy="15" r="15" fill="#ffffff" stroke="#aeaeae" stroke-width="1"></circle>'
-    + '<text text-anchor="middle" style="font-size: 18px;cursor:pointer;" fill="#757575" x="15" y="22">{collapsed-children-count}</text>';
 
 OrgChart.templates[template].field_0 = `
     <text data-width="125" data-text-overflow="ellipsis" style="font-size: 13px;" fill="#ffffff" x="15" y="25" text-anchor="start">{val}</text>
@@ -17,6 +15,8 @@ OrgChart.templates[template].img_0 = `
     <rect x="3" y="115" height="30" width="144" fill="#002c41" opacity="0.75" rx="3" ry="3"></rect>
     `;
 OrgChart.templates.invisibleGroup.padding = [20, 0, 0, 0];
+OrgChart.templates.group.node = '<rect rx="50" ry="50" x="0" y="0" height="{h}" width="{w}" fill="#11181d" stroke-width="0"></rect>';
+
 
 const categories = [
     "Animals",
@@ -170,6 +170,10 @@ var chart = new OrgChart(document.getElementById("tree"), {
     showYScroll: OrgChart.scroll.visible,
     mouseScrool: OrgChart.action.yScroll,
     scaleInitial: OrgChart.match.width,
+    anim: {
+        func: OrgChart.anim.outPow,
+        duration: 0
+    },
     collapse: {
         level: 1
     },
@@ -192,37 +196,22 @@ var chart = new OrgChart(document.getElementById("tree"), {
         img_0: "img",
         field_0: "name",
         field_1: "title",
-        // field_2: "text",
     },
     tags: {
-        // "item": {
-        //     subTreeConfig: {
-        //         layout: OrgChart.mixed,
-        //         collapse: {
-        //             level: 2
-        //         }
-        //     },
-        // },
         "all": {
             template: "invisibleGroup",
             subTreeConfig: {
-                // orientation: OrgChart.orientation.bottom,
                 collapse: {
                     level: 1
                 }
             }
         },
-        "item": {
+        "category-group": {
+            template: "group",
             subTreeConfig: {
-                layout: OrgChart.treeRightOffset,
-                collapse: {
-                    level: 1
-                }
-            },
-        },
-        "department": {
-            template: "group"
-        },
+                columns: 6
+            }
+        }
     },
     clinks: [
         { from: 11, to: 18 }
@@ -234,10 +223,6 @@ async function loadJSONData() {
     const response = await fetch(url);
     const jsonData = await response.json();
     let items = convertJSON(jsonData);
-    // let categories = [{ id: "hr-team", pid: "top-management", tags: ["hr-team", "department"], name: "HR department" },
-    // { id: "it-team", pid: "top-management", tags: ["it-team", "department"], name: "IT department" },
-    // { id: "sales-team", pid: "top-management", tags: ["sales-team", "department"], name: "Sales department" }]
-
     chart.load(items);
 }
 
@@ -306,25 +291,6 @@ function convertJSON(json){
 
     let baseNodes = [{ id: "all", tags: ["all"] }];
 
-    /*
-    { id: "all", tags: ["all"] },
-    { id: "hr-team", pid: "all", tags: ["hr-team", "department"], name: "HR department" },
-    { id: 1, stpid: "all", name: "Nicky Phillips", title: "CEO", img: "https://cdn.balkan.app/shared/anim/1.gif", tags: ["seo-menu"] },
-    */
-    
-    /*
-    categories.forEach((title)=>{
-        let category = { 
-            id: title, 
-            name: title,
-            pid: "all", 
-            tags: [title, "department", "item"]
-            
-        };
-        
-        baseNodes.push(category);
-    });*/
-
     categories.forEach((category, index)=>{
         let section = { 
             id: 1000 + index, 
@@ -335,7 +301,14 @@ function convertJSON(json){
             img: './images/'+category+'.png?v=0.1', 
             tags: []
         };
+        let categoryGroup = { 
+            id: category+"_group", 
+            name: category, 
+            pid: 1000 + index, 
+            tags: ['category-group'] 
+        }
         if(!itemId || itemId == section.id){
+            baseNodes.push(categoryGroup);
             baseNodes.push(section);
         }
     });
@@ -378,11 +351,12 @@ function buildItem(item, parent){
     let elm = {
         "id":id,
         "pid": pid,
+        "stpid": mappings[item.title]+"_group",
         "title":item.place_name,
         "name":item.title,
         "difficulty":item.difficulty,
         "img": 'https://liquidlands.io'+item.thumb.replace('/48/', '/350/'),
-        "tags":[mappings[item.title]]
+        "tags":[mappings[item.title], 'department']
     }
     if(parent){
         elm.pid = parent;
@@ -444,23 +418,17 @@ chart.on('expcollclick', function (sender, isCollpasing, id, ids) {
       var collapseIds = [];
       var clickedNode = chart.getNode('all');
 
-    for (var i = 0; i < clickedNode.stChildren.length; i++) {
-        let child = clickedNode.stChildren[i];
-        if(clickedNode.stChildrenIds[i] != id){
-            for (var j = 0; j < child.childrenIds.length; j++) {
-                collapseIds.push(child.childrenIds[j])
-            }
+        for (var i = 0; i < clickedNode.stChildren.length; i++) {
+            let children = clickedNode.stContainerNodes;
+            children.forEach((child)=>{
+                if(child.id != 'all' && id != child.pid){
+                    collapseIds.push(child.id)
+                }
+            })
         }
-    }
 
-    setTimeout(()=>{
         chart.collapse(id, collapseIds)
-    }, 100);
-      
-
-    //   chart.collapse(id, collapseIds, function () {
-    //     chart.expand(id, clickedNode.childrenIds)
-    //   })
-      return false;
+        
+        return false;
     }
-  });
+});
