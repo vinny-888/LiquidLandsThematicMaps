@@ -332,7 +332,7 @@ function convertJSON(json){
             // pid: category,
             name: category, 
             title: category, 
-            img: './images/'+category+'.png', 
+            img: './images/'+category+'.png?v=0.1', 
             tags: []
         };
         if(!itemId || itemId == section.id){
@@ -453,7 +453,10 @@ chart.on('expcollclick', function (sender, isCollpasing, id, ids) {
         }
     }
 
-      chart.collapse(id, collapseIds)
+    setTimeout(()=>{
+        chart.collapse(id, collapseIds)
+    }, 100);
+      
 
     //   chart.collapse(id, collapseIds, function () {
     //     chart.expand(id, clickedNode.childrenIds)
