@@ -10,13 +10,145 @@ OrgChart.templates[template].field_1 = `
 `;
 OrgChart.templates[template].img_0 = `
     <clipPath id="{randId}">
-    <rect fill="#ffffff" stroke="#039BE5" stroke-width="1" x="5" y="5" rx="15" ry="15" width="140" height="140"></rect>
+    <rect fill="#ffffff" stroke="#002c41" stroke-width="1" x="5" y="5" rx="15" ry="15" width="140" height="140"></rect>
     </clipPath>
     <image preserveAspectRatio="xMidYMid slice" clip-path="url(#{randId})" xlink:href="{val}" x="5" y="5"  width="140" height="140"></image>
-    <rect x="3" y="5" height="30" width="144" fill="#039BE5" opacity="0.5" rx="3" ry="3"></rect>
-    <rect x="3" y="115" height="30" width="144" fill="#039BE5" opacity="0.5" rx="3" ry="3"></rect>
+    <rect x="3" y="5" height="30" width="144" fill="#002c41" opacity="0.5" rx="3" ry="3"></rect>
+    <rect x="3" y="115" height="30" width="144" fill="#002c41" opacity="0.5" rx="3" ry="3"></rect>
     `;
 OrgChart.templates.invisibleGroup.padding = [20, 0, 0, 0];
+
+const categories = [
+    "Minerals and Gasses",
+    "Metals",
+    "Materials",
+    "Food and Drink",
+    "Technology",
+    "Weapons",
+    "Energy",
+    "Clothing",
+    "Skills"
+];
+
+const urlParams = new URLSearchParams(window.location.search);
+let itemId = urlParams.get('id');
+if(itemId){
+    itemId = parseInt(itemId);
+    document.getElementById('item_name').innerHTML = categories[itemId-1000];
+} else {
+    itemId = null;
+    document.getElementById('item_name').innerHTML = '';
+}
+
+// title
+const mappings = {
+    'Coal':'Minerals and Gasses',
+    'Limestone':'Metals',
+    'Lime':'Minerals and Gasses',
+    'Iron Ore':'Metals',
+    'Pig Iron':'Metals',
+    'Steel':'Metals',
+    'Wood':'Materials',
+    'Steel Dagger':'Weapons',
+    'Wooden Club':'Weapons',
+    'Clay':'Metals',
+    'Terracule001':'Energy',
+    'Wand of Eternity':'Weapons',
+    'Bazooka':'Weapons',
+    'Planks':'Materials',
+    'Concrete':'Materials',
+    'Glass': 'Technology',
+    'Charcoal':'Materials',
+    'BBQ':'Food and Drink',
+    'Crude Oil':'Energy',
+    'Natural Gas':'Energy',
+    'Gold':'Metals',
+    'Silver':'Metals',
+    'Cotton':'Clothing',
+    'Rubber':'Materials',
+    'Sand':'Minerals and Gasses',
+    'Wheat':'Food and Drink',
+    'Plastic':'Materials',
+    'Catapult':'Weapons',
+    'Armored Tank':'Weapons',
+    'Trebuchet':'Weapons',
+    'Aluminium Ore':'Metals',
+    'Cement':'Materials',
+    'Copper':'Metals',
+    'Sword of Truth':'Weapons',
+    'Manganese':'Metals',
+    'Nickle':'Metals',
+    'Tin':'Metals',
+    'Zinc':'Metals',
+    'Platinum':'Metals',
+    'Titanium':'Metals',
+    'Cobalt':'Metals',
+    'Uranium':'Metals',
+    'Lead':'Metals',
+    'Bismuth':'Metals',
+    'Lithium':'Metals',
+    'Oxygen':'Minerals and Gasses',
+    'Mug of Coffee':'Food and Drink',
+    'Jug of Ale':'Food and Drink',
+    'Silicon':'Materials',
+    'Horses':'Technology',
+    'Oats':'Food and Drink',
+    'Corn':'Food and Drink',
+    'Barley':'Food and Drink',
+    'Salt':'Minerals and Gasses',
+    'Settler':'Skills',
+    'Barbarian':'Skills',
+    'Knight':'Skills',
+    'ICBM':'Weapons',
+    'Cows':'Food and Drink',
+    'Sheep':'Food and Drink',
+    'Chickens':'Food and Drink',
+    'Pigs':'Food and Drink',
+    'Water H2O':'Food and Drink',
+    'Rawhide Leather':'Clothing',
+    'Leather Shield':'Clothing',
+    'Armor':'Clothing',
+    'Fertilizer':'Materials',
+    'Sulfur':'Materials',
+    'Phosphate':'Materials',
+    'Saltpeter':'Minerals and Gasses',
+    'Aluminium':'Metals',
+    'Potassium Nitrate':'Materials',
+    'Wool':'Clothing',
+    'Leather Boots':'Clothing',
+    'Leather Gloves':'Clothing',
+    'Leather Greaves':'Clothing',
+    'Leather Jacket':'Clothing',
+    'Leather Helm':'Clothing',
+    'Potash':'Minerals and Gasses',
+    'Nitrogen':'Minerals and Gasses',
+    'Beef Jerky':'Food and Drink',
+    'Pig':'Food and Drink',
+    'Silicon Wafer':'Technology',
+    'Lamb Jerky':'Food and Drink',
+    'Electronics':'Technology',
+    'Cured Ham':'Food and Drink',
+    'Gun Powder':'Weapons',
+    'Rope':'Materials',
+    'Enriched Uranium':'Energy',
+    'Guidance System':'Technology',
+    'Sword':'Weapons',
+    'Eggs':'Food and Drink',
+    'Explosives':'Weapons',
+    'Tomatoes':'Food and Drink',
+    'Milk':'Food and Drink',
+    'Cheese':'Food and Drink',
+    'Omelette':'Food and Drink',
+    'Electricity':'Energy',
+    'Laser':'Technology',
+    'Horse  Cart':'Technology',
+    'Combustion Engine':'Technology',
+    'Hydrogen':'Minerals and Gasses',
+    'Grenades':'Weapons',
+    'RPG':'Weapons',
+    'Nuclear Warhead':'Weapons',
+    'Diesel': 'Energy'
+};
 
 var chart = new OrgChart(document.getElementById("tree"), {
     mouseScrool: OrgChart.action.ctrlZoom,
@@ -28,7 +160,7 @@ var chart = new OrgChart(document.getElementById("tree"), {
     mouseScrool: OrgChart.action.yScroll,
     scaleInitial: OrgChart.match.width,
     collapse: {
-        level: 2
+        level: 1
     },
     menu: {
         pdfPreview: {
@@ -52,13 +184,33 @@ var chart = new OrgChart(document.getElementById("tree"), {
         // field_2: "text",
     },
     tags: {
+        // "item": {
+        //     subTreeConfig: {
+        //         layout: OrgChart.mixed,
+        //         collapse: {
+        //             level: 2
+        //         }
+        //     },
+        // },
+        "all": {
+            template: "invisibleGroup",
+            subTreeConfig: {
+                // orientation: OrgChart.orientation.bottom,
+                collapse: {
+                    level: 1
+                }
+            }
+        },
         "item": {
             subTreeConfig: {
-                layout: OrgChart.mixed,
+                layout: OrgChart.treeRightOffset,
                 collapse: {
-                    level: 2
+                    level: 1
                 }
             },
+        },
+        "department": {
+            template: "group"
         },
     },
     clinks: [
@@ -71,6 +223,10 @@ async function loadJSONData() {
     const response = await fetch(url);
     const jsonData = await response.json();
     let items = convertJSON(jsonData);
+    // let categories = [{ id: "hr-team", pid: "top-management", tags: ["hr-team", "department"], name: "HR department" },
+    // { id: "it-team", pid: "top-management", tags: ["it-team", "department"], name: "IT department" },
+    // { id: "sales-team", pid: "top-management", tags: ["sales-team", "department"], name: "Sales department" }]
+
     chart.load(items);
 }
 
@@ -78,8 +234,8 @@ window.addEventListener("DOMContentLoaded", async (event) => {
     await loadJSONData();
   });
 
-  function getChildren(items, item, parent, children){
-    let newItem = buildItem(item, parent);
+  function getChildren(items, item, parent, children, offset){
+    let newItem = buildItem(item, parent, offset);
     children.push(newItem);
     
     let children1 = children;
@@ -136,21 +292,62 @@ window.addEventListener("DOMContentLoaded", async (event) => {
 function convertJSON(json){
     let items = [];
     let counts = [];
+
+    let baseNodes = [{ id: "all", tags: ["all"] }];
+
+    /*
+    { id: "all", tags: ["all"] },
+    { id: "hr-team", pid: "all", tags: ["hr-team", "department"], name: "HR department" },
+    { id: 1, stpid: "all", name: "Nicky Phillips", title: "CEO", img: "https://cdn.balkan.app/shared/anim/1.gif", tags: ["seo-menu"] },
+    */
+    
+    /*
+    categories.forEach((title)=>{
+        let category = { 
+            id: title, 
+            name: title,
+            pid: "all", 
+            tags: [title, "department", "item"]
+            
+        };
+        
+        baseNodes.push(category);
+    });*/
+
+    categories.forEach((category, index)=>{
+        let section = { 
+            id: 1000 + index, 
+            stpid: 'all', 
+            // pid: category,
+            name: category, 
+            title: category, 
+            img: './images/'+category+'.png', 
+            tags: []
+        };
+        if(!itemId || itemId == section.id){
+            baseNodes.push(section);
+        }
+    });
+
+
     json.forEach((item)=>{
         let newItem = buildItem(item, null);
-        items.push(newItem);
-        let children = getChildren(json, item, null, []);
-        let difficulty = 0;
-        children.forEach((child)=>{
-            difficulty += child.difficulty;
-        })
-        counts.push(difficulty);
+        if(!itemId || itemId == newItem.pid){
+            items.push(newItem);
+            let children = getChildren(json, item, null, []);
+
+            let difficulty = 0;
+            children.forEach((child)=>{
+                difficulty += child.difficulty;
+            })
+            counts.push(difficulty);
+        }
     })
 
     items.sort(function(a, b) {
         return counts[items.indexOf(b)] - counts[items.indexOf(a)];
     });
-    return items;
+    return baseNodes.concat(items);
 }
 
 let ids = [];
@@ -162,13 +359,16 @@ function buildItem(item, parent){
         id = id+100000;
     }
     ids.push(id);
+
+    let pid = 1000 + categories.indexOf(mappings[item.title]);
     let elm = {
         "id":id,
+        "pid": pid,
         "title":item.place_name,
         "name":item.title,
         "difficulty":item.difficulty,
         "img": 'https://liquidlands.io'+item.thumb.replace('/48/', '/350/'),
-        "tags":['item']
+        "tags":[mappings[item.title]]
     }
     if(parent){
         elm.pid = parent;
@@ -216,6 +416,10 @@ chart.on('click', function(sender, args){
     while(id > 9999){
         id -= 100000;
     }
-    window.location.href = './item.html?id='+id;
+    if(id >= 1000){
+        window.location.href = './index.html?id='+id;
+    }else {
+        window.location.href = './item.html?id='+id;
+    }
     return false;
 });
