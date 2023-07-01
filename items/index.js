@@ -3,18 +3,18 @@ OrgChart.templates[template].plus = '<circle cx="15" cy="15" r="15" fill="#fffff
     + '<text text-anchor="middle" style="font-size: 18px;cursor:pointer;" fill="#757575" x="15" y="22">{collapsed-children-count}</text>';
 
 OrgChart.templates[template].field_0 = `
-    <text data-width="125" data-text-overflow="ellipsis" style="font-size: 16px;" fill="#ffffff" x="15" y="25" text-anchor="start">{val}</text>
+    <text data-width="125" data-text-overflow="ellipsis" style="font-size: 13px;" fill="#ffffff" x="15" y="25" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].field_1 = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 12px;" fill="#ffffff" x="15" y="135" text-anchor="start">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 10px;" fill="#ffffff" x="15" y="135" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].img_0 = `
     <clipPath id="{randId}">
     <rect fill="#ffffff" stroke="#002c41" stroke-width="1" x="5" y="5" rx="15" ry="15" width="140" height="140"></rect>
     </clipPath>
     <image preserveAspectRatio="xMidYMid slice" clip-path="url(#{randId})" xlink:href="{val}" x="5" y="5"  width="140" height="140"></image>
-    <rect x="3" y="5" height="30" width="144" fill="#002c41" opacity="0.5" rx="3" ry="3"></rect>
-    <rect x="3" y="115" height="30" width="144" fill="#002c41" opacity="0.5" rx="3" ry="3"></rect>
+    <rect x="3" y="5" height="30" width="144" fill="#002c41" opacity="0.75" rx="3" ry="3"></rect>
+    <rect x="3" y="115" height="30" width="144" fill="#002c41" opacity="0.75" rx="3" ry="3"></rect>
     `;
 OrgChart.templates.invisibleGroup.padding = [20, 0, 0, 0];
 
