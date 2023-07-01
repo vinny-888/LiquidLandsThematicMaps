@@ -148,7 +148,17 @@ const mappings = {
     'Grenades':'Weapons',
     'RPG':'Weapons',
     'Nuclear Warhead':'Weapons',
-    'Diesel': 'Energy'
+    'Diesel': 'Energy',
+    'Drone': 'Weapons',
+    'Laser Turret': 'Weapons',
+    'Assault Rifle': 'Weapons',
+    'FPV Drone': 'Technology',
+    'Military Drone': 'Weapons',
+    'Military Engineer': 'Skills',
+    'Explosives Specialist': 'Skills',
+    'Gasoline': 'Energy',
+    'Samurai': 'Skills',
+    'Motor Car': 'Technology',
 };
 
 var chart = new OrgChart(document.getElementById("tree"), {
@@ -361,6 +371,9 @@ function buildItem(item, parent){
     }
     ids.push(id);
 
+    if(categories.indexOf(mappings[item.title]) == -1){
+        console.log(item.title);
+    }
     let pid = 1000 + categories.indexOf(mappings[item.title]);
     let elm = {
         "id":id,
