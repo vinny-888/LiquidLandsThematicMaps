@@ -169,6 +169,9 @@ const mappings = {
     'Gasoline': 'Energy',
     'Samurai': 'Skills',
     'Motor Car': 'Technology',
+    'Sniper Rifle': 'Weapons',
+    'Navy Seal': 'Skills',
+    'Attack Helicopter': 'Weapons',
 };
 
 var chart = new OrgChart(document.getElementById("tree"), {
