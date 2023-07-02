@@ -7,13 +7,16 @@ OrgChart.templates[template].field_1 = `
     <text width="105" text-overflow="ellipsis" style="font-size: 12px;" fill="#bbbbbb" x="15" y="33" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].durability = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#40c0ff" x="77" y="125" text-anchor="start">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#40c0ff" x="140" y="123" text-anchor="end">{val}</text>
+`;
+OrgChart.templates[template].difficulty = `
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#40c0ff" x="140" y="138" text-anchor="end">{val}</text>
 `;
 OrgChart.templates[template].value_1 = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="12" y="125" text-anchor="start">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="10" y="123" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].value_2 = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="12" y="140" text-anchor="start" rx="15" ry="15">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="10" y="138" text-anchor="start" rx="15" ry="15">{val}</text>
 `;
 
 OrgChart.templates[template].img_0 = `
@@ -215,6 +218,7 @@ var chart = new OrgChart(document.getElementById("tree"), {
         field_0: "name",
         field_1: "title",
         durability: "durability",
+        difficulty: "difficulty",
         value_1: "value1",
         value_2: "value2",
     },
@@ -286,9 +290,13 @@ function getNonZeroNumbers(obj) {
         key: 'durability',
         value: obj['durability']
     });
+    results.push({
+        key: 'difficulty',
+        value: obj['difficulty']
+    });
     for (let key in obj) {
         if (obj.hasOwnProperty(key) && key != 'id') {
-            if (typeof obj[key] === 'number' && obj[key] !== 0 && key != 'durability' && key != 'points') {
+            if (typeof obj[key] === 'number' && obj[key] !== 0 && key != 'durability' && key != 'points' && key != 'difficulty') {
                 results.push({
                     key: key,
                     value: obj[key]
@@ -405,9 +413,9 @@ function buildItem(item, parent){
         "title":item.place_name,
         "name":item.title,
         "durability": values[0] ? (values[0].key + ' ' + values[0].value) : '',
-        "value1": values[1] ? (values[1].value + ' ' + values[1].key) : '',
-        "value2": values[2] ? (values[2].value + ' ' + values[2].key) : '',
-        "difficulty":item.difficulty,
+        "difficulty": values[1] ? (values[1].key + ' ' + values[1].value) : '',
+        "value1": values[2] ? (values[2].value + ' ' + values[2].key) : '',
+        "value2": values[3] ? (values[3].value + ' ' + values[3].key) : '',
         "img1": 'https://liquidlands.io'+item.thumb.replace('/48/', '/350/'),
         "img2": 'https://liquidlands.io'+item.place_thumb.replace('/48/', '/350/'),
         "tags":[mappings[item.title], 'department']
