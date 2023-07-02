@@ -4,7 +4,7 @@ OrgChart.templates[template].field_0 = `
     <text data-width="125" data-text-overflow="ellipsis" style="font-size: 13px;" fill="#ffffff" x="15" y="20" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].field_1 = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 10px;" fill="#dddddd" x="15" y="35" text-anchor="start">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 12px;" fill="#bbbbbb" x="15" y="33" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].durability = `
     <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#40c0ff" x="80" y="125" text-anchor="start">{val}</text>
@@ -30,15 +30,15 @@ OrgChart.templates.group.node = '<rect rx="50" ry="50" x="0" y="0" height="{h}" 
 
 const categories = [
     "Animals",
-    "Minerals and Gasses",
-    "Metals",
-    "Materials",
+    "Clothing",
+    "Energy",
     "Food and Drink",
+    "Materials",
+    "Metals",
+    "Minerals and Gasses",
+    "Skills",
     "Technology",
     "Weapons",
-    "Energy",
-    "Clothing",
-    "Skills"
 ];
 
 const urlParams = new URLSearchParams(window.location.search);
@@ -323,29 +323,6 @@ function convertJSON(json){
 
     let baseNodes = [{ id: "all", tags: ["all"] }];
 
-    categories.forEach((category, index)=>{
-        let section = { 
-            id: 1000 + index, 
-            stpid: 'all', 
-            // pid: category,
-            name: category, 
-            title: '', 
-            img: './images/'+category+'.png?v=0.1', 
-            tags: []
-        };
-        let categoryGroup = { 
-            id: category+"_group", 
-            name: category, 
-            pid: 1000 + index, 
-            tags: ['category-group'] 
-        }
-        if(!itemId || itemId == section.id){
-            baseNodes.push(categoryGroup);
-            baseNodes.push(section);
-        }
-    });
-
-
     json.forEach((item)=>{
         let newItem = buildItem(item, null);
         if(!itemId || itemId == newItem.pid){
@@ -363,6 +340,36 @@ function convertJSON(json){
     items.sort(function(a, b) {
         return counts[items.indexOf(b)] - counts[items.indexOf(a)];
     });
+
+
+    categories.forEach((category, index)=>{
+        let children = 0;
+        items.forEach((item)=>{
+            if(item.stpid == category+'_group'){
+                children++;
+            }
+        });
+        let section = { 
+            id: 1000 + index, 
+            stpid: 'all', 
+            // pid: category,
+            name: category, 
+            title: children, 
+            img: './images/'+category+'.png?v=0.1', 
+            tags: []
+        };
+        let categoryGroup = { 
+            id: category+"_group", 
+            name: category, 
+            pid: 1000 + index, 
+            tags: ['category-group'] 
+        }
+        if(!itemId || itemId == section.id){
+            baseNodes.push(categoryGroup);
+            baseNodes.push(section);
+        }
+    });
+
     return baseNodes.concat(items);
 }
 
