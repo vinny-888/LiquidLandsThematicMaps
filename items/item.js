@@ -14,13 +14,13 @@ OrgChart.templates[template].field_1 = `
     <text width="105" text-overflow="ellipsis" style="font-size: 10px;" fill="#dddddd" x="15" y="35" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].durability = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#40c0ff" x="80" y="125" text-anchor="start">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#40c0ff" x="77" y="125" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].value_1 = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="15" y="125" text-anchor="start">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="12" y="125" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].value_2 = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="15" y="140" text-anchor="start">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="12" y="140" text-anchor="start">{val}</text>
 `;
 
 OrgChart.templates[template].img_0 = `
