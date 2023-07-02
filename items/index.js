@@ -228,7 +228,8 @@ var chart = new OrgChart(document.getElementById("tree"), {
             subTreeConfig: {
                 collapse: {
                     level: 1
-                }
+                },
+                columns: 5
             }
         },
         "category-group": {
@@ -477,20 +478,22 @@ chart.on('click', function(sender, args){
 chart.on('expcollclick', function (sender, isCollpasing, id, ids) {
 
     if (!isCollpasing) {
-      var collapseIds = [];
-      var clickedNode = chart.getNode('all');
+        setTimeout(()=>{
+            var collapseIds = [];
+            var clickedNode = chart.getNode('all');
 
-        for (var i = 0; i < clickedNode.stChildren.length; i++) {
-            let children = clickedNode.stContainerNodes;
-            children.forEach((child)=>{
-                if(child.id != 'all' && id != child.pid){
-                    collapseIds.push(child.id)
+                for (var i = 0; i < clickedNode.stChildren.length; i++) {
+                    let children = clickedNode.stContainerNodes;
+                    children.forEach((child)=>{
+                        if(child.id != 'all' && id != child.pid){
+                            collapseIds.push(child.id)
+                        }
+                    })
                 }
-            })
-        }
 
-        chart.collapse(id, collapseIds)
-        
+                chart.collapse(id, collapseIds)
+                chart.fit();
+            }, 100)
         return false;
     }
 });
