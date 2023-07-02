@@ -347,7 +347,7 @@ function convertJSON(json){
 
             let difficulty = 0;
             children.forEach((child)=>{
-                difficulty += child.difficulty;
+                difficulty += parseInt(child.difficulty.split(' ')[1]);
             })
             counts.push(difficulty);
         }
