@@ -7,16 +7,16 @@ OrgChart.templates[template].field_1 = `
     <text width="105" text-overflow="ellipsis" style="font-size: 12px;" fill="#bbbbbb" x="15" y="33" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].durability = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#40c0ff" x="140" y="123" text-anchor="end">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 10px;font-weight: bold;" fill="#55ffe8" x="140" y="123" text-anchor="end">{val}</text>
 `;
 OrgChart.templates[template].difficulty = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#40c0ff" x="140" y="138" text-anchor="end">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 10px;font-weight: bold;" fill="#55ffe8" x="140" y="138" text-anchor="end">{val}</text>
 `;
 OrgChart.templates[template].value_1 = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="10" y="123" text-anchor="start">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 10px;font-weight: bold;" fill="#e2960a" x="10" y="123" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].value_2 = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="10" y="138" text-anchor="start" rx="15" ry="15">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 10px;font-weight: bold;" fill="#e2960a" x="10" y="138" text-anchor="start" rx="15" ry="15">{val}</text>
 `;
 
 OrgChart.templates[template].img_0 = `
