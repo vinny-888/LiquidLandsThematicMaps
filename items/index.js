@@ -1,18 +1,28 @@
 let template = 'deborah';
 
 OrgChart.templates[template].field_0 = `
-    <text data-width="125" data-text-overflow="ellipsis" style="font-size: 13px;" fill="#ffffff" x="15" y="25" text-anchor="start">{val}</text>
+    <text data-width="125" data-text-overflow="ellipsis" style="font-size: 13px;" fill="#ffffff" x="15" y="20" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].field_1 = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 10px;" fill="#ffffff" x="15" y="135" text-anchor="start">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 10px;" fill="#dddddd" x="15" y="35" text-anchor="start">{val}</text>
 `;
+OrgChart.templates[template].durability = `
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#40c0ff" x="80" y="125" text-anchor="start">{val}</text>
+`;
+OrgChart.templates[template].value_1 = `
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="15" y="125" text-anchor="start">{val}</text>
+`;
+OrgChart.templates[template].value_2 = `
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="15" y="140" text-anchor="start">{val}</text>
+`;
+
 OrgChart.templates[template].img_0 = `
     <clipPath id="{randId}">
     <rect fill="#ffffff" stroke="#002c41" stroke-width="1" x="5" y="5" rx="15" ry="15" width="140" height="140"></rect>
     </clipPath>
-    <image preserveAspectRatio="xMidYMid slice" clip-path="url(#{randId})" xlink:href="{val}" x="5" y="5"  width="140" height="140"></image>
-    <rect x="3" y="5" height="30" width="144" fill="#002c41" opacity="0.75" rx="3" ry="3"></rect>
-    <rect x="3" y="115" height="30" width="144" fill="#002c41" opacity="0.75" rx="3" ry="3"></rect>
+    <image style="cursor: pointer;" preserveAspectRatio="xMidYMid slice" clip-path="url(#{randId})" xlink:href="{val}" x="5" y="5"  width="140" height="140"></image>
+    <rect class="topCorner" x="5" y="5" height="50" width="140" fill="#002c41" opacity="0.75" rx="15" ry="15"></rect>
+    <rect class="bottomCorner"x="5" y="95" height="50" width="140" fill="#002c41" opacity="0.75" rx="15" ry="15"></rect>
     `;
 OrgChart.templates.invisibleGroup.padding = [20, 0, 0, 0];
 OrgChart.templates.group.node = '<rect rx="50" ry="50" x="0" y="0" height="{h}" width="{w}" fill="#11181d" stroke-width="0"></rect>';
@@ -44,15 +54,15 @@ if(itemId){
 // title
 const mappings = {
     'Coal':'Minerals and Gasses',
-    'Limestone':'Metals',
+    'Limestone':'Minerals and Gasses',
     'Lime':'Minerals and Gasses',
-    'Iron Ore':'Metals',
+    'Iron Ore':'Minerals and Gasses',
     'Pig Iron':'Metals',
     'Steel':'Metals',
     'Wood':'Materials',
     'Steel Dagger':'Weapons',
     'Wooden Club':'Weapons',
-    'Clay':'Metals',
+    'Clay':'Minerals and Gasses',
     'Terracule001':'Energy',
     'Wand of Eternity':'Weapons',
     'Bazooka':'Weapons',
@@ -73,7 +83,7 @@ const mappings = {
     'Catapult':'Weapons',
     'Armored Tank':'Weapons',
     'Trebuchet':'Weapons',
-    'Aluminium Ore':'Metals',
+    'Aluminium Ore':'Minerals and Gasses',
     'Cement':'Materials',
     'Copper':'Metals',
     'Sword of Truth':'Weapons',
@@ -196,6 +206,9 @@ var chart = new OrgChart(document.getElementById("tree"), {
         img_0: "img",
         field_0: "name",
         field_1: "title",
+        durability: "durability",
+        value_1: "value1",
+        value_2: "value2",
     },
     tags: {
         "all": {
@@ -259,6 +272,25 @@ window.addEventListener("DOMContentLoaded", async (event) => {
     return children3;
 }
 
+function getNonZeroNumbers(obj) {
+    let results = [];
+    results.push({
+        key: 'durability',
+        value: obj['durability']
+    });
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key) && key != 'id') {
+            if (typeof obj[key] === 'number' && obj[key] !== 0 && key != 'durability' && key != 'points') {
+                results.push({
+                    key: key,
+                    value: obj[key]
+                });
+            }
+        }
+    }
+    return results;
+}
+
 /* LL Item Sample
     {
       "id":5,
@@ -297,7 +329,7 @@ function convertJSON(json){
             stpid: 'all', 
             // pid: category,
             name: category, 
-            title: category, 
+            title: '', 
             img: './images/'+category+'.png?v=0.1', 
             tags: []
         };
@@ -348,12 +380,18 @@ function buildItem(item, parent){
         console.log(item.title);
     }
     let pid = 1000 + categories.indexOf(mappings[item.title]);
+
+    let values = getNonZeroNumbers(item);
+    
     let elm = {
         "id":id,
         "pid": pid,
         "stpid": mappings[item.title]+"_group",
         "title":item.place_name,
         "name":item.title,
+        "durability": values[0] ? (values[0].key + ' ' + values[0].value) : '',
+        "value1": values[1] ? (values[1].value + ' ' + values[1].key) : '',
+        "value2": values[2] ? (values[2].value + ' ' + values[2].key) : '',
         "difficulty":item.difficulty,
         "img": 'https://liquidlands.io'+item.thumb.replace('/48/', '/350/'),
         "tags":[mappings[item.title], 'department']

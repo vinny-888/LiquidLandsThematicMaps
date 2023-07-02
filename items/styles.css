@@ -25,3 +25,10 @@ html, body {
 a{
     color: #fff;
 }
+
+.topCorner {
+    clip-path: inset(0px 0px 15px 0px);
+}
+.bottomCorner {
+    clip-path: inset(15px 0px 0px 0px);
+}

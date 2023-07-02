@@ -7,22 +7,29 @@ if(itemId){
 }
 let template = 'deborah';
 
-OrgChart.templates[template].plus = '<circle cx="15" cy="15" r="15" fill="#ffffff" stroke="#aeaeae" stroke-width="1"></circle>'
-    + '<text text-anchor="middle" style="font-size: 18px;cursor:pointer;" fill="#757575" x="15" y="22">{collapsed-children-count}</text>';
-
 OrgChart.templates[template].field_0 = `
-    <text data-width="125" data-text-overflow="ellipsis" style="font-size: 16px;" fill="#ffffff" x="15" y="25" text-anchor="start">{val}</text>
+    <text data-width="125" data-text-overflow="ellipsis" style="font-size: 13px;" fill="#ffffff" x="15" y="20" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].field_1 = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 12px;" fill="#ffffff" x="15" y="135" text-anchor="start">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 10px;" fill="#dddddd" x="15" y="35" text-anchor="start">{val}</text>
 `;
+OrgChart.templates[template].durability = `
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#40c0ff" x="80" y="125" text-anchor="start">{val}</text>
+`;
+OrgChart.templates[template].value_1 = `
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="15" y="125" text-anchor="start">{val}</text>
+`;
+OrgChart.templates[template].value_2 = `
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="15" y="140" text-anchor="start">{val}</text>
+`;
+
 OrgChart.templates[template].img_0 = `
     <clipPath id="{randId}">
-    <rect fill="#ffffff" stroke="#039BE5" stroke-width="1" x="5" y="5" rx="15" ry="15" width="140" height="140"></rect>
+    <rect fill="#ffffff" stroke="#002c41" stroke-width="1" x="5" y="5" rx="15" ry="15" width="140" height="140"></rect>
     </clipPath>
-    <image preserveAspectRatio="xMidYMid slice" clip-path="url(#{randId})" xlink:href="{val}" x="5" y="5"  width="140" height="140"></image>
-    <rect x="3" y="5" height="30" width="144" fill="#039BE5" opacity="0.5" rx="3" ry="3"></rect>
-    <rect x="3" y="115" height="30" width="144" fill="#039BE5" opacity="0.5" rx="3" ry="3"></rect>
+    <image style="cursor: pointer;" preserveAspectRatio="xMidYMid slice" clip-path="url(#{randId})" xlink:href="{val}" x="5" y="5"  width="140" height="140"></image>
+    <rect class="topCorner" x="5" y="5" height="50" width="140" fill="#002c41" opacity="0.75" rx="15" ry="15"></rect>
+    <rect class="bottomCorner"x="5" y="95" height="50" width="140" fill="#002c41" opacity="0.75" rx="15" ry="15"></rect>
     `;
 
 OrgChart.templates.invisibleGroup.padding = [20, 0, 0, 0];
@@ -55,6 +62,9 @@ var chart = new OrgChart(document.getElementById("tree"), {
         img_0: "img",
         field_0: "name",
         field_1: "title",
+        durability: "durability",
+        value_1: "value1",
+        value_2: "value2",
     },
     tags: {
         "item": {
@@ -154,10 +164,16 @@ function buildItem(item, parent){
         id = id+100000;
     }
     ids.push(id);
+
+    let values = getNonZeroNumbers(item);
+
     let elm = {
         "id":id,
         "title":item.place_name,
         "name":item.title,
+        "durability": values[0] ? (values[0].key + ' ' + values[0].value) : '',
+        "value1": values[1] ? (values[1].value + ' ' + values[1].key) : '',
+        "value2": values[2] ? (values[2].value + ' ' + values[2].key) : '',
         "img": 'https://liquidlands.io'+item.thumb.replace('/48/', '/350/'),
         "tags":['item']
     }
@@ -210,3 +226,22 @@ chart.on('click', function(sender, args){
     window.location.href = './item.html?id='+id;
     return false;
 });
+
+function getNonZeroNumbers(obj) {
+    let results = [];
+    results.push({
+        key: 'durability',
+        value: obj['durability']
+    });
+    for (let key in obj) {
+        if (obj.hasOwnProperty(key) && key != 'id') {
+            if (typeof obj[key] === 'number' && obj[key] !== 0 && key != 'durability' && key != 'points') {
+                results.push({
+                    key: key,
+                    value: obj[key]
+                });
+            }
+        }
+    }
+    return results;
+}
