@@ -13,7 +13,7 @@ OrgChart.templates[template].value_1 = `
     <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="12" y="125" text-anchor="start">{val}</text>
 `;
 OrgChart.templates[template].value_2 = `
-    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="12" y="140" text-anchor="start">{val}</text>
+    <text width="105" text-overflow="ellipsis" style="font-size: 11px;font-weight: bold;" fill="#e2960a" x="12" y="140" text-anchor="start" rx="15" ry="15">{val}</text>
 `;
 
 OrgChart.templates[template].img_0 = `
@@ -23,6 +23,10 @@ OrgChart.templates[template].img_0 = `
     <image style="cursor: pointer;" preserveAspectRatio="xMidYMid slice" clip-path="url(#{randId})" xlink:href="{val}" x="5" y="5"  width="140" height="140"></image>
     <rect class="topCorner" x="5" y="5" height="50" width="140" fill="#002c41" opacity="0.75" rx="15" ry="15"></rect>
     <rect class="bottomCorner"x="5" y="95" height="50" width="140" fill="#002c41" opacity="0.75" rx="15" ry="15"></rect>
+    `;
+OrgChart.templates[template].img_1 = `
+    <image style="cursor: pointer;" preserveAspectRatio="xMidYMid slice" clip-path="url(#shape)" xlink:href="{val}" x="110" y="5"  width="35" height="35"></image>
+    <path d="M132,3 a13,13 0 0 1 15,15" fill="#00000000" stroke="#039be5" stroke-width="4.5" />
     `;
 OrgChart.templates.invisibleGroup.padding = [20, 0, 0, 0];
 OrgChart.templates.group.node = '<rect rx="50" ry="50" x="0" y="0" height="{h}" width="{w}" fill="#11181d" stroke-width="0"></rect>';
@@ -206,7 +210,8 @@ var chart = new OrgChart(document.getElementById("tree"), {
         expandAll: true
     },
     nodeBinding: {
-        img_0: "img",
+        img_0: "img1",
+        img_1: "img2",
         field_0: "name",
         field_1: "title",
         durability: "durability",
@@ -358,7 +363,7 @@ function convertJSON(json){
             // pid: category,
             name: category, 
             title: children, 
-            img: './images/'+category+'.png?v=0.1', 
+            img1: './images/'+category+'.png?v=0.1', 
             tags: []
         };
         let categoryGroup = { 
@@ -403,7 +408,8 @@ function buildItem(item, parent){
         "value1": values[1] ? (values[1].value + ' ' + values[1].key) : '',
         "value2": values[2] ? (values[2].value + ' ' + values[2].key) : '',
         "difficulty":item.difficulty,
-        "img": 'https://liquidlands.io'+item.thumb.replace('/48/', '/350/'),
+        "img1": 'https://liquidlands.io'+item.thumb.replace('/48/', '/350/'),
+        "img2": 'https://liquidlands.io'+item.place_thumb.replace('/48/', '/350/'),
         "tags":[mappings[item.title], 'department']
     }
     if(parent){
