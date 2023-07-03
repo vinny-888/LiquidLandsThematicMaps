@@ -179,6 +179,8 @@ const mappings = {
     'Sniper Rifle': 'Weapons',
     'Navy Seal': 'Skills',
     'Attack Helicopter': 'Weapons',
+    'Sniper': 'Skills',
+    'Loitering Munitions': 'Weapons',
 };
 
 var chart = new OrgChart(document.getElementById("tree"), {
@@ -493,6 +495,7 @@ chart.on('expcollclick', function (sender, isCollpasing, id, ids) {
 
                 chart.collapse(id, collapseIds)
                 chart.fit();
+                // chart.zoom(2);
             }, 100)
         return false;
     }
