@@ -1,4 +1,13 @@
 let template = 'deborah';
+const urlParams = new URLSearchParams(window.location.search);
+let itemId = urlParams.get('id');
+if(itemId){
+    itemId = parseInt(itemId);
+    document.getElementById('item_name').innerHTML = categories[itemId-1000];
+} else {
+    itemId = null;
+    document.getElementById('item_name').innerHTML = '';
+}
 
 OrgChart.templates[template].field_0 = `
     <text data-width="125" data-text-overflow="ellipsis" style="font-size: 13px;" fill="#ffffff" x="15" y="20" text-anchor="start">{val}</text>
@@ -33,7 +42,7 @@ OrgChart.templates[template].img_1 = `
     `;
 OrgChart.templates.invisibleGroup.padding = [20, 0, 0, 0];
 OrgChart.templates.group.node = '<rect rx="50" ry="50" x="0" y="0" height="{h}" width="{w}" fill="#11181d" stroke-width="0"></rect>';
-
+// OrgChart.templates[template].field_number_children = '<circle cx="50" cy="50" r="15" fill="#F57C00"></circle><text fill="#ffffff" x="50" y="50" text-anchor="middle">{val}</text>';
 
 const categories = [
     "Animals",
@@ -47,16 +56,6 @@ const categories = [
     "Technology",
     "Weapons",
 ];
-
-const urlParams = new URLSearchParams(window.location.search);
-let itemId = urlParams.get('id');
-if(itemId){
-    itemId = parseInt(itemId);
-    document.getElementById('item_name').innerHTML = categories[itemId-1000];
-} else {
-    itemId = null;
-    document.getElementById('item_name').innerHTML = '';
-}
 
 // title
 const mappings = {
@@ -181,6 +180,14 @@ const mappings = {
     'Attack Helicopter': 'Weapons',
     'Sniper': 'Skills',
     'Loitering Munitions': 'Weapons',
+    'Tires':'Technology',
+	'Defensive Shield':'Technology',
+	'Taser Fists':'Weapons',
+	'Soul Destroyer':'Weapons',
+	'Hydrogen Fuel Cell':'Technology',
+	'Phosphor':'Minerals and Gasses',
+	'Gallium':'Metals',
+	'Ceramics':'Technology'
 };
 
 var chart = new OrgChart(document.getElementById("tree"), {

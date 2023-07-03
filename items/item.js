@@ -34,6 +34,8 @@ OrgChart.templates[template].img_0 = `
     <rect class="topCorner" x="5" y="5" height="50" width="140" fill="#002c41" opacity="0.75" rx="15" ry="15"></rect>
     <rect class="bottomCorner"x="5" y="95" height="50" width="140" fill="#002c41" opacity="0.75" rx="15" ry="15"></rect>
     `;
+// OrgChart.templates[template].field_number_children = '<circle cx="50" cy="50" r="15" fill="#F57C00"></circle><text fill="#ffffff" x="50" y="50" text-anchor="middle">{val}</text>';
+
 
 OrgChart.templates.invisibleGroup.padding = [20, 0, 0, 0];
 
@@ -69,6 +71,7 @@ var chart = new OrgChart(document.getElementById("tree"), {
         difficulty: "difficulty",
         value_1: "value1",
         value_2: "value2",
+        // field_number_children: "numberOfChldren"
     },
     tags: {
         "item": {
@@ -91,6 +94,7 @@ async function loadJSONData() {
     const jsonData = await response.json();
     let items = convertJSON(jsonData, itemId);
     chart.load(items);
+    // chart.fit();
 }
 
 window.addEventListener("DOMContentLoaded", async (event) => {
@@ -254,3 +258,25 @@ function getNonZeroNumbers(obj) {
     }
     return results;
 }
+
+var iterate = function (c, n, args){
+    args.count += n.childrenIds.length + n.stChildrenIds.length;
+    for(var i = 0; i < n.childrenIds.length; i++){    
+        var node = c.getNode(n.childrenIds[i]);
+        iterate(c, node, args);  
+    }
+    for(var i = 0; i < n.stChildrenIds.length; i++){    
+        var node = c.getNode(n.stChildrenIds[i]);
+        iterate(c, node, args);  
+    }
+}
+
+// chart.on('field', function(sender, args){
+//     if (args.name == "numberOfChldren"){
+//         var arg = {
+//                 count: 0
+//         };
+//         iterate(sender, args.node, arg);
+//         args.data['numberOfChldren'] = arg.count + 1;
+//     }
+//  });
