@@ -183,7 +183,7 @@ function buildItem(item, parent){
         "difficulty": values[1] ? (values[1].key + ' ' + values[1].value) : '',
         "value1": values[2] ? (values[2].value + ' ' + values[2].key) : '',
         "value2": values[3] ? (values[3].value + ' ' + values[3].key) : '',
-        "img": 'https://liquidlands.io'+item.thumb.replace('/48/', '/350/'),
+        "img": item.thumb.replace('/48/', '/350/'),
         "tags":['item']
     }
     if(parent){
