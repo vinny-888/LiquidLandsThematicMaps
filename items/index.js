@@ -181,13 +181,15 @@ const mappings = {
     'Sniper': 'Skills',
     'Loitering Munitions': 'Weapons',
     'Tires':'Technology',
-	'Defensive Shield':'Technology',
-	'Taser Fists':'Weapons',
-	'Soul Destroyer':'Weapons',
-	'Hydrogen Fuel Cell':'Technology',
-	'Phosphor':'Minerals and Gasses',
-	'Gallium':'Metals',
-	'Ceramics':'Technology'
+    'Defensive Shield':'Technology',
+    'Taser Fists':'Weapons',
+    'Soul Destroyer':'Weapons',
+    'Hydrogen Fuel Cell':'Technology',
+    'Phosphor':'Minerals and Gasses',
+    'Gallium':'Metals',
+    'Ceramics':'Technology',
+    'Motorbike':'Technology',
+    'Personnel Carrier':'Technology'
 };
 
 var chart = new OrgChart(document.getElementById("tree"), {
@@ -426,8 +428,8 @@ function buildItem(item, parent){
         "difficulty": values[1] ? (values[1].key + ' ' + values[1].value) : '',
         "value1": values[2] ? (values[2].value + ' ' + values[2].key) : '',
         "value2": values[3] ? (values[3].value + ' ' + values[3].key) : '',
-        "img1": 'https://liquidlands.io'+item.thumb.replace('/48/', '/350/'),
-        "img2": 'https://liquidlands.io'+item.place_thumb.replace('/48/', '/350/'),
+        "img1": item.thumb.replace('/48/', '/350/'),
+        "img2": item.place_thumb.replace('/48/', '/350/'),
         "tags":[mappings[item.title], 'department']
     }
     if(parent){
