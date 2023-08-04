@@ -189,7 +189,8 @@ const mappings = {
     'Gallium':'Metals',
     'Ceramics':'Technology',
     'Motorbike':'Technology',
-    'Personnel Carrier':'Technology'
+    'Personnel Carrier':'Weapons',
+    'Hydrogen Powered Lazer Drone':'Weapons'
 };
 
 var chart = new OrgChart(document.getElementById("tree"), {
