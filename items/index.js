@@ -262,6 +262,34 @@ async function loadJSONData() {
     const jsonData = await response.json();
     let items = convertJSON(jsonData);
     chart.load(items);
+    buildInfoTable(items);
+}
+
+function toggle(){
+    let table = document.getElementById('info');
+    let toggle = document.getElementById('toggle');
+    if(table.style.display == ''){
+        table.style.display = 'none';
+        toggle.innerHTML = 'Show Info';
+    } else {
+        table.style.display = '';
+        toggle.innerHTML = 'Hide Info';
+    }
+    return false;
+}
+
+function buildInfoTable(items){
+    let html = '<table>';
+    html+= '<thead><tr><td>Item</td><td>Difficulty</td><td>Durability</td><td>Stats</td></tr></thead>';
+    html+= '<tbody>';
+    items.slice(21).forEach((item)=>{
+        let value = item.value1 + '<br>' + item.value2;
+        html+= '<tr><td>'+item.name+'</td><td>'+item.difficulty.replace('difficulty ', '')+'</td><td>'+item.durability.replace('durability ', '')+'</td><td>'+value +'</td></tr>';
+    })
+    html+= '</tbody>';
+    html += '</table>';
+
+    document.getElementById('info').innerHTML = html;
 }
 
 window.addEventListener("DOMContentLoaded", async (event) => {

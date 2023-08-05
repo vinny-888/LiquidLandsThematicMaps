@@ -44,7 +44,15 @@ a{
     font-size: 16px;
     line-height: 1em;
     left: 30px;
-    top: 50px;
+    top: 60px;
+    z-index: 1;
+    max-height: calc(100% - 100px);
+    overflow: scroll;
+}
+
+#toggle{
+    margin-left: 30px;
+    margin-top: 30px;
 }
 
 #info thead,
