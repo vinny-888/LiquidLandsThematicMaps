@@ -94,7 +94,37 @@ async function loadJSONData() {
     const jsonData = await response.json();
     let items = convertJSON(jsonData, itemId);
     chart.load(items);
+
+    buildInfoTable(items);
     // chart.fit();
+}
+
+function buildInfoTable(items){
+    let stats = {};
+    let total = 0;
+    items.slice(1).forEach((item)=>{
+        if(!stats[item.name]){
+            stats[item.name] = 0;
+        }
+        stats[item.name]++;
+        total++;
+    })
+
+    let html = '<table>';
+    html+= '<thead><tr><td>'+items[0].name+'</td><td>'+total+'</td></tr></thead>';
+    html+= '<tbody>';
+    let keys = Object.keys(stats)
+    keys.sort(function(a, b) {
+        return stats[a] - stats[b];
+    });
+    keys.forEach((key)=>{
+        let item = stats[key];
+        html+= '<tr><td>'+key+'</td><td>'+item+'</td></tr>';
+    })
+    html+= '</tbody>';
+    html += '</table>';
+
+    document.getElementById('info').innerHTML = html;
 }
 
 window.addEventListener("DOMContentLoaded", async (event) => {
