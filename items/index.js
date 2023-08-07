@@ -190,7 +190,15 @@ const mappings = {
     'Ceramics':'Technology',
     'Motorbike':'Technology',
     'Personnel Carrier':'Weapons',
-    'Hydrogen Powered Lazer Drone':'Weapons'
+    'Hydrogen Powered Lazer Drone':'Weapons',
+    'Supply Shuttle':'Weapons',
+    'Orbital Probe':'Weapons',
+    'Sword of Fury':'Weapons',
+    'Shield of Resilience':'Clothing',
+    'Horn of the Conqueror':'Clothing',
+    'Crown of Prosperity':'Clothing',
+    'Cloak of Invincibility':'Clothing',
+    'Boots of Teleportation':'Clothing'
 };
 
 var chart = new OrgChart(document.getElementById("tree"), {
