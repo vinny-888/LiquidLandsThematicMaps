@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Org Chart Tree with Infinite Nesting and Expand/Collapse</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <style>
+        .node circle {
+            fill: #fff;
+            stroke: steelblue;
+            stroke-width: 3px;
+        }
+
+        .node text {
+            font: 12px sans-serif;
+        }
+
+        .link {
+            fill: none;
+            stroke: #ccc;
+            stroke-width: 2px;
+        }
+    </style>
+</head>
+
+<body>
+
+<script>
+    let i = 0;
+    let tree = d3.tree().size([580, 700]);
+    let root;
+    let g;
+    function loadData(){
+        // Fetch the data from the URL
+        fetch("https://liquidlands.io/raw/items")
+            .then(response => response.json())
+            .then(data => {
+                // Assuming the root node is the first item in the array
+                const rootNode = data[2];
+                drawTree(rootNode);
+            })
+            .catch(error => console.error("Error fetching data:", error));
+    }
+
+    function drawTree(rootNode) {
+        const svg = d3.select("body").append("svg")
+            .attr("width", 800)
+            .attr("height", 600)
+            .style("border", "1px solid black");
+
+        g = svg.append("g").attr("transform", "translate(100,0)");
+
+        root = d3.hierarchy(rootNode, function (d) {
+            return [d.input1, d.input2, d.input3].filter(i => i);
+        });
+
+        root.x0 = 290;
+        root.y0 = 0;
+
+        update(root);
+
+        //... [rest of the code from the previous example]
+    }
+
+    function update(source) {
+        const treeData = tree(root);
+
+        const nodes = treeData.descendants(),
+            links = treeData.descendants().slice(1);
+
+        nodes.forEach(function (d) {
+            d.y = d.depth * 180;
+        });
+
+        const node = g.selectAll('g.node')
+            .data(nodes, function (d) {
+                return d.id || (d.id = ++i);
+            });
+
+        const nodeEnter = node.enter().append('g')
+            .attr('class', 'node')
+            .attr("transform", function (d) {
+                return "translate(" + source.y0 + "," + source.x0 + ")";
+            })
+            .on('click', click);
+
+        nodeEnter.append('circle')
+            .attr('class', 'node')
+            .attr('r', 1e-6)
+            .style("fill", function (d) {
+                return d._children ? "lightsteelblue" : "#fff";
+            });
+
+        nodeEnter.append('text')
+            .attr("dy", ".35em")
+            .attr("x", function (d) {
+                return d.children || d._children ? -13 : 13;
+            })
+            .attr("text-anchor", function (d) {
+                return d.children || d._children ? "end" : "start";
+            })
+            .text(function (d) {
+                return d.data.title;
+            });
+
+        const nodeUpdate = nodeEnter.merge(node);
+
+        nodeUpdate.transition()
+            .duration(200)
+            .attr("transform", function (d) {
+                return "translate(" + d.y + "," + d.x + ")";
+            });
+
+        nodeUpdate.select('circle.node')
+            .attr('r', 10)
+            .style("fill", function (d) {
+                return d._children ? "lightsteelblue" : "#fff";
+            });
+
+        const nodeExit = node.exit().transition()
+            .duration(200)
+            .attr("transform", function (d) {
+                return "translate(" + source.y + "," + source.x + ")";
+            })
+            .remove();
+
+        nodeExit.select('circle')
+            .attr('r', 1e-6);
+
+        nodeExit.select('text')
+            .style('fill-opacity', 1e-6);
+
+        const link = g.selectAll('path.link')
+            .data(links, function (d) {
+                return d.id;
+            });
+
+        const linkEnter = link.enter().insert('path', "g")
+            .attr("class", "link")
+            .attr('d', function (d) {
+                const o = {x: source.x0, y: source.y0};
+                return diagonal(o, o);
+            });
+
+        const linkUpdate = linkEnter.merge(link);
+
+        linkUpdate.transition()
+            .duration(200)
+            .attr('d', function (d) {
+                return diagonal(d, d.parent)
+            });
+
+        link.exit().transition()
+            .duration(200)
+            .attr('d', function (d) {
+                const o = {x: source.x, y: source.y};
+                return diagonal(o, o);
+            })
+            .remove();
+
+        nodes.forEach(function (d) {
+            d.x0 = d.x;
+            d.y0 = d.y;
+        });
+
+        function diagonal(s, d) {
+            const path = `M ${s.y} ${s.x}
+            C ${(s.y + d.y) / 2} ${s.x},
+              ${(s.y + d.y) / 2} ${d.x},
+              ${d.y} ${d.x}`;
+
+            return path;
+        }
+    }
+
+    function click(d) {
+        if (d.children) {
+            d._children = d.children;
+            d.children = null;
+        } else {
+            d.children = d._children;
+            d._children = null;
+        }
+        update(d);
+    }
+
+    loadData();
+
+</script>
+
+</body>
+
+</html>

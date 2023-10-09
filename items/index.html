@@ -3,18 +3,34 @@
 <title>Liquidlands - Crafting Items</title>
 <head>
     <link rel="stylesheet" type="text/css" href="./styles.css">
-    <script src="./OrgChart.js"></script>
 </head>
 <body>
-    <div class="header">
-        <span class="items"><a href="./index.html">Home</a></span> / <span class="item" id="item_name"></span>
-    </div>
+    <div class="container">
+        <div class="row">
+            <div class="column" >
+                <div>
+                    <label style="margin-left: 0px;">Min Att:</label> <input id="att" type="number" value="" onchange="filter()" onkeyup="filter()">
+                    <label>Min Def:</label> <input id="def" type="number" value="" onchange="filter()" onkeyup="filter()">
+                    <label>Min Inv:</label> <input id="inv" type="number" value="" onchange="filter()" onkeyup="filter()">
+                    <label>Min Tax:</label> <input id="tax" type="number" value="" onchange="filter()" onkeyup="filter()">
+                    <label>Min Raid:</label> <input id="raid" type="number" value="" onchange="filter()" onkeyup="filter()">
+                    <label>Min Leave:</label> <input id="leave" type="number" value="" onchange="filter()" onkeyup="filter()">
+                </div>
+                <div id="info">
 
-    <a href="#" id="toggle" onclick="toggle()">Hide Info</a>
-    <div id="info">
+                </div>
+            </div>
+            <div class="column" >
+                <div>
+                    Quantity: <input id="quantity" type="number" value="1" onchange="updateQuantity()">
+                    Requires: <span id="total_bricks"></span>
+                </div>
+                <div id="tree">
 
+                </div>
+            </div>
+        </div>
     </div>
-    <div id="tree"></div>
     <script src="./index.js?v=1.2"></script>
 </body>
 

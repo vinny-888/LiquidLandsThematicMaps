@@ -10,11 +10,6 @@ html, body {
     color: #fff;
 }
 
-#tree {
-    width: 100%;
-    height: calc(100% - 40px);
-}
-
 .header{
     padding-left: 30px;
     padding-top: 20px;
@@ -33,21 +28,13 @@ a{
     clip-path: inset(15px 0px 0px 0px);
 }
 
-.node rect {
-}
-
-.node.department rect {
-}
-
 #info{
-    position: absolute;
-    font-size: 16px;
-    line-height: 1em;
-    left: 30px;
-    top: 60px;
-    z-index: 1;
-    max-height: calc(100% - 100px);
-    overflow: scroll;
+  overflow: scroll;
+  max-height: calc(100% - 10px);
+}
+#tree {
+  overflow: scroll;
+  max-height: calc(100% - 10px);
 }
 
 #toggle{
@@ -55,17 +42,21 @@ a{
     margin-top: 30px;
 }
 
-#info thead,
+table {
+  width: 100%;
+}
+
+thead,
 tfoot {
   background-color: #1a7aaa;
   color: #fff;
 }
 
-#info tbody {
+tbody {
   background-color: #30404c;
 }
 
-#info table {
+table {
   border-collapse: collapse;
   border: 1px solid rgb(200, 200, 200);
   letter-spacing: 1px;
@@ -73,8 +64,86 @@ tfoot {
   font-size: 0.8rem;
 }
 
-#info td,
+td,
 th {
   border: 1px solid rgb(190, 190, 190);
   padding: 5px 10px;
+}
+thead{
+  border: 1px solid rgb(190, 190, 190);
+}
+th {
+  position: sticky;
+  top: 0;
+  background-color: #1a7aaa;
+}
+th:after,
+th:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+}
+th:before {
+  top: -1px;
+  border: 1px solid rgb(190, 190, 190);
+}
+
+th:after {
+  bottom: -1px;
+  border: 1px solid rgb(190, 190, 190);
+}
+tr {
+  cursor: pointer;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Create two equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 50%;
+  padding: 10px;
+  height: calc(100% - 10px); /* Should be removed. Only for demonstration */
+  max-height: 100%;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.row{
+  max-height: 100%;
+  width: 100%;
+}
+
+.container{
+  display: flex;
+  max-height: 100%;
+}
+
+.selected{
+  background-color: #2a61c3;
+}
+
+label{
+  margin-left: 20px;
+  display: inline-block;
+}
+
+input[type="number" i] {
+  width: 50px;
+}
+
+#total_bricks{
+  color: #0f0;
+}
+
+.composite{
+  background-color: #112126;
 }
