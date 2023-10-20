@@ -10,8 +10,9 @@ async function loadJSONData() {
     const response = await fetch(url);
     const jsonData = await response.json();
     items = convertJSON(jsonData);
-    filteredItems = items;
-    buildInfoTable(items);
+    filteredItems = [];//.concat(items);
+    // buildInfoTable(items);
+    filter();
 }
 
 function toggle(){
@@ -27,11 +28,11 @@ function toggle(){
     return false;
 }
 
-function buildInfoTable(items){
+function buildInfoTable(arr){
     let html = '<table>';
     html+= '<thead><tr><th>Item</th><th>Difficulty</th><th>Durability</th><th>Stats</th></tr></thead>';
     html+= '<tbody>';
-    items.forEach((item, index)=>{
+    arr.forEach((item, index)=>{
         let value = item.value1 + '<br>' + item.value2;
         html+= '<tr id="item_'+index+'" onclick="loadTree(\''+item.title+'\', '+index+')">';
         html += '<td>'+item.title+'</td>';
@@ -94,7 +95,7 @@ function buildRows(arr){
     let total_bricks = 0;
     getSortedKeys(arr).forEach((key, index)=>{
         let count = arr[key];
-        let item = items.find((item)=>item.title == key);
+        let item = filteredItems.find((item)=>item.title == key);
         let composite = item.children && item.children.length > 0 ? true : false;
 
         let citiesHTML = getCities(item.title);
@@ -132,29 +133,29 @@ window.addEventListener("DOMContentLoaded", async (event) => {
     await loadJSONData();
   });
 
-  function getChildren(items, item){
+  function getChildren(arr, item){
     
     let children1 = [];
     let children2 = [];
     let children3 = [];
     if(item.input1){
-        let child = items.find((elm)=>elm.id == item.input1.id);
+        let child = arr.find((elm)=>elm.id == item.input1.id);
         let childItem = buildItem(child, null);
-        children1 = getChildren(items, childItem);
+        children1 = getChildren(arr, childItem);
         children1.push(childItem);
     }
 
     if(item.input2){
-        let child = items.find((elm)=>elm.id == item.input2.id);
+        let child = arr.find((elm)=>elm.id == item.input2.id);
         let childItem = buildItem(child, null);
-        children2 = getChildren(items, childItem);
+        children2 = getChildren(arr, childItem);
         children2.push(childItem);
     }
 
     if(item.input3){
-        let child = items.find((elm)=>elm.id == item.input3.id);
+        let child = arr.find((elm)=>elm.id == item.input3.id);
         let childItem = buildItem(child, null);
-        children3 = getChildren(items, childItem);
+        children3 = getChildren(arr, childItem);
         children3.push(childItem);
     }
     let allChildren = children1.concat(children2).concat(children3)
@@ -188,7 +189,7 @@ function getNonZeroNumbers(obj) {
 }
 
 function convertJSON(json){
-    let items = [];
+    let arr = [];
     let counts = [];
 
     json.forEach((item)=>{
@@ -201,15 +202,15 @@ function convertJSON(json){
             difficulty += parseInt(child.difficulty.split(' ')[1]);
         })
 
-        items.push(newItem);
+        arr.push(newItem);
         counts.push(difficulty);
     })
 
-    items.sort(function(a, b) {
-        return counts[items.indexOf(b)] - counts[items.indexOf(a)];
+    arr.sort(function(a, b) {
+        return counts[arr.indexOf(b)] - counts[arr.indexOf(a)];
     });
 
-    return items;
+    return arr;
 }
 
 let ids = [];
@@ -242,7 +243,7 @@ function loadTree(name, index){
     selectedRows.forEach((elm)=>{
         elm.classList.remove('selected');
     })
-    let item = items.find((it)=>it.title == name)
+    let item = filteredItems.find((it)=>it.title == name)
 
 
     if(index != undefined){
@@ -253,6 +254,8 @@ function loadTree(name, index){
 }
 
 function filter(){
+    filteredItems = [];
+    let name = document.getElementById('name').value.toLowerCase();
     let att = parseInt(document.getElementById('att').value);
     let def = parseInt(document.getElementById('def').value);
     let inv = parseInt(document.getElementById('inv').value);
@@ -282,7 +285,7 @@ function filter(){
     if( Number.isNaN(leave)){
         countNaN++;
     }
-    filteredItems = [];//.concat(items);
+    // filteredItems = [];//.concat(items);
     items.forEach((item)=>{
         let val1Valid = false;
         let val2Valid = false;
@@ -375,12 +378,16 @@ function filter(){
         }
 
         if((val1Valid && item.value2 == '') || (val2Valid && item.value1 == '') 
+            || (item.value1 == '' && item.value2 == '')
             || (val1Valid && val2Valid) 
             || (val1Valid && countNaN == 5) || (val2Valid && countNaN == 5)){
             filteredItems.push(item);
+        } else {
+            console.log('Filtered:', item);
         }
     })
-    buildInfoTable(filteredItems);
+    
+    buildInfoTable(filteredItems.filter((item)=>item.title.toLowerCase().indexOf(name) != -1));
 }
 
 

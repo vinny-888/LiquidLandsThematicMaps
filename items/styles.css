@@ -132,12 +132,12 @@ tr {
 }
 
 label{
-  margin-left: 20px;
+  margin-left: 4px;
   display: inline-block;
 }
 
 input[type="number" i] {
-  width: 50px;
+  width: 40px;
 }
 
 #total_bricks{
