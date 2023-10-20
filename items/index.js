@@ -102,7 +102,7 @@ function buildRows(arr){
         // console.log('Found Cities with item: ', item, citiesWithBuilding);
         
         html+= '<tr class="'+(composite ? 'composite' : '')+'">';
-        html += '<td onclick="loadTree(\''+item.title+'\')">'+item.title+'</td>';
+        html += '<td onclick="loadTree(\''+item.title+'\')"><u>'+item.title+'</u></td>';
         html += '<td>'+ (count * quantity) +'</td>';
         html += '<td>'+ citiesHTML +'</td>';
         total_bricks += (count * quantity);
