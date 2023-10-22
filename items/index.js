@@ -61,6 +61,7 @@ function buildItemTable(item){
     html += '</table>';
 
     document.getElementById('tree').innerHTML = html;
+    document.getElementById('item_title').innerHTML = item.title;
 }
 
 function getSortedKeys(obj) {
