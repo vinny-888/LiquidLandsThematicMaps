@@ -409,7 +409,7 @@ function getTileStates(tiles){
                 let key = defense;
                 state.defenseValLookup[tile_id] = key;
                 if(!state.defenseLookup[key]){
-                    state.defenseLookup[key] = createYieldTile(tile_id, ''+defense, color, duration/HOUR, defense, game_bricks_per_day.toFixed(2) );
+                    state.defenseLookup[key] = createYieldTile(tile_id, ''+defense, color, duration/HOUR, defense, game_bricks_per_day );
                 }
                 // if(state.realmTilesLookup[tile_id] && !state.guardedYieldLookup[guardedYield+'_realm']){
                 //     state.guardedYieldLookup['guardedYield_'+guardedYield+'_realm'] = createYieldTile(tile_id, defense, color, duration/HOUR, defense, 1);
