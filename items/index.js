@@ -75,16 +75,20 @@ function canBeBuilt(item){
     getChildrenRecursive(item, children);
 
     Object.keys(children).forEach((key, index)=>{
-        let child = filteredItems.find((item)=>item.title == key);
-        let citiesWithItem = getCitiesWithItem(child.title);
-        // let composite = item.children && item.children.length > 0 ? true : false;
+        let child = items.find((item)=>item.title == key);
+        if(child){
+            let citiesWithItem = getCitiesWithItem(child.title);
+            // let composite = item.children && item.children.length > 0 ? true : false;
 
-        // if(composite){
-        //     canBeBuilt()
-        // }
+            // if(composite){
+            //     canBeBuilt()
+            // }
 
-        let count = Object.keys(citiesWithItem).length;
-        if(count == 0){
+            let count = Object.keys(citiesWithItem).length;
+            if(count == 0){
+                canBuild = false;
+            }
+        } else {
             canBuild = false;
         }
     });
@@ -410,7 +414,8 @@ function filter(){
         }
 
         if((val1Valid && item.value2 == '') || (val2Valid && item.value1 == '') 
-            || (item.value1 == '' && item.value2 == '')
+            // || (item.value1 == '' && item.value2 == '')
+            || countNaN == 6
             || (val1Valid && val2Valid) 
             || (val1Valid && countNaN == 5) || (val2Valid && countNaN == 5)){
             filteredItems.push(item);
