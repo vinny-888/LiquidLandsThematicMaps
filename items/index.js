@@ -130,7 +130,7 @@ function buildRows(arr){
     let total_bricks = 0;
     getSortedKeys(arr).forEach((key, index)=>{
         let count = arr[key];
-        let item = filteredItems.find((item)=>item.title == key);
+        let item = items.find((item)=>item.title == key);
         let composite = item.children && item.children.length > 0 ? true : false;
 
         let citiesHTML = getCities(item.title);
@@ -278,7 +278,7 @@ function loadTree(name, index){
     selectedRows.forEach((elm)=>{
         elm.classList.remove('selected');
     })
-    let item = filteredItems.find((it)=>it.title == name)
+    let item = items.find((it)=>it.title == name)
 
 
     if(index != undefined){
