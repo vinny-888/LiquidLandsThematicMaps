@@ -51,12 +51,12 @@ function buildInfoTable(arr){
 
 function buildItemTable(item){
     let html = '<table>';
-    html+= '<thead><tr><th>Item</th><th>Required</th><th>Cities</th></tr></thead>';
+    html+= '<thead><tr><th>Item</th><th>Type</th><th>Required</th><th>Cities</th></tr></thead>';
     html+= '<tbody>';
 
     let children = {};
     getChildrenRecursive(item, children);
-    html += buildRows(children);
+    html += buildRows(item, children);
     html+= '</tbody>';
     html += '</table>';
 
@@ -115,8 +115,8 @@ function getCities(item){
     let citiesWithItem = getCitiesWithItem(item);
     citiesWithItem.sort((a,b) => (b.buildings[item] > a.buildings[item]) ? 1 : ((a.buildings[item] > b.buildings[item]) ? -1 : 0))
 
-    if(citiesWithItem.length > 5){
-        citiesWithItem = citiesWithItem.slice(0,5);
+    if(citiesWithItem.length > 3){
+        citiesWithItem = citiesWithItem.slice(0,3);
     }
     let citiesHTML = '';
     citiesWithItem.forEach((city)=>{
@@ -125,24 +125,72 @@ function getCities(item){
     return citiesHTML;
 }
 
-function buildRows(arr){
+function buildRows(mainItem, arr){
     let html = '';
     let total_bricks = 0;
-    getSortedKeys(arr).forEach((key, index)=>{
+    let sortedKeys = getSortedKeys(arr);
+    sortedKeys.forEach((key, index)=>{
         let count = arr[key];
         let item = items.find((item)=>item.title == key);
         let composite = item.children && item.children.length > 0 ? true : false;
 
-        let citiesHTML = getCities(item.title);
+        let mainItemClass = mainItem.title == item.title;
+        if(!mainItemClass && !composite){
+            let citiesHTML = getCities(item.title);
 
-        // console.log('Found Cities with item: ', item, citiesWithBuilding);
-        
-        html+= '<tr class="'+(composite ? 'composite' : '')+'">';
-        html += '<td onclick="loadTree(\''+item.title+'\')"><u>'+item.title+'</u></td>';
-        html += '<td>'+ (count * quantity) +'</td>';
-        html += '<td>'+ citiesHTML +'</td>';
-        total_bricks += (count * quantity);
-        html += '</tr>';
+            // console.log('Found Cities with item: ', item, citiesWithBuilding);
+            
+            html+= '<tr class="'+(composite ? 'composite' : '')+'">';
+            html += '<td onclick="loadTree(\''+item.title+'\')"><u>'+item.title+'</u></td>';
+            html += '<td>Base</td>';
+            html += '<td>'+ (count * quantity) +'</td>';
+            html += '<td>'+ citiesHTML +'</td>';
+            total_bricks += (count * quantity);
+            html += '</tr>';
+        }
+    })
+
+    sortedKeys.forEach((key, index)=>{
+        let count = arr[key];
+        let item = items.find((item)=>item.title == key);
+        let composite = item.children && item.children.length > 0 ? true : false;
+
+        let mainItemClass = mainItem.title == item.title;
+        if(!mainItemClass && composite){
+            let citiesHTML = getCities(item.title);
+
+            // console.log('Found Cities with item: ', item, citiesWithBuilding);
+            
+            html+= '<tr class="'+(composite ? 'composite' : '')+'">';
+            html += '<td onclick="loadTree(\''+item.title+'\')"><u>'+item.title+'</u></td>';
+            html += '<td>Composite</td>';
+            html += '<td>'+ (count * quantity) +'</td>';
+            html += '<td>'+ citiesHTML +'</td>';
+            total_bricks += (count * quantity);
+            html += '</tr>';
+        }
+    })
+
+    sortedKeys.forEach((key, index)=>{
+        let count = arr[key];
+        let item = items.find((item)=>item.title == key);
+        // let composite = item.children && item.children.length > 0 ? true : false;
+
+        let mainItemClass = mainItem.title == item.title;
+        if(mainItemClass){
+            let citiesHTML = getCities(item.title);
+    
+            // console.log('Found Cities with item: ', item, citiesWithBuilding);
+            
+            html+= '<tr class="mainItem">';
+            html += '<td onclick="loadTree(\''+item.title+'\')"><u>'+item.title+'</u></td>';
+            html += '<td>Main</td>';
+            html += '<td>'+ (count * quantity) +'</td>';
+            html += '<td>'+ citiesHTML +'</td>';
+            total_bricks += (count * quantity);
+            html += '</tr>';
+
+        }
     })
     document.getElementById('total_bricks').innerHTML = (total_bricks*0.7).toFixed(1) + ' bricks @ 70% - ' + (total_bricks) + ' bricks @ 100%';
     return html;

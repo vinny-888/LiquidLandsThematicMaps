@@ -148,6 +148,10 @@ input[type="number" i] {
   background-color: #112126;
 }
 
+.mainItem{
+  background-color: #186041;
+}
+
 #item_title{
   color: #ffae00;
   font-weight: bold;
