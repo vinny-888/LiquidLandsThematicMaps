@@ -120,7 +120,8 @@ function getCities(item){
     }
     let citiesHTML = '';
     citiesWithItem.forEach((city)=>{
-        citiesHTML += `<div>${city.buildings[item]} x ${item}- <a href="https://liquidlands.io/city/${city.id}" target="_blank">${city.name}</a></div>`;
+        //${item}- 
+        citiesHTML += `<div>${city.buildings[item]} x <a href="https://liquidlands.io/city/${city.id}" target="_blank">${city.name}</a></div>`;
     })
     return citiesHTML;
 }
