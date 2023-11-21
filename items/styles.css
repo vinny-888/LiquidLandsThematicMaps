@@ -168,3 +168,7 @@ input[type="number" i] {
   margin-bottom: 10px;
   min-height: 20px;
 }
+
+tr{
+  cursor: pointer;
+}
