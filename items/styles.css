@@ -156,3 +156,15 @@ input[type="number" i] {
   color: #ffae00;
   font-weight: bold;
 }
+
+.canbuild{
+  color: #0f0;
+}
+.cantbuild{
+  color: #ff9600;
+}
+
+.bottomMargin{
+  margin-bottom: 10px;
+  min-height: 20px;
+}

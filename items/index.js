@@ -30,12 +30,13 @@ function toggle(){
 
 function buildInfoTable(arr){
     let html = '<table>';
-    html+= '<thead><tr><th>Item</th><th>Difficulty</th><th>Durability</th><th>Stats</th><th>Can Build</th></tr></thead>';
+    html+= '<thead><tr><th>Image</th><th>Item</th><th>Difficulty</th><th>Durability</th><th>Stats</th><th>Can Build</th></tr></thead>';
     html+= '<tbody>';
     arr.forEach((item, index)=>{
         let value = item.value1 + '<br>' + item.value2;
         let canBuild = canBeBuilt(item);
         html+= '<tr id="item_'+index+'" onclick="loadTree(\''+item.title+'\', '+index+')">';
+        html += '<td><img width="80px" src="'+item.img1+'">'+'</td>';
         html += '<td>'+item.title+'</td>';
         html += '<td>'+item.difficulty.replace('difficulty ', '')+'</td>';
         html += '<td>'+item.durability.replace('durability ', '')+'</td>';
@@ -51,7 +52,7 @@ function buildInfoTable(arr){
 
 function buildItemTable(item){
     let html = '<table>';
-    html+= '<thead><tr><th>Item</th><th>Type</th><th>Required</th><th>Cities</th></tr></thead>';
+    html+= '<thead><tr><th>Image</th><th>Item</th><th>Type</th><th>Required</th><th>Cities</th></tr></thead>';
     html+= '<tbody>';
 
     let children = {};
@@ -129,10 +130,13 @@ function getCities(item){
 function buildRows(mainItem, arr){
     let html = '';
     let total_bricks = 0;
+    
     let sortedKeys = getSortedKeys(arr);
     sortedKeys.forEach((key, index)=>{
         let count = arr[key];
         let item = items.find((item)=>item.title == key);
+
+        let canBuild = canBeBuilt(item); 
         let composite = item.children && item.children.length > 0 ? true : false;
 
         let mainItemClass = mainItem.title == item.title;
@@ -142,7 +146,8 @@ function buildRows(mainItem, arr){
             // console.log('Found Cities with item: ', item, citiesWithBuilding);
             
             html+= '<tr class="'+(composite ? 'composite' : '')+'">';
-            html += '<td onclick="loadTree(\''+item.title+'\')"><u>'+item.title+'</u></td>';
+            html += '<td><img width="40px" src="'+item.img1+'">'+'</td>';
+            html += '<td onclick="loadTree(\''+item.title+'\')" class="'+(canBuild ? 'canbuild' : 'cantbuild') +'"><u>'+item.title+'</u></td>';
             html += '<td>Base</td>';
             html += '<td>'+ (count * quantity) +'</td>';
             html += '<td>'+ citiesHTML +'</td>';
@@ -154,6 +159,7 @@ function buildRows(mainItem, arr){
     sortedKeys.forEach((key, index)=>{
         let count = arr[key];
         let item = items.find((item)=>item.title == key);
+        let canBuild = canBeBuilt(item);
         let composite = item.children && item.children.length > 0 ? true : false;
 
         let mainItemClass = mainItem.title == item.title;
@@ -163,7 +169,8 @@ function buildRows(mainItem, arr){
             // console.log('Found Cities with item: ', item, citiesWithBuilding);
             
             html+= '<tr class="'+(composite ? 'composite' : '')+'">';
-            html += '<td onclick="loadTree(\''+item.title+'\')"><u>'+item.title+'</u></td>';
+            html += '<td><img width="40px" src="'+item.img1+'">'+'</td>';
+            html += '<td onclick="loadTree(\''+item.title+'\')" class="'+(canBuild ? 'canbuild' : 'cantbuild') +'"><u>'+item.title+'</u></td>';
             html += '<td>Composite</td>';
             html += '<td>'+ (count * quantity) +'</td>';
             html += '<td>'+ citiesHTML +'</td>';
@@ -175,6 +182,7 @@ function buildRows(mainItem, arr){
     sortedKeys.forEach((key, index)=>{
         let count = arr[key];
         let item = items.find((item)=>item.title == key);
+        let canBuild = canBeBuilt(item);
         // let composite = item.children && item.children.length > 0 ? true : false;
 
         let mainItemClass = mainItem.title == item.title;
@@ -184,7 +192,8 @@ function buildRows(mainItem, arr){
             // console.log('Found Cities with item: ', item, citiesWithBuilding);
             
             html+= '<tr class="mainItem">';
-            html += '<td onclick="loadTree(\''+item.title+'\')"><u>'+item.title+'</u></td>';
+            html += '<td><img width="40px" src="'+item.img1+'">'+'</td>';
+            html += '<td onclick="loadTree(\''+item.title+'\')" class="'+(canBuild ? 'canbuild' : 'cantbuild') +'"><u>'+item.title+'</u></td>';
             html += '<td>Main</td>';
             html += '<td>'+ (count * quantity) +'</td>';
             html += '<td>'+ citiesHTML +'</td>';
