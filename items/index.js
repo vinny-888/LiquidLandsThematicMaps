@@ -353,7 +353,7 @@ function loadTree(name, index){
     buildItemTable(item);
 }
 
-function filter(){
+function filter(cantbuild){
     filteredItems = [];
     let name = document.getElementById('name').value.toLowerCase();
     let att = parseInt(document.getElementById('att').value);
@@ -493,7 +493,16 @@ function filter(){
 
     if(canBuild){
         filtered = filtered.filter((item)=>canBeBuilt(item));
+    } else if(cantbuild){
+        let cantbuildElm = document.getElementById("cantbuild").checked;
+        if(cantbuildElm){
+            filtered = filtered.filter((item)=>!canBeBuilt(item));
+        }
     }
+
+    document.getElementById("total_items").innerHTML = filtered.length;
+    document.getElementById("buildable_items").innerHTML = filtered.filter((item)=>canBeBuilt(item)).length;
+    
     buildInfoTable(filtered);
 }
 

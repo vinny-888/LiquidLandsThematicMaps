@@ -5,6 +5,10 @@
     <link rel="stylesheet" type="text/css" href="./styles.css">
 </head>
 <body>
+    <div class="bottomMargin" style="text-align: center;margin-top: 10px;">
+        <label>Total Items:</label> <span id="total_items" class="cantbuild">---</span>
+        <label>Buildable Items:</label> <span id="buildable_items" class="canbuild">---</span>
+    </div>
     <div class="container">
         <div class="row">
             <div class="column" >
@@ -16,7 +20,7 @@
                     <label>Min Tax:</label> <input id="tax" type="number" value="" onchange="filter()" onkeyup="filter()">
                     <label>Min Raid:</label> <input id="raid" type="number" value="" onchange="filter()" onkeyup="filter()">
                     <label>Min Leave:</label> <input id="leave" type="number" value="" onchange="filter()" onkeyup="filter()">
-                    <label></label> <input id="build" type="checkbox" onchange="filter()" onkeyup="filter()">
+                    <label></label><input id="build" type="checkbox" onchange="filter()" onkeyup="filter()">/<input id="cantbuild" type="checkbox" onchange="filter(true)" onkeyup="filter(true)">
                 </div>
                 <div id="info">
 
@@ -34,6 +38,6 @@
             </div>
         </div>
     </div>
-    <script src="./index.js?v=3.4"></script>
+    <script src="./index.js?v=3.5"></script>
 </body>
 

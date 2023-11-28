@@ -30,11 +30,11 @@ a{
 
 #info{
   overflow: scroll;
-  max-height: calc(100% - 10px);
+  max-height: calc(100% - 60px);
 }
 #tree {
   overflow: scroll;
-  max-height: calc(100% - 10px);
+  max-height: calc(100% - 60px);
 }
 
 #toggle{
