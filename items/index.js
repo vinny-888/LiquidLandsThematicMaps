@@ -30,17 +30,21 @@ function toggle(){
 
 function buildInfoTable(arr){
     let html = '<table>';
-    html+= '<thead><tr><th>Image</th><th>Item</th><th>Difficulty</th><th>Durability</th><th>Stats</th><th>Parts</th></tr></thead>';
+    html+= '<thead><tr><th>Image</th><th>Item</th><th>Difficulty</th><th>Durability</th><th>Stats</th><th>Cities</th><th>Parts</th></tr></thead>';
     html+= '<tbody>';
     arr.forEach((item, index)=>{
         let value = item.value1 + '<br>' + item.value2;
         let info = canBeBuilt(item, true);
+
+        let citiesHTML = getCities(item.title);
+
         html+= '<tr id="item_'+index+'" onclick="loadTree(\''+item.title+'\', '+index+')">';
         html += '<td><img width="80px" src="'+item.img1+'">'+'</td>';
         html += '<td>'+item.title+'</td>';
         html += '<td>'+item.difficulty.replace('difficulty ', '')+'</td>';
         html += '<td>'+item.durability.replace('durability ', '')+'</td>';
         html += '<td>'+value +'</td>';
+        html += '<td>'+citiesHTML +'</td>';
         html += '<td class="'+(info.canBuild ? 'canbuild' : 'cantbuild') + '">' + ' ' + info.complete + '/' + info.total+  '</td>';
         html += '</tr>';
     })
