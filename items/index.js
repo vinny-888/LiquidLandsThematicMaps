@@ -125,7 +125,7 @@ function getCitiesWithItem(itemName){
 
 function getCities(item){
     let citiesWithItem = getCitiesWithItem(item);
-    citiesWithItem.sort((a,b) => (b.buildings[item] > a.buildings[item]) ? 1 : ((a.buildings[item] > b.buildings[item]) ? -1 : 0))
+    citiesWithItem.sort((a,b) => (b.buildings[item].count > a.buildings[item].count) ? 1 : ((a.buildings[item].count > b.buildings[item].count) ? -1 : 0))
 
     if(citiesWithItem.length > 3){
         citiesWithItem = citiesWithItem.slice(0,3);
