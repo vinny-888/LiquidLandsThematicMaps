@@ -172,3 +172,7 @@ input[type="number" i] {
 tr{
   cursor: pointer;
 }
+
+.highlighted{
+  color: #0f0;
+}
