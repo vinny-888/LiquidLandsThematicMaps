@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Liquidlands - Crafting Item</title>
+<head>
+    <link rel="stylesheet" type="text/css" href="./styles.css">
+    <style>
+        #tree {
+            max-width: 500px;
+            min-width: 500px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="column" >
+                <div class="bottomMargin">
+                    Item: <span id="item_title"></span>
+                    Quantity: <input id="quantity" type="number" value="1" onchange="updateQuantity()"><br>
+                    Requires: <span id="total_bricks"></span>
+                </div>
+                <div id="tree">
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="./item_small.js?v=5.6"></script>
+</body>
+
