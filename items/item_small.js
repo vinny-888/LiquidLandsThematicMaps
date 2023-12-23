@@ -1,4 +1,5 @@
 let items;
+let unfilteredItems;
 let currentItem = 'Hydrogen Powered Lazer Drone';
 let currentIndex = 0;
 let quantity = 1;
@@ -29,7 +30,8 @@ const url = 'https://liquidlands.io/raw/items';
 async function loadJSONData() {
     const response = await fetch(url);
     const jsonData = await response.json();
-    items = convertJSON(jsonData);
+    unfilteredItems = convertJSON(jsonData, false);
+    items = convertJSON(jsonData, true);
     filteredItems = [];//.concat(items);
     // buildInfoTable(items);
     // filter();
@@ -89,7 +91,7 @@ function buildItemTable(item){
     html+= '<tbody>';
 
     let children = {};
-    getChildrenRecursive(item, children);
+    getChildrenRecursive(item, children, true);
     html += buildRows(item, children);
     html+= '</tbody>';
     html += '</table>';
@@ -106,7 +108,7 @@ function getSortedKeys(obj) {
 function canBeBuilt(item, counts){
     let canBuild = true;
     let children = {};
-    getChildrenRecursive(item, children);
+    getChildrenRecursive(item, children, false);
     let complete = 0;
     let total = Object.keys(children).length;
     Object.keys(children).forEach((key, index)=>{
@@ -183,7 +185,7 @@ function buildRows(mainItem, arr){
     
     let sortedKeys = getSortedKeys(arr);
     sortedKeys.forEach((key, index)=>{
-        let count = arr[key];
+        let count = arr[key] + itemLookupUsed[key];
         let item = items.find((item)=>item.title == key);
 
         let canBuild = canBeBuilt(item); 
@@ -211,7 +213,7 @@ function buildRows(mainItem, arr){
     })
 
     sortedKeys.forEach((key, index)=>{
-        let count = arr[key];
+        let count = arr[key] + itemLookupUsed[key];
         let item = items.find((item)=>item.title == key);
         let canBuild = canBeBuilt(item);
         let composite = item.children && item.children.length > 0 ? true : false;
@@ -240,7 +242,7 @@ function buildRows(mainItem, arr){
     })
 
     sortedKeys.forEach((key, index)=>{
-        let count = arr[key];
+        let count = arr[key] + itemLookupUsed[key];
         let item = items.find((item)=>item.title == key);
         let canBuild = canBeBuilt(item);
         // let composite = item.children && item.children.length > 0 ? true : false;
@@ -269,7 +271,7 @@ function buildRows(mainItem, arr){
     return html;
 }
 
-function getChildrenRecursive(item, children){
+function getChildrenRecursive(item, children, count){
     if(!children[item.title]){
         children[item.title] = 0;
     }
@@ -279,9 +281,9 @@ function getChildrenRecursive(item, children){
             if(!children[child.title]){
                 children[child.title] = 0;
             }
-            if(itemLookupNotNeeded[child.title] == 0){
+            if(!itemLookupNotNeeded[child.title] || !count){
                 children[child.title]++;
-            } else {
+            } else if (count){
                 itemLookupNotNeeded[child.title]--;
             }
         })
@@ -348,21 +350,37 @@ function getNonZeroNumbers(obj) {
     return results;
 }
 
-function convertJSON(json){
+function convertJSON(json, filter){
     let arr = [];
     let counts = [];
+    let childrenItems = {};
+    let item = null;
+    if(filter){
+        item = unfilteredItems.find((it)=>it.title == selectedItem)
+        getChildrenRecursive(item, childrenItems, false);
+    }
 
     json.forEach((item)=>{
         let newItem = buildItem(item, null);
         let children = [];
 
         let used = 0;
-        if(itemLookupUsed[item.title]){
-            used = itemLookupUsed[item.title];
-        } else {
-            itemLookupUsed[item.title] = 0;
+        let isNeeded = false;
+        if(filter){
+            if(itemLookupUsed[item.title]){
+                used = itemLookupUsed[item.title];
+            } else {
+                itemLookupUsed[item.title] = 0;
+            }
+            Object.keys(childrenItems).forEach((childItem)=>{
+                if(item.title == childItem && childrenItems[childItem] > 0){
+                    isNeeded = true;
+                }
+            })
+        }else {
+            isNeeded = true;
         }
-        if(itemLookup[item.title] && parseInt(itemLookup[item.title]) - used > 0){
+        if(filter && isNeeded && itemLookup[item.title] && parseInt(itemLookup[item.title]) - used > 0){
             itemLookupUsed[item.title]++;
             if(item.input1){
                 if(!itemLookupNotNeeded[item.input1.title]){
