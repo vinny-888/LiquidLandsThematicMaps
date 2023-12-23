@@ -198,11 +198,17 @@ function buildRows(mainItem, arr){
 
             // console.log('Found Cities with item: ', item, citiesWithBuilding);
             
+            let colorStr = '#ffa500';
+            if(itemLookup[item.title] == (count * quantity)){
+                colorStr = '#0F0';
+            } else if(itemLookup[item.title] > 0){
+                colorStr = '#FF0';
+            }
             html+= '<tr class="'+(composite ? 'composite' : '')+'">';
             html += '<td><img width="40px" src="'+item.img1+'">'+'</td>';
             html += '<td onclick="loadTree(\''+item.title+'\')" class="'+(canBuild ? 'canbuild' : 'cantbuild') +'"><u>'+item.title+'</u></td>';
             // html += '<td>Base</td>';
-            html += '<td>' + (itemLookup[item.title] ? itemLookup[item.title] : 0) + ' / ' + (count * quantity) + '</td>';
+            html += '<td style="color: '+colorStr+';">' + (itemLookup[item.title] ? itemLookup[item.title] : 0) + ' / ' + (count * quantity) + '</td>';
             html += '<td>'+ citiesHTML +'</td>';
             total_bricks += (count * quantity);
             html += '</tr>';
@@ -221,11 +227,17 @@ function buildRows(mainItem, arr){
 
             // console.log('Found Cities with item: ', item, citiesWithBuilding);
             
+            let colorStr = '#ffa500';
+            if(itemLookup[item.title] == (count * quantity)){
+                colorStr = '#0F0';
+            } else if(itemLookup[item.title] > 0){
+                colorStr = '#FF0';
+            }
             html+= '<tr class="'+(composite ? 'composite' : '')+'">';
             html += '<td><img width="40px" src="'+item.img1+'">'+'</td>';
             html += '<td onclick="loadTree(\''+item.title+'\')" class="'+(canBuild ? 'canbuild' : 'cantbuild') +'"><u>'+item.title+'</u></td>';
             // html += '<td>Composite</td>';
-            html += '<td>' + (itemLookup[item.title] ? itemLookup[item.title] : 0) + ' / ' + (count * quantity) + '</td>';
+            html += '<td style="color: '+colorStr+';">' + (itemLookup[item.title] ? itemLookup[item.title] : 0) + ' / ' + (count * quantity) + '</td>';
             html += '<td>'+ citiesHTML +'</td>';
             total_bricks += (count * quantity);
             html += '</tr>';
@@ -241,14 +253,17 @@ function buildRows(mainItem, arr){
         let mainItemClass = mainItem.title == item.title;
         if(mainItemClass){
             let citiesHTML = getCities(item.title);
-    
-            // console.log('Found Cities with item: ', item, citiesWithBuilding);
-            
+            let colorStr = '#ffa500';
+            if(itemLookup[item.title] == (count * quantity)){
+                colorStr = '#0F0';
+            } else if(itemLookup[item.title] > 0){
+                colorStr = '#FF0';
+            }
             html+= '<tr class="mainItem">';
             html += '<td><img width="40px" src="'+item.img1+'">'+'</td>';
             html += '<td onclick="loadTree(\''+item.title+'\')" class="'+(canBuild ? 'canbuild' : 'cantbuild') +'"><u>'+item.title+'</u></td>';
             // html += '<td>Main</td>';
-            html += '<td>' + (itemLookup[item.title] ? itemLookup[item.title] : 0) + ' / ' + (count * quantity) + '</td>';
+            html += '<td style="color: '+colorStr+';">' + (itemLookup[item.title] ? itemLookup[item.title] : 0) + ' / ' + (count * quantity) + '</td>';
             html += '<td>'+ citiesHTML +'</td>';
             total_bricks += (count * quantity);
             html += '</tr>';
