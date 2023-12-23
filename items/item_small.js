@@ -13,6 +13,8 @@ if(highlighted){
 let selectedItem = urlParams.get('item');
 let itemCounts = urlParams.get('items');
 let itemLookup = {};
+let itemLookupUsed = {};
+let itemLookupNotNeeded = {};
 if(itemCounts){
     let itemArr = itemCounts.split(',');
     itemArr.forEach((item)=>{
@@ -111,11 +113,6 @@ function canBeBuilt(item, counts){
         let child = items.find((item)=>item.title == key);
         if(child){
             let citiesWithItem = getCitiesWithItem(child.title);
-            // let composite = item.children && item.children.length > 0 ? true : false;
-
-            // if(composite){
-            //     canBeBuilt()
-            // }
 
             let count = Object.keys(citiesWithItem).length;
             if(count == 0){
@@ -196,10 +193,8 @@ function buildRows(mainItem, arr){
         if(!mainItemClass && !composite){
             let citiesHTML = getCities(item.title);
 
-            // console.log('Found Cities with item: ', item, citiesWithBuilding);
-            
             let colorStr = '#ffa500';
-            if(itemLookup[item.title] >= (count * quantity)){
+            if(itemLookup[item.title] >= (count * quantity) || count == 0){
                 colorStr = '#0F0';
             } else if(itemLookup[item.title] > 0){
                 colorStr = '#FF0';
@@ -284,7 +279,11 @@ function getChildrenRecursive(item, children){
             if(!children[child.title]){
                 children[child.title] = 0;
             }
-            children[child.title]++;
+            if(itemLookupNotNeeded[child.title] == 0){
+                children[child.title]++;
+            } else {
+                itemLookupNotNeeded[child.title]--;
+            }
         })
     }
     return children;
@@ -295,7 +294,7 @@ window.addEventListener("DOMContentLoaded", async (event) => {
   });
 
   function getChildren(arr, item){
-    
+
     let children1 = [];
     let children2 = [];
     let children3 = [];
@@ -355,7 +354,39 @@ function convertJSON(json){
 
     json.forEach((item)=>{
         let newItem = buildItem(item, null);
-        let children = getChildren(json, newItem, null, []);
+        let children = [];
+
+        let used = 0;
+        if(itemLookupUsed[item.title]){
+            used = itemLookupUsed[item.title];
+        } else {
+            itemLookupUsed[item.title] = 0;
+        }
+        if(itemLookup[item.title] && parseInt(itemLookup[item.title]) - used > 0){
+            itemLookupUsed[item.title]++;
+            if(item.input1){
+                if(!itemLookupNotNeeded[item.input1.title]){
+                    itemLookupNotNeeded[item.input1.title] = 0;
+                }
+                itemLookupNotNeeded[item.input1.title]++;
+            }
+            if(item.input2){
+                if(!itemLookupNotNeeded[item.input1.title]){
+                    itemLookupNotNeeded[item.input1.title] = 0;
+                }
+                itemLookupNotNeeded[item.input2.title]++;
+            }
+            if(item.input3){
+                if(!itemLookupNotNeeded[item.input1.title]){
+                    itemLookupNotNeeded[item.input1.title] = 0;
+                }
+                itemLookupNotNeeded[item.input3.title]++;
+            }
+            
+        } else {
+            children = getChildren(json, newItem, null, []);
+        }
+        
         newItem.children = children;
 
         let difficulty = 0;
