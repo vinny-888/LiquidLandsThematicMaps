@@ -8,12 +8,23 @@
             max-width: 500px;
             min-width: 500px;
         }
+        body{
+            width: 100%;
+        }
+        .column2{
+            padding: 10px;
+            height: 100%;
+            max-height: 100%;
+        }
+        #tree{
+            max-height: 100%;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="row">
-            <div class="column" >
+            <div class="column2" >
                 <div class="bottomMargin">
                     Item: <span id="item_title"></span>
                     Quantity: <input id="quantity" type="number" value="1" onchange="updateQuantity()"><br>
