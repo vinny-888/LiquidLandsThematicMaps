@@ -225,7 +225,7 @@ function buildRows(mainItem, arr){
             html += '<td><img width="40px" src="'+item.img1+'">'+'</td>';
             html += '<td onclick="loadTree(\''+item.title+'\')" class="'+(canBuild ? 'canbuild' : 'cantbuild') +'"><u>'+item.title+'</u></td>';
             // html += '<td>Composite</td>';
-            html += '<td>'+ (count * quantity) +'</td>';
+            html += '<td>' + (itemLookup[item.title] ? itemLookup[item.title] : 0) + ' / ' + (count * quantity) + '</td>';
             html += '<td>'+ citiesHTML +'</td>';
             total_bricks += (count * quantity);
             html += '</tr>';
@@ -248,7 +248,7 @@ function buildRows(mainItem, arr){
             html += '<td><img width="40px" src="'+item.img1+'">'+'</td>';
             html += '<td onclick="loadTree(\''+item.title+'\')" class="'+(canBuild ? 'canbuild' : 'cantbuild') +'"><u>'+item.title+'</u></td>';
             // html += '<td>Main</td>';
-            html += '<td>'+ (count * quantity) +'</td>';
+            html += '<td>' + (itemLookup[item.title] ? itemLookup[item.title] : 0) + ' / ' + (count * quantity) + '</td>';
             html += '<td>'+ citiesHTML +'</td>';
             total_bricks += (count * quantity);
             html += '</tr>';
