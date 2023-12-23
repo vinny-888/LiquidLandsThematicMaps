@@ -159,7 +159,7 @@ function getCities(item){
         if(building.count < 10){
             pad = '&nbsp;&nbsp;';
         }
-        let color = '#FFF';
+        let color = '#F00';
         if(building.count >= 5){
             let colorIndex = Math.min(parseInt(building.count / 5), 9);
             color = colors[colorIndex];
