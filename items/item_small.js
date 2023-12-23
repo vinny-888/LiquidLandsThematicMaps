@@ -175,7 +175,7 @@ function getCities(item){
             let colorIndex = Math.min(parseInt(building.count / 5), 9);
             color = colors[colorIndex];
         }
-        citiesHTML += `<div><span style="color: ${color}">${pad}${building.count} x</span> <a class="${classVal}" href="https://liquidlands.io/city/${city.id}/_xy${building.x},${building.y}" target="_blank">${city.name}</a></div>`;
+        citiesHTML += `<div><span style="color: ${color}">${pad}${building.count} x</span> <a class="${classVal}" href="https://liquidlands.io/city/${city.id}/_xy${building.x},${building.y}">${city.name}</a></div>`;
     })
     return citiesHTML;
 }
