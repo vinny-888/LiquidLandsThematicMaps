@@ -185,7 +185,7 @@ function buildRows(mainItem, arr){
     
     let sortedKeys = getSortedKeys(arr);
     sortedKeys.forEach((key, index)=>{
-        let count = arr[key] + itemLookupUsed[key];
+        let count = arr[key];
         let item = items.find((item)=>item.title == key);
 
         let canBuild = canBeBuilt(item); 
