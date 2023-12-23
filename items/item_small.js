@@ -199,7 +199,7 @@ function buildRows(mainItem, arr){
             // console.log('Found Cities with item: ', item, citiesWithBuilding);
             
             let colorStr = '#ffa500';
-            if(itemLookup[item.title] == (count * quantity)){
+            if(itemLookup[item.title] >= (count * quantity)){
                 colorStr = '#0F0';
             } else if(itemLookup[item.title] > 0){
                 colorStr = '#FF0';
@@ -228,7 +228,7 @@ function buildRows(mainItem, arr){
             // console.log('Found Cities with item: ', item, citiesWithBuilding);
             
             let colorStr = '#ffa500';
-            if(itemLookup[item.title] == (count * quantity)){
+            if(itemLookup[item.title] >= (count * quantity)){
                 colorStr = '#0F0';
             } else if(itemLookup[item.title] > 0){
                 colorStr = '#FF0';
@@ -254,7 +254,7 @@ function buildRows(mainItem, arr){
         if(mainItemClass){
             let citiesHTML = getCities(item.title);
             let colorStr = '#ffa500';
-            if(itemLookup[item.title] == (count * quantity)){
+            if(itemLookup[item.title] >= (count * quantity)){
                 colorStr = '#0F0';
             } else if(itemLookup[item.title] > 0){
                 colorStr = '#FF0';
