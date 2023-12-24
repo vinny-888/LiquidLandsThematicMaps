@@ -13,6 +13,10 @@ if(highlighted){
 }
 let selectedItem = urlParams.get('item');
 let itemCounts = urlParams.get('items');
+let quantityParam = urlParams.get('quantity');
+if(quantityParam){
+    quantity = quantityParam;
+}
 let itemLookup = {};
 let itemLookupUsed = {};
 let itemLookupNotNeeded = {};
