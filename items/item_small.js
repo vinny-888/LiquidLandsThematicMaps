@@ -217,7 +217,7 @@ function buildRows(mainItem, arr){
     })
 
     sortedKeys.forEach((key, index)=>{
-        let count = arr[key] + itemLookupUsed[key];
+        let count = arr[key];// + itemLookupUsed[key];
         let item = items.find((item)=>item.title == key);
         let canBuild = canBeBuilt(item);
         let composite = item.children && item.children.length > 0 ? true : false;
@@ -246,7 +246,7 @@ function buildRows(mainItem, arr){
     })
 
     sortedKeys.forEach((key, index)=>{
-        let count = arr[key] + itemLookupUsed[key];
+        let count = arr[key];// + itemLookupUsed[key];
         let item = items.find((item)=>item.title == key);
         let canBuild = canBeBuilt(item);
         // let composite = item.children && item.children.length > 0 ? true : false;
@@ -285,11 +285,14 @@ function getChildrenRecursive(item, children, count){
             if(!children[child.title]){
                 children[child.title] = 0;
             }
+            /*
             if(!itemLookupNotNeeded[child.title] || !count){
                 children[child.title]++;
             } else if (count){
                 itemLookupNotNeeded[child.title]--;
             }
+            */
+            children[child.title]++;
         })
     }
     return children;
@@ -367,7 +370,7 @@ function convertJSON(json, filter){
     json.forEach((item)=>{
         let newItem = buildItem(item, null);
         let children = [];
-
+        /*
         let used = 0;
         let isNeeded = false;
         if(filter){
@@ -405,9 +408,12 @@ function convertJSON(json, filter){
                 itemLookupNotNeeded[item.input3.title]++;
             }
             
-        } else {
+        } 
+        else {
             children = getChildren(json, newItem, null, []);
         }
+        */
+        children = getChildren(json, newItem, null, []);
         
         newItem.children = children;
 
