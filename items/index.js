@@ -443,6 +443,7 @@ function filter(){
     let composite_y = document.getElementById('composite_y').checked;
     let composite_n = document.getElementById('composite_n').checked;
     let grid = document.getElementById('grid').checked;
+    let sort = document.getElementById('sort').checked;
     let allNaN = false;
     if(Number.isNaN(att) && Number.isNaN(def) && Number.isNaN(inv) && Number.isNaN(tax) && Number.isNaN(raid) && Number.isNaN(leave)){
         allNaN = true;
@@ -586,6 +587,16 @@ function filter(){
     
     if(composite_n){
         filtered = filtered.filter((item)=>!item.children || item.children.length == 0);
+    }
+
+    if(sort){
+        filtered = filtered.sort(function(a,b){
+            let aVal = buildStats[a.title] ? buildStats[a.title] : 0;
+            let bVal = buildStats[b.title] ? buildStats[b.title] : 0;
+            if (aVal === bVal) 
+                return 0;
+            return bVal < aVal ? -1 : 1;
+        });
     }
 
     document.getElementById("total_items").innerHTML = filtered.length;
