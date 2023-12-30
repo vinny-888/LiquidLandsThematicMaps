@@ -176,3 +176,47 @@ tr{
 .highlighted{
   color: #ffee00;
 }
+
+
+
+  #imageGrid {
+    display: grid;
+    /* grid-template-columns: repeat(3, 1fr); */
+    grid-template-columns: repeat( auto-fit, minmax(350px, 1fr) );
+    grid-gap: 10px;
+    max-height: 100%;
+    overflow-y: scroll;
+  }
+  
+  .imageItem {
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .imageItem img {
+    width: 100%;
+    display: block;
+    transition: 0.5s ease;
+  }
+  
+  .imageItem:hover img {
+    opacity: 0.3;
+  }
+  
+  .textOverlay {
+    position: absolute;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5); /* Dark gradient background */
+    color: white;
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+  }
+
+  .citiesHTML {
+    text-align: left;
+  }
+
+  .leftPad{
+    margin-left: 20px;
+  }

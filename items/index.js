@@ -45,6 +45,10 @@ function toggle(){
 }
 
 function buildInfoTable(arr){
+    let imageGrid = document.getElementById('imageGrid')
+    imageGrid.style.display = 'none';
+    let infoDiv = document.getElementById('tables')
+    infoDiv.style.display = '';
     let html = '<table>';
     html+= '<thead><tr><th>Image</th><th>Item</th><th>Difficulty</th><th>Durability</th><th>Stats</th><th>Cities</th><th>Parts</th></tr></thead>';
     html+= '<tbody>';
@@ -68,6 +72,43 @@ function buildInfoTable(arr){
     html += '</table>';
 
     document.getElementById('info').innerHTML = html;
+}
+
+function buildInfoGrid(arr){
+    let infoDiv = document.getElementById('tables')
+    infoDiv.style.display = 'none';
+    const imageGrid = document.getElementById('imageGrid');
+    imageGrid.style.display = '';
+    imageGrid.innerHTML = '';
+
+    arr.forEach(item => {
+        let value = item.value1 + ' - ' + item.value2;
+        let info = canBeBuilt(item, true);
+
+        let citiesHTML = getCities(item.title);
+
+        const div = document.createElement('div');
+        div.classList.add('imageItem');
+        
+        const img = document.createElement('img');
+        img.src = item.img1;
+        img.alt = item.title;
+
+        const overlay = document.createElement('div');
+        overlay.classList.add('textOverlay');
+        overlay.innerHTML = item.title + '<br>' + value;
+
+        const stats = document.createElement('div');
+
+        const infoHTML = '<span class="'+(info.canBuild ? 'canbuild' : 'cantbuild') + '">' + ' ' + info.complete + '/' + info.total+  '</span>';
+
+        stats.innerHTML = infoHTML + '<br>' + citiesHTML;
+
+        div.appendChild(img);
+        overlay.appendChild(stats);
+        div.appendChild(overlay);
+        imageGrid.appendChild(div);
+    });
 }
 
 function buildItemTable(item){
@@ -164,7 +205,7 @@ function getCities(item){
             let colorIndex = Math.min(parseInt(building.count / 5), 9);
             color = colors[colorIndex];
         }
-        citiesHTML += `<div><span style="color: ${color}">${pad}${building.count} x</span> <a class="${classVal}" href="https://liquidlands.io/city/${city.id}/_xy${building.x},${building.y}" target="_blank">${city.name}</a></div>`;
+        citiesHTML += `<div class="citiesHTML" ><span style="color: ${color}">${pad}${building.count} x</span> <a class="${classVal}" href="https://liquidlands.io/city/${city.id}/_xy${building.x},${building.y}" target="_blank">${city.name}</a></div>`;
     })
     return citiesHTML;
 }
@@ -398,6 +439,9 @@ function filter(){
     let raid = parseInt(document.getElementById('raid').value);
     let leave = parseInt(document.getElementById('leave').value);
     let canBuild = document.getElementById('build').checked;
+    let composite_y = document.getElementById('composite_y').checked;
+    let composite_n = document.getElementById('composite_n').checked;
+    let grid = document.getElementById('grid').checked;
     let allNaN = false;
     if(Number.isNaN(att) && Number.isNaN(def) && Number.isNaN(inv) && Number.isNaN(tax) && Number.isNaN(raid) && Number.isNaN(leave)){
         allNaN = true;
@@ -535,10 +579,22 @@ function filter(){
         filtered = filtered.filter((item)=>canBeBuilt(item));
     }
 
+    if(composite_y){
+        filtered = filtered.filter((item)=>item.children && item.children.length > 0);
+    }
+    
+    if(composite_n){
+        filtered = filtered.filter((item)=>!item.children || item.children.length == 0);
+    }
+
     document.getElementById("total_items").innerHTML = filtered.length;
     document.getElementById("buildable_items").innerHTML = filtered.filter((item)=>canBeBuilt(item)).length;
     
-    buildInfoTable(filtered);
+    if(grid){
+        buildInfoGrid(filtered);
+    } else {
+        buildInfoTable(filtered);
+    }
 }
 
 
