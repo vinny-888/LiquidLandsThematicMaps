@@ -442,6 +442,8 @@ function filter(){
     let canBuild = document.getElementById('build').checked;
     let composite_y = document.getElementById('composite_y').checked;
     let composite_n = document.getElementById('composite_n').checked;
+
+    let uses_item = document.getElementById('uses_item').value;
     let grid = document.getElementById('grid').checked;
     let sort = document.getElementById('sort').checked;
     let allNaN = false;
@@ -587,6 +589,25 @@ function filter(){
     
     if(composite_n){
         filtered = filtered.filter((item)=>!item.children || item.children.length == 0);
+    }
+
+    if(uses_item && uses_item != ''){
+        let newFiltered = [];
+        filtered.forEach((item)=>{
+            let children = {};
+            getChildrenRecursive(item, children);
+            let usesItemTrue = false;
+            Object.keys(children).forEach((item)=>{
+                if(item.toLowerCase() == uses_item.toLowerCase()){
+                    usesItemTrue = true;
+                }
+            })
+            if(usesItemTrue){
+                newFiltered.push(item);
+            }
+        })
+       
+        filtered = newFiltered;
     }
 
     if(sort){
