@@ -404,7 +404,7 @@ function getTileStates(tiles){
                     state.guardedYieldLookup['guardedYield_'+guardedYield+'_realm'] = createProtected(tile_id, guardedYield, color, duration/HOUR, defense, game_bricks_per_day);
                 }
             } else if(state.layer == 'defense'){
-                color = heatMapColorforValue(Math.min(defense/100, 1));
+                color = heatMapColorforValue(Math.min(defense/200, 1));
 
                 let key = defense;
                 state.defenseValLookup[tile_id] = key;
@@ -426,11 +426,11 @@ function applyTimeRage(hours, color){
     if(adjustedMaxHours >= 46){
         adjustedMaxHours = 999;
     }
-    if(hours > state.minHours && hours <= adjustedMaxHours){
-        // Do nothing
-    } else {
-        newColor = '#999999';
-    }
+    // if(hours > state.minHours && hours <= adjustedMaxHours){
+    //     // Do nothing
+    // } else {
+    //     newColor = '#999999';
+    // }
     return newColor;
 }
 
