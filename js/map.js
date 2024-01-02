@@ -24,7 +24,7 @@ window.addEventListener('load', async function(event) {
     let timeout2 = null;
     let settings2 = {
         min: 0,
-        max: 47,
+        max: 200,
         unit: 'Def'
     };
     document.getElementById('inputPieces2').addEventListener('rangechange', function(e) {
@@ -36,7 +36,7 @@ window.addEventListener('load', async function(event) {
             state.yieldLookup = {};
             state.guardedLookup = {};
             state.minDefense = parseFloat(e.detail[0]);
-            state.maxDefense = e.detail[1] == 47 ? 9999 : parseFloat(e.detail[1]);
+            state.maxDefense = e.detail[1] == 200 ? 9999 : parseFloat(e.detail[1]);
             state.tileStates = getTileStates(state.allTiles);
             layerUpdate();
             snapshot();
@@ -427,7 +427,7 @@ function getTileStates(tiles){
 function applyTimeRage(hours, color){
     let newColor = color;
     let adjustedMaxHours = state.maxHours;
-    if(adjustedMaxHours >= 46){
+    if(adjustedMaxHours >= 198){
         adjustedMaxHours = 999;
     }
     // if(hours > state.minHours && hours <= adjustedMaxHours){
@@ -441,7 +441,7 @@ function applyTimeRage(hours, color){
 function applyDefense(defense, color){
     let newColor = color;
     let adjustedMaxDefense = state.maxDefense;
-    if(adjustedMaxDefense >= 46){
+    if(adjustedMaxDefense >= 198){
         adjustedMaxDefense = 999;
     }
     if(defense >= state.minDefense && defense <= adjustedMaxDefense){
@@ -461,7 +461,7 @@ function applyDefense2(bricks_per_day, defense, color){
     }
 
     let adjustedMaxDefense = state.maxDefense;
-    if(adjustedMaxDefense >= 46){
+    if(adjustedMaxDefense >= 198){
         adjustedMaxDefense = 999;
     }
     if((defense < state.minDefense || defense > adjustedMaxDefense) || (bricks_per_day < state.minYield || bricks_per_day > adjustedMaxYield)){

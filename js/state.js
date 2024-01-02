@@ -10,7 +10,7 @@ let state = {
     maxHours: 48,
 
     minDefense: 0,
-    maxDefense: 50,
+    maxDefense: 200,
 
     minYield: 0.0,
     maxYield: 3.0,
