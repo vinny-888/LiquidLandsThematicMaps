@@ -409,7 +409,7 @@ function getTileStates(tiles){
                 let key = defense;
                 state.defenseValLookup[tile_id] = key;
                 if(!state.defenseLookup[key]){
-                    state.defenseLookup[key] = createYieldTile(tile_id, ''+defense, color, duration/HOUR, defense, game_bricks_per_day );
+                    state.defenseLookup[key] = createDefenseTile(tile_id, ''+defense, color, duration/HOUR, defense, game_bricks_per_day );
                 }
                 // if(state.realmTilesLookup[tile_id] && !state.guardedYieldLookup[guardedYield+'_realm']){
                 //     state.guardedYieldLookup['guardedYield_'+guardedYield+'_realm'] = createYieldTile(tile_id, defense, color, duration/HOUR, defense, 1);
@@ -435,6 +435,9 @@ function applyTimeRage(hours, color){
 }
 
 function applyDefense(defense, color){
+    if(color == '#999999'){
+        return color;
+    }
     let newColor = color;
     let adjustedMaxDefense = state.maxDefense;
     if(adjustedMaxDefense >= 46){
@@ -488,6 +491,13 @@ function createYieldTile(tile_id, game_bricks_per_day, color, hours, defense, br
     color = applyTimeRage(hours, color);
     color = applyDefense(defense, color);
     color = applyYield(bricks_per_day, color);
+    return get_tile_canvas(color, state.tile_width - 3, state.tile_height-3, game_bricks_per_day,'', state.realmTilesLookup[tile_id] ? true : false);
+}
+
+function createDefenseTile(tile_id, game_bricks_per_day, color, hours, defense, bricks_per_day){
+    color = applyTimeRage(hours, color);
+    color = applyYield(bricks_per_day, color);
+    color = applyDefense(defense, color);
     return get_tile_canvas(color, state.tile_width - 3, state.tile_height-3, game_bricks_per_day,'', state.realmTilesLookup[tile_id] ? true : false);
 }
 
