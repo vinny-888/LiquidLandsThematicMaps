@@ -53,7 +53,10 @@ function buildInfoTable(arr){
     let html = '<table>';
     html+= '<thead><tr><th>Image</th><th>Item</th><th>Difficulty</th><th>Durability</th><th>Stats</th><th>Cities</th><th>Parts</th></tr></thead>';
     html+= '<tbody>';
-    arr.forEach((item, index)=>{
+
+    let sortedKeys = getSortedKeysDifficulty(arr);
+
+    sortedKeys.forEach((item, index)=>{
         let value = item.value1 + '<br>' + item.value2;
         let info = canBeBuilt(item, true);
 
@@ -130,6 +133,10 @@ function buildItemTable(item){
 function getSortedKeys(obj) {
     var keys = Object.keys(obj);
     return keys.sort(function(a,b){return obj[b]-obj[a]});
+}
+
+function getSortedKeysDifficulty(arr) {
+    return arr.sort(function(a,b){return parseInt(b.difficulty.substring(11))-parseInt(a.difficulty.substring(11))});
 }
 
 function canBeBuilt(item, counts){
